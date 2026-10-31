@@ -1,0 +1,65 @@
+{
+  "factorVersion": "2026.1-GEDA",
+  "citation": "Central Electricity Authority (CEA) CO2 Baseline Database Ver 19 (2024), MoEFCC India GHG Program, IPCC 2006 Guidelines for National Greenhouse Gas Inventories",
+  "electricity": {
+    "gridKgPerKwh": 0.71,
+    "source": "CEA CO2 Baseline Database (Western Regional Grid)",
+    "units": "kg CO2e / kWh"
+  },
+  "cooking": {
+    "lpgKgCo2PerKg": 2.98,
+    "standardCylinderKg": 14.2,
+    "smallCylinderKg": 5.0,
+    "pngKgCo2PerScm": 2.15,
+    "source": "IPCC Guidelines / Petroleum Planning & Analysis Cell (PPAC)",
+    "units": "kg CO2e / kg (LPG), kg CO2e / SCM (PNG)"
+  },
+  "transport": {
+    "perKm": {
+      "petrol_bike": 0.035,
+      "electric_bike": 0.012,
+      "petrol_car": 0.142,
+      "diesel_car": 0.168,
+      "electric_car": 0.048,
+      "cng_car": 0.105,
+      "bus": 0.018,
+      "metro": 0.009,
+      "train": 0.014,
+      "auto": 0.045,
+      "walk": 0.0,
+      "bicycle": 0.0
+    },
+    "source": "ARAI / India GHG Program fleet average factors",
+    "units": "kg CO2e / passenger-km"
+  },
+  "tariffs": {
+    "gujarat_guvnl_residential": {
+      "slab1": { "limit": 100, "rate": 3.40 },
+      "slab2": { "limit": 250, "rate": 4.15 },
+      "slab3": { "limit": 999999, "rate": 5.20 },
+      "fixedCharge": 70,
+      "fpppaRate": 2.45
+    },
+    "effectiveAverageRatePerKwh": 6.80
+  },
+  "appliances": {
+    "ceiling_fan": { "watts": 70, "label": "Ceiling Fan", "defaultHours": 8 },
+    "ac": { "watts": 1500, "label": "Air Conditioner", "defaultHours": 6 },
+    "geyser": { "watts": 2000, "label": "Geyser", "defaultHours": 0.5 },
+    "refrigerator": { "kwhPerDay": 1.0, "label": "Refrigerator", "defaultHours": 24 },
+    "washing_machine": { "watts": 500, "label": "Washing Machine", "defaultHours": 0.7 },
+    "led_lights": { "watts": 9, "label": "LED Lights", "defaultHours": 6 },
+    "laptop": { "watts": 50, "label": "Laptop", "defaultHours": 6 },
+    "desktop": { "watts": 200, "label": "Desktop PC", "defaultHours": 4 },
+    "tv": { "watts": 100, "label": "Television", "defaultHours": 4 },
+    "water_pump": { "watts": 750, "label": "Water Pump", "defaultHours": 0.5 }
+  },
+  "districts_gujarat": [
+    "Ahmedabad", "Amreli", "Anand", "Aravalli", "Banaskantha", "Bharuch",
+    "Bhavnagar", "Botad", "Chhota Udaipur", "Dahod", "Dang", "Devbhoomi Dwarka",
+    "Gandhinagar", "Gir Somnath", "Jamnagar", "Junagadh", "Kheda", "Kutch",
+    "Mahisagar", "Mehsana", "Morbi", "Narmada", "Navsari", "Panchmahal",
+    "Patan", "Porbandar", "Rajkot", "Sabarkantha", "Surat", "Surendranagar",
+    "Tapi", "Vadodara", "Valsad"
+  ]
+}
