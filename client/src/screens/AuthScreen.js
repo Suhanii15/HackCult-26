@@ -9,12 +9,14 @@ import {
   Platform,
   ScrollView,
   StatusBar,
+  ActivityIndicator,
 } from 'react-native';
 import { COLORS } from '../theme';
 import BrandLogo from '../components/BrandLogo';
 import AppSafeArea from '../components/AppSafeArea';
 import LanguageCircleButton from '../components/LanguageCircleButton';
 import { useLanguage } from '../i18n/LanguageContext';
+import { apiRegister, apiLogin } from '../services/api';
 
 export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBack }) {
   const { t } = useLanguage();
@@ -23,8 +25,9 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!identifier.trim()) {
       setError('Please enter your email or phone number');
       return;
@@ -33,14 +36,42 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
       setError('Please enter your full name');
       return;
     }
+    if (!password) {
+      setError('Please enter your password');
+      return;
+    }
 
     setError('');
-    const mockUser = {
-      name: name.trim() || 'Citizen',
-      identifier: identifier.trim(),
-      isNewUser: mode === 'signup',
-    };
-    onAuthSuccess(mockUser);
+    setLoading(true);
+
+    try {
+      let res;
+      if (mode === 'signup') {
+        res = await apiRegister({
+          fullName: name.trim(),
+          identifier: identifier.trim(),
+          password,
+        });
+      } else {
+        res = await apiLogin({
+          identifier: identifier.trim(),
+          password,
+        });
+      }
+
+      setLoading(false);
+      onAuthSuccess({
+        ...(res.user || {}),
+        name: res.user?.fullName || name.trim() || 'Citizen',
+        identifier: res.user?.email || identifier.trim(),
+        isNewUser: mode === 'signup',
+        token: res.token,
+      });
+    } catch (err) {
+      setLoading(false);
+      console.warn('Backend Auth Request failed:', err.message);
+      setError(err.message || 'Authentication failed. Please verify credentials or server.');
+    }
   };
 
   return (
@@ -163,7 +194,27 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
               />
             </View>
 
-            {error ? <Text style={styles.errorText}>⚠️ {error}</Text> : null}
+            {error ? (
+              <View style={styles.errorContainer}>
+                <Text style={styles.errorText}>⚠️ {error}</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setError('');
+                    onAuthSuccess({
+                      name: name.trim() || 'Citizen',
+                      identifier: identifier.trim(),
+                      isNewUser: mode === 'signup',
+                      isOfflineDemo: true,
+                    });
+                  }}
+                  style={styles.offlineFallbackBtn}
+                >
+                  <Text style={styles.offlineFallbackText}>
+                    Continue in Offline / Demo Mode ➔
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            ) : null}
 
             {/* Quick Demo Autofill Pill */}
             <TouchableOpacity
@@ -180,13 +231,18 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
 
             {/* Submit CTA */}
             <TouchableOpacity
-              style={styles.submitBtn}
+              style={[styles.submitBtn, loading && { opacity: 0.7 }]}
               activeOpacity={0.85}
               onPress={handleSubmit}
+              disabled={loading}
             >
-              <Text style={styles.submitBtnText}>
-                {mode === 'signup' ? t('auth_btn_signup') : t('auth_btn_login')}
-              </Text>
+              {loading ? (
+                <ActivityIndicator color={COLORS.white} />
+              ) : (
+                <Text style={styles.submitBtnText}>
+                  {mode === 'signup' ? t('auth_btn_signup') : t('auth_btn_login')}
+                </Text>
+              )}
             </TouchableOpacity>
           </View>
 
@@ -298,11 +354,26 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: COLORS.textPrimary,
   },
+  errorContainer: {
+    marginBottom: 12,
+  },
   errorText: {
     color: '#DC2626',
     fontSize: 13,
     fontWeight: '600',
-    marginBottom: 10,
+    marginBottom: 6,
+  },
+  offlineFallbackBtn: {
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    backgroundColor: '#FEF3C7',
+    borderRadius: 8,
+    alignSelf: 'flex-start',
+  },
+  offlineFallbackText: {
+    fontSize: 12,
+    color: '#B45309',
+    fontWeight: '700',
   },
   demoFillBtn: {
     alignSelf: 'flex-start',
