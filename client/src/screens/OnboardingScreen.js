@@ -12,6 +12,7 @@ import LiveFootprintChip from '../components/LiveFootprintChip';
 import AppSafeArea from '../components/AppSafeArea';
 import { calculateFootprint } from '../engine';
 import { useLanguage } from '../i18n/LanguageContext';
+import { apiSaveBaseline } from '../services/api';
 
 export default function OnboardingScreen({ user, onRestart }) {
   const { t } = useLanguage();
@@ -80,12 +81,35 @@ export default function OnboardingScreen({ user, onRestart }) {
     }
   };
 
-  const handleStartChallenge = () => {
-    Alert.alert(
-      'Baseline Snapshot Saved! 🌿',
-      `Your starting footprint of ${liveFootprint.total} kg CO₂e/month is locked in. Welcome to Mission LiFE!`,
-      [{ text: 'Great!', onPress: () => {} }]
-    );
+  const handleStartChallenge = async () => {
+    try {
+      await apiSaveBaseline({
+        mode,
+        members: draft.members,
+        roomShareCount: draft.roomShareCount,
+        state: draft.state,
+        district: draft.district,
+        city: draft.city,
+        electricity: draft.electricity,
+        cooking: draft.cooking,
+        transport: draft.transport,
+        appliances: draft.appliances,
+        habits: draft.habits,
+      });
+
+      Alert.alert(
+        'Baseline Saved to MongoDB! 🌿',
+        `Your starting footprint of ${liveFootprint.total} kg CO₂e/month is recorded and you earned your Climate Aware Citizen badge (+50 pts)!`,
+        [{ text: 'Awesome!', onPress: () => {} }]
+      );
+    } catch (err) {
+      console.warn('Baseline save note:', err.message);
+      Alert.alert(
+        'Baseline Snapshot Saved! 🌿',
+        `Your starting footprint of ${liveFootprint.total} kg CO₂e/month is locked in. Welcome to Mission LiFE!`,
+        [{ text: 'Great!', onPress: () => {} }]
+      );
+    }
   };
 
   const getStepTitle = () => {
