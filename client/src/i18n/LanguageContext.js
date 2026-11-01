@@ -168,6 +168,9 @@ const TRANSLATIONS = {
     how_we_calculated: 'How we calculated this',
     start_first_challenge: 'Start My First Challenge 🌿',
     personalise_btn: '✦ Personalise with Home Appliances & Habits (Optional)',
+    toast_baseline_saved_title: 'Baseline Saved! 🌿',
+    toast_baseline_saved_msg: 'Your starting footprint of {val} kg CO₂e/month is recorded and you earned your Climate Aware Citizen badge (+50 pts)!',
+    toast_btn_awesome: 'Awesome!',
   },
 
   gu: {
@@ -336,6 +339,9 @@ const TRANSLATIONS = {
     how_we_calculated: 'અમે આ કેવી રીતે ગણતરી કરી',
     start_first_challenge: 'પ્રથમ પડકાર શરૂ કરો 🌿',
     personalise_btn: '✦ ઘરના સાધનો અને આદતોથી વ્યક્તિગત કરો (વૈકલ્પિક)',
+    toast_baseline_saved_title: 'બેઝલાઇન સેવ થઈ ગઈ! 🌿',
+    toast_baseline_saved_msg: 'તમારી પ્રારંભિક {val} કિગ્રા CO₂e/માસની ફૂટપ્રિન્ટ નોંધાઈ છે અને તમે ક્લાઇમેટ અવેર બેજ (+50 પોઈન્ટ) મેળવ્યા છે!',
+    toast_btn_awesome: 'સરસ!',
   },
 
   hi: {
@@ -504,6 +510,9 @@ const TRANSLATIONS = {
     how_we_calculated: 'हमने इसकी गणना कैसे की',
     start_first_challenge: 'पहली चुनौती शुरू करें 🌿',
     personalise_btn: '✦ घरेलू उपकरणों और आदतों से निजीकृत करें (वैकल्पिक)',
+    toast_baseline_saved_title: 'बेसलाइन सहेज ली गई! 🌿',
+    toast_baseline_saved_msg: 'आपका प्रारंभिक {val} किग्रा CO₂e/माह का फुटप्रिंट दर्ज हो गया है और आपने क्लाइमेट अवेयर बैज (+50 अंक) अर्जित किया है!',
+    toast_btn_awesome: 'शानदार!',
   },
 };
 
