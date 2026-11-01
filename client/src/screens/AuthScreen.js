@@ -217,17 +217,19 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
             ) : null}
 
             {/* Quick Demo Autofill Pill */}
-            <TouchableOpacity
-              style={styles.demoFillBtn}
-              onPress={() => {
-                setName('Priya Patel');
-                setIdentifier('priya.patel@gujarat.in');
-                setPassword('MissionLife2026!');
-                setError('');
-              }}
-            >
-              <Text style={styles.demoFillText}>{t('auth_quick_fill')}</Text>
-            </TouchableOpacity>
+            {__DEV__ && (
+              <TouchableOpacity
+                style={styles.demoFillBtn}
+                onPress={() => {
+                  setName('Priya Patel');
+                  setIdentifier('priya.patel@gujarat.in');
+                  setPassword('MissionLife2026!');
+                  setError('');
+                }}
+              >
+                <Text style={styles.demoFillText}>{t('auth_quick_fill')}</Text>
+              </TouchableOpacity>
+            )}
 
             {/* Submit CTA */}
             <TouchableOpacity
