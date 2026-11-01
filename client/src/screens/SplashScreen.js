@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import BrandLogo from '../components/BrandLogo';
 import { COLORS } from '../theme';
+import { apiWarmup } from '../services/api';
 
 export default function SplashScreen({ onFinish }) {
   const fadeAnim = useRef(new Animated.Value(0)).current;
@@ -16,6 +17,9 @@ export default function SplashScreen({ onFinish }) {
   const pulseAnim = useRef(new Animated.Value(0.4)).current;
 
   useEffect(() => {
+    // 0. Trigger silent backend health warm-up call
+    apiWarmup().catch(() => {});
+
     // 1. Smooth Fade-in and scale up
     Animated.parallel([
       Animated.timing(fadeAnim, {
@@ -102,7 +106,12 @@ export default function SplashScreen({ onFinish }) {
       </Animated.View>
 
       {/* Bottom Authority Line (Reference style: "a ClearYst company") */}
-      
+      <Animated.View style={[styles.footer, { opacity: fadeAnim }]}>
+        <Text style={styles.footerLead}>an initiative by</Text>
+        <Text style={styles.footerOrg}>
+          Gujarat Energy Development Agency (GEDA)
+        </Text>
+      </Animated.View>
     </TouchableOpacity>
   );
 }

@@ -1,15 +1,6 @@
-import { Platform } from 'react-native';
-
-// For local testing on Wi-Fi device or emulator:
-// - Physical device on Wi-Fi: use PC's LAN IP (e.g. 192.168.0.191:5000)
-// - Web / localhost: use http://localhost:5000
-const DEV_LAN_IP = '192.168.0.191';
-const PORT = '5000';
-
+// Expo environment variable or fallback for localhost:
 export const API_BASE_URL =
-  Platform.OS === 'web'
-    ? `http://localhost:${PORT}/api/v1`
-    : `http://${DEV_LAN_IP}:${PORT}/api/v1`;
+  process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
 
 // Memory token cache for current session
 let authToken = null;
@@ -22,7 +13,7 @@ export const getAuthToken = () => {
   return authToken;
 };
 
-// Generic fetch wrapper with timeout & error handling
+// Generic fetch wrapper with 45s timeout & error handling
 async function request(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
 
@@ -35,7 +26,7 @@ async function request(endpoint, options = {}) {
 
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+    const timeoutId = setTimeout(() => controller.abort(), 45000); // 45s timeout for cold start / Render spins
 
     const response = await fetch(url, {
       ...options,
@@ -63,6 +54,15 @@ async function request(endpoint, options = {}) {
     throw error;
   }
 }
+
+// Silent warm-up call to wake up server / spin-up
+export const apiWarmup = async () => {
+  try {
+    return await request('/health', { method: 'GET' });
+  } catch {
+    return null;
+  }
+};
 
 // Auth API
 export const apiRegister = async ({ fullName, identifier, password, district, city }) => {
