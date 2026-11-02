@@ -15,7 +15,7 @@ import { calculateFootprint } from '../engine';
 import { useLanguage } from '../i18n/LanguageContext';
 import { apiSaveBaseline } from '../services/api';
 
-export default function OnboardingScreen({ user, onRestart }) {
+export default function OnboardingScreen({ user, onRestart, onComplete }) {
   const { t } = useLanguage();
   // Navigation state: 'mode' | 1 | 2 | 3 | 4 | 'result' | 'personalise'
   const [currentStep, setCurrentStep] = useState('mode');
@@ -254,7 +254,10 @@ export default function OnboardingScreen({ user, onRestart }) {
         message={toast.message}
         buttonText={toast.buttonText || t('toast_btn_awesome')}
         type={toast.type}
-        onClose={() => setToast((prev) => ({ ...prev, visible: false }))}
+        onClose={() => {
+          setToast((prev) => ({ ...prev, visible: false }));
+          if (onComplete) onComplete();
+        }}
       />
     </>
   );

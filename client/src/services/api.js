@@ -1,6 +1,25 @@
-// Expo environment variable or fallback for localhost:
-export const API_BASE_URL =
-  process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000/api/v1';
+import { NativeModules, Platform } from 'react-native';
+
+// Dynamically resolve API URL: uses EXPO_PUBLIC_API_URL if set, or extracts Metro host IP for mobile devices
+const resolveApiBaseUrl = () => {
+  if (process.env.EXPO_PUBLIC_API_URL) {
+    return process.env.EXPO_PUBLIC_API_URL;
+  }
+  if (Platform.OS !== 'web' && NativeModules?.SourceCode?.scriptURL) {
+    try {
+      const rawUrl = NativeModules.SourceCode.scriptURL;
+      const host = rawUrl.split('://')[1]?.split(':')[0];
+      if (host && host !== 'localhost' && host !== '127.0.0.1') {
+        return `http://${host}:5000/api/v1`;
+      }
+    } catch {
+      // Fallback below
+    }
+  }
+  return 'http://localhost:5000/api/v1';
+};
+
+export const API_BASE_URL = resolveApiBaseUrl();
 
 // Memory token cache for current session
 let authToken = null;
@@ -14,7 +33,7 @@ export const getAuthToken = () => {
 };
 
 // Generic fetch wrapper with 45s timeout & error handling
-async function request(endpoint, options = {}) {
+export async function request(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
 
   const headers = {

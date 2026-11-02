@@ -97,7 +97,8 @@ export default function StepTravel({
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>{t('step4_title')}</Text>
-        <Text style={styles.subtitle}>{t('step4_sub')}</Text>
+
+        {/* <Text style={styles.subtitle}>{t('step4_sub')}</Text> */}
 
         {/* "I don't travel regularly" explicit zero toggle */}
         <TouchableOpacity
@@ -150,12 +151,12 @@ export default function StepTravel({
                   </ScrollView>
 
                   {/* Selected Mode Summary */}
-                  <View style={styles.modeSummaryPill}>
+                  {/* <View style={styles.modeSummaryPill}>
                     <Text style={styles.summaryEmoji}>{currentModeDef.icon}</Text>
                     <Text style={styles.summaryText}>
                       Mode: <Text style={{ fontWeight: '800' }}>{currentModeDef.label}</Text> ({currentModeDef.subtitle})
                     </Text>
-                  </View>
+                  </View> */}
 
                   {/* Distance Slider with driving vehicle visual */}
                   <SliderWithPreview
@@ -262,6 +263,7 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: COLORS.textPrimary,
     letterSpacing: -0.4,
+    marginBottom: 16,
   },
   subtitle: {
     fontSize: 13,

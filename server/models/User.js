@@ -116,6 +116,13 @@ const UserSchema = new mongoose.Schema(
       default: 50, // Starting welcome bonus
       index: -1,
     },
+    ecoScore: {
+      total: { type: Number, default: 0, min: 0, max: 100 },
+      energy: { type: Number, default: 0, min: 0, max: 25 },
+      transport: { type: Number, default: 0, min: 0, max: 25 },
+      waste: { type: Number, default: 0, min: 0, max: 25 },
+      water: { type: Number, default: 0, min: 0, max: 25 },
+    },
     currentStreakDays: {
       type: Number,
       default: 1,
