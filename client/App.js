@@ -4,10 +4,12 @@ import SplashScreen from './src/screens/SplashScreen';
 import WelcomeScreen from './src/screens/WelcomeScreen';
 import AuthScreen from './src/screens/AuthScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
+import LeaderboardScreen from './src/screens/LeaderboardScreen';
 import { LanguageProvider, useLanguage } from './src/i18n/LanguageContext';
 import LanguageModal from './src/components/LanguageModal';
 
 function MainApp() {
+  // PREVIEW: set to 'leaderboard' to preview; change back to 'splash' for normal flow
   const [currentScreen, setCurrentScreen] = useState('splash');
   const [authMode, setAuthMode] = useState('signup');
   const [currentUser, setCurrentUser] = useState(null);
@@ -60,6 +62,12 @@ function MainApp() {
         <OnboardingScreen
           user={currentUser}
           onRestart={handleRestartFlow}
+        />
+      )}
+
+      {currentScreen === 'leaderboard' && (
+        <LeaderboardScreen
+          onBack={() => setCurrentScreen('welcome')}
         />
       )}
 
