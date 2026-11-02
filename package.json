@@ -1,0 +1,11 @@
+{
+  "name": "hackcult-26-mission-life",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mission LiFE - Lifestyle for Environment Platform (HackCult '26)",
+  "scripts": {
+    "sync:engine": "node scripts/syncEngine.js",
+    "test:engine-sync": "node scripts/checkEngineSync.js",
+    "test": "node scripts/checkEngineSync.js"
+  }
+}

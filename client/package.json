@@ -6,7 +6,9 @@
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "sync:engine": "node ../scripts/syncEngine.js",
+    "test:engine-sync": "node ../scripts/checkEngineSync.js"
   },
   "dependencies": {
     "expo": "^58.0.21",

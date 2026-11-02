@@ -1,7 +1,13 @@
 const config = require('./config.json');
 
+/**
+ * Convert electricity bill in INR to estimated kWh using Gujarat residential slab tariffs
+ * @param {number} billInINR
+ * @returns {{ kwh: number, assumption: string }}
+ */
 function billInrToKwh(billInINR) {
   if (!billInINR || billInINR <= 0) return { kwh: 0, assumption: '' };
+  // Using effective average rate per kWh (energy charge + FPPPA + fixed distribution amortized)
   const effectiveRate = config.tariffs.effectiveAverageRatePerKwh || 6.80;
   const estimatedKwh = Math.round((billInINR / effectiveRate) * 10) / 10;
   return {
@@ -10,6 +16,12 @@ function billInrToKwh(billInINR) {
   };
 }
 
+/**
+ * Estimate electricity kWh from appliance list
+ * @param {Array<{ key: string, count: number, hoursPerDay: number, watts?: number }>} appliances
+ * @param {number} roomShareCount - default 1
+ * @returns {number} monthly kWh
+ */
 function estimateApplianceKwh(appliances = [], roomShareCount = 1) {
   if (!Array.isArray(appliances) || appliances.length === 0) return 0;
   const divisor = Math.max(1, roomShareCount || 1);
@@ -30,6 +42,7 @@ function estimateApplianceKwh(appliances = [], roomShareCount = 1) {
       dailyKwh = (watts * hours * count) / 1000;
     }
 
+    // Shared appliances (fan, AC, lights) divided by room share
     const isShared = ['ceiling_fan', 'ac', 'led_lights'].includes(app.key);
     const itemDailyKwh = isShared ? (dailyKwh / divisor) : dailyKwh;
     totalMonthlyKwh += itemDailyKwh * 30;
@@ -38,8 +51,13 @@ function estimateApplianceKwh(appliances = [], roomShareCount = 1) {
   return Math.round(totalMonthlyKwh * 10) / 10;
 }
 
+/**
+ * Pure footprint calculation function
+ * @param {Object} input
+ * @returns {Object} Footprint output conforming to Section 9
+ */
 function calculateFootprint(input = {}) {
-  const mode = input.mode || 'household';
+  const mode = input.mode || 'household'; // 'household' | 'individual'
   const members = mode === 'individual' ? 1 : Math.max(1, input.members || 1);
   const factorVersion = config.factorVersion;
   const computedAt = new Date().toISOString();
@@ -50,7 +68,7 @@ function calculateFootprint(input = {}) {
     transport: { kg: null, status: 'unavailable', assumptions: [] }
   };
 
-  // 1. Electricity
+  // 1. ELECTRICITY
   const elec = input.electricity;
   if (elec) {
     let gridKwh = null;
@@ -74,6 +92,7 @@ function calculateFootprint(input = {}) {
     }
 
     if (typeof gridKwh === 'number') {
+      // Deduct rooftop solar export if given
       let netGridKwh = gridKwh;
       if (elec.solar && elec.solar.hasSolar) {
         const exportedKwh = elec.solar.exportedKwh || 0;
@@ -88,7 +107,7 @@ function calculateFootprint(input = {}) {
     }
   }
 
-  // 2. Cooking
+  // 2. COOKING
   const cooking = input.cooking;
   if (cooking) {
     if (cooking.noCookingFuel) {
@@ -120,6 +139,7 @@ function calculateFootprint(input = {}) {
           assumptions.push(`${scm} SCM PNG piped gas/month`);
           hasReported = true;
         } else if (fuel.type === 'induction') {
+          // Rule: Electric cooking is never added separately (already in electricity bill)
           assumptions.push('Electric/Induction cooking accounted for in electricity bill (0 additional CO₂e)');
           hasReported = true;
         } else if (fuel.type === 'other') {
@@ -137,7 +157,7 @@ function calculateFootprint(input = {}) {
     }
   }
 
-  // 3. Transport
+  // 3. TRANSPORT
   const transport = input.transport;
   if (transport) {
     if (transport.noRegularTravel) {
@@ -166,6 +186,7 @@ function calculateFootprint(input = {}) {
     }
   }
 
+  // Determine coverage and partial state
   const isPartial =
     categories.electricity.kg === null ||
     categories.cooking.kg === null ||

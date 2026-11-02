@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "check-db": "node scripts/checkDb.js"
+    "check-db": "node scripts/checkDb.js",
+    "sync:engine": "node ../scripts/syncEngine.js",
+    "test:engine-sync": "node ../scripts/checkEngineSync.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
