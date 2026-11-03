@@ -1,12 +1,11 @@
 import React from 'react';
-import { StyleSheet, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { COLORS } from '../theme';
 import { useLanguage } from '../i18n/LanguageContext';
 import CommunityScreen from '../features/community/screens/CommunityScreen';
 import ActivitiesStack from './ActivitiesStack';
 import HomeScreen from '../features/home/screens/HomeScreen';
 import SolarScreen from '../features/solar/screens/SolarScreen';
+import GlassEllipseTabBar from './GlassEllipseTabBar';
 import {
   CommunityIcon,
   ActivitiesIcon,
@@ -16,9 +15,8 @@ import {
 
 const Tab = createBottomTabNavigator();
 
-// Order is defined in ONE array: Community, Activities, Home, Solar
+// Order is defined in ONE array: Home, Community, Activities, Solar
 const TAB_DEFINITIONS = [
-  
   {
     name: 'Home',
     titleKey: 'tab_home',
@@ -55,17 +53,12 @@ export default function MainTabs({ user }) {
   return (
     <Tab.Navigator
       initialRouteName="Home"
+      tabBar={(props) => <GlassEllipseTabBar {...props} />}
       screenOptions={{
         headerShown: false,
-        tabBarActiveTintColor: COLORS.accent,
-        tabBarInactiveTintColor: COLORS.textOnDarkMuted,
-        tabBarStyle: styles.tabBar,
-        tabBarLabelStyle: styles.tabBarLabel,
-        tabBarItemStyle: styles.tabBarItem,
       }}
     >
       {TAB_DEFINITIONS.map((tab) => {
-        const IconComponent = tab.icon;
         const label = tab.titleKey && t(tab.titleKey) !== tab.titleKey
           ? t(tab.titleKey)
           : tab.defaultLabel;
@@ -76,9 +69,6 @@ export default function MainTabs({ user }) {
             name={tab.name}
             options={{
               tabBarLabel: label,
-              tabBarIcon: ({ color, size }) => (
-                <IconComponent color={color} size={size || 22} />
-              ),
             }}
           >
             {(props) => {
@@ -91,22 +81,3 @@ export default function MainTabs({ user }) {
     </Tab.Navigator>
   );
 }
-
-const styles = StyleSheet.create({
-  tabBar: {
-    backgroundColor: COLORS.darkSurface, // Dark surface tab bar
-    borderTopColor: '#1F2937',
-    borderTopWidth: 1,
-    height: Platform.OS === 'ios' ? 88 : 64,
-    paddingTop: 6,
-    paddingBottom: Platform.OS === 'ios' ? 24 : 8,
-  },
-  tabBarLabel: {
-    fontSize: 11,
-    fontWeight: '700',
-    marginTop: 2,
-  },
-  tabBarItem: {
-    paddingVertical: 2,
-  },
-});

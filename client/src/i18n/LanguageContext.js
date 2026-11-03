@@ -349,6 +349,20 @@ const TRANSLATIONS = {
 
     active_activities_screen_title: 'Active Challenges',
     active_activities_empty: 'You have no active challenges. Browse categories and add goals to begin!',
+
+    // Dashboard Minimal UI
+    your_impact_this_month: 'Your Impact This Month',
+    kg_co2_saved: 'kg CO₂ saved',
+    vs_last_month: '18% vs last month',
+    your_snapshot: 'Your Snapshot',
+    see_all: 'See all',
+    carbon_footprint: 'Carbon Footprint',
+    eco_score: 'Eco Score',
+    eco_score_good: 'Good',
+    in_progress: 'in progress',
+    smart_suggestion: 'Smart Suggestion',
+    smart_suggestion_desc: 'Switch to 9W LED bulbs and save',
+    smart_suggestion_action: 'Switch to 9W BEE 5-Star LED bulbs',
   },
 
   gu: {
@@ -666,6 +680,20 @@ const TRANSLATIONS = {
 
     active_activities_screen_title: 'સક્રિય પડકારો',
     active_activities_empty: 'તમારી પાસે કોઈ સક્રિય પડકાર નથી. શરૂ કરવા માટે શ્રેણીઓ બ્રાઉઝ કરો અને લક્ષ્યો ઉમેરો!',
+
+    // Dashboard Minimal UI
+    your_impact_this_month: 'આ મહિને તમારી અસર',
+    kg_co2_saved: 'kg CO₂ બચાવેલ',
+    vs_last_month: 'ગયા મહિનાની સરખામણીએ 18%',
+    your_snapshot: 'તમારો સારાંશ',
+    see_all: 'બધું જુઓ',
+    carbon_footprint: 'કાર્બન ફૂટપ્રિન્ટ',
+    eco_score: 'ઇકો સ્કોર',
+    eco_score_good: 'ઉત્તમ',
+    in_progress: 'ચાલુ છે',
+    smart_suggestion: 'સ્માર્ટ સૂચન',
+    smart_suggestion_desc: '9W LED બલ્બ અપનાવો અને બચાવો',
+    smart_suggestion_action: '9W BEE 5-Star LED બલ્બ લગાવો',
   },
 
   hi: {
@@ -1015,6 +1043,20 @@ const TRANSLATIONS = {
 
     active_activities_screen_title: 'सक्रिय चुनौतियाँ',
     active_activities_empty: 'आपकी कोई सक्रिय चुनौती नहीं है। शुरू करने के लिए श्रेणियाँ देखें और लक्ष्य जोड़ें!',
+
+    // Dashboard Minimal UI
+    your_impact_this_month: 'इस महीने आपका प्रभाव',
+    kg_co2_saved: 'kg CO₂ बचाया',
+    vs_last_month: 'पिछले माह की तुलना में 18%',
+    your_snapshot: 'आपका स्नैपशॉट',
+    see_all: 'सभी देखें',
+    carbon_footprint: 'कार्बन फ़ुटप्रिंट',
+    eco_score: 'इको स्कोर',
+    eco_score_good: 'अच्छा',
+    in_progress: 'प्रगति पर',
+    smart_suggestion: 'स्मार्ट सुझाव',
+    smart_suggestion_desc: '9W LED बल्ब अपनाएं और बचाएं',
+    smart_suggestion_action: '9W BEE 5-स्टार LED बल्ब लगाएं',
   },
 };
 
