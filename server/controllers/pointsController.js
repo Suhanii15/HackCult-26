@@ -46,7 +46,7 @@ exports.getLeaderboard = async (req, res, next) => {
     let scoreUnit = '';
 
     if (metric === 'eco') {
-      sortObj = { ecoScore: -1, currentStreakDays: -1, totalPoints: -1 };
+      sortObj = { 'ecoScore.total': -1, currentStreakDays: -1, totalPoints: -1 };
       scoreField = 'ecoScore';
       scoreUnit = 'Eco';
     } else if (metric === 'carbon') {
@@ -84,7 +84,7 @@ exports.getLeaderboard = async (req, res, next) => {
       let displayScore = '0';
 
       if (metric === 'eco') {
-        rawScore = u.ecoScore || 72;
+        rawScore = u.ecoScore?.total || 72;
         displayScore = `${rawScore}`;
       } else if (metric === 'carbon') {
         rawScore = u.baselineAnnualCO2Kg || 2500;
@@ -123,7 +123,7 @@ exports.getLeaderboard = async (req, res, next) => {
     if (!currentUserEntry && user._id) {
       const myRawScore =
         metric === 'eco'
-          ? user.ecoScore || 72
+          ? user.ecoScore?.total || 72
           : metric === 'carbon'
           ? user.baselineAnnualCO2Kg || 2500
           : user.totalPoints || 50;

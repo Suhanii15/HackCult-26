@@ -1,12 +1,14 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/errorHandler');
 
-// Load environment variables
+// Load environment variables (supports running from root or server dir)
 dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '.env') });
 
 // Connect to Database
 connectDB();
@@ -47,6 +49,7 @@ app.get('/api/v1/health', (req, res) => {
 app.use('/api/v1/auth', require('./routes/authRoutes'));
 app.use('/api/v1/users', require('./routes/userRoutes'));
 app.use('/api/v1/footprint', require('./routes/footprintRoutes'));
+app.use('/api/v1/activities', require('./routes/activityRoutes'));
 app.use('/api/v1/points', require('./routes/pointsRoutes'));
 
 // Centralized Error Handler
@@ -54,12 +57,15 @@ app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
 
-const server = app.listen(PORT, () => {
-  console.log(
-    `🚀 Mission LiFE Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`
-  );
-  console.log(`📡 Health Check: http://localhost:${PORT}/api/v1/health`);
-});
+let server;
+if (require.main === module) {
+  server = app.listen(PORT, "0.0.0.0", () => {
+    console.log(
+      `🚀 Mission LiFE Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`
+    );
+    console.log(`📡 Health Check: http://localhost:${PORT}/api/v1/health`);
+  });
+}
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
