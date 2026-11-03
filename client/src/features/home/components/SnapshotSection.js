@@ -3,6 +3,11 @@ import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from '../../../components/ui';
 import { COLORS, RADII, SPACING } from '../../../theme';
 import { useLanguage } from '../../../i18n/LanguageContext';
+import {
+  FootprintIcon,
+  EcoCycleIcon,
+  EarthSproutIcon,
+} from './HomeIcons';
 
 export default function SnapshotSection({
   monthlyCO2Kg = 128,
@@ -37,7 +42,7 @@ export default function SnapshotSection({
           onPress={onOpenFootprint}
         >
           <View style={styles.iconCircleCyan}>
-            <Text style={styles.iconText}>👣</Text>
+            <FootprintIcon size={20} color="#00897B" />
           </View>
           <Text style={styles.cardLabel}>{t('carbon_footprint')}</Text>
           <Text style={styles.cardValue}>{Math.round(monthlyCO2Kg)}</Text>
@@ -50,8 +55,8 @@ export default function SnapshotSection({
           elevation="subtle"
           onPress={onOpenActivities}
         >
-          <View style={styles.iconCircleTeal}>
-            <Text style={styles.iconText}>🌿</Text>
+          <View style={styles.iconCircleGreen}>
+            <EcoCycleIcon size={20} color="#10B981" />
           </View>
           <Text style={styles.cardLabel}>{t('eco_score')}</Text>
           <Text style={styles.cardValue}>{ecoScore}</Text>
@@ -67,7 +72,7 @@ export default function SnapshotSection({
       >
         <View style={styles.horizontalLeft}>
           <View style={styles.horizontalIconCircle}>
-            <Text style={styles.iconText}>🌱</Text>
+            <EarthSproutIcon size={24} color="#00897B" />
           </View>
           <Text style={styles.horizontalTitle}>{t('eco_score')}</Text>
         </View>
@@ -97,12 +102,13 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '700',
-    color: '#1E293B',
+    color: '#0F172A',
+    letterSpacing: -0.2,
   },
   seeAllText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: COLORS.primary, // Brand teal #00897B
+    fontWeight: '500',
+    color: '#64748B',
   },
   gridRow: {
     flexDirection: 'row',
@@ -111,75 +117,73 @@ const styles = StyleSheet.create({
   gridCard: {
     flex: 1,
     padding: 16,
-    borderRadius: 22,
+    borderRadius: 24,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1.2,
-    borderColor: 'rgba(224, 242, 241, 0.8)',
-    shadowColor: '#004D40',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.04,
+    borderWidth: 1,
+    borderColor: 'rgba(226, 232, 240, 0.8)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
     shadowRadius: 8,
     elevation: 2,
   },
   iconCircleCyan: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
     backgroundColor: '#E0F7FA',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
   },
-  iconCircleTeal: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: '#E0F2F1', // Brand mint tint
+  iconCircleGreen: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#DCFCE7',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 10,
-  },
-  iconText: {
-    fontSize: 18,
+    marginBottom: 12,
   },
   cardLabel: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
+    fontSize: 13,
+    color: '#64748B',
     fontWeight: '500',
     marginBottom: 4,
   },
   cardValue: {
     fontSize: 26,
     fontWeight: '800',
-    color: '#004D40', // Brand deep teal
-    lineHeight: 32,
+    color: '#0F172A',
+    lineHeight: 30,
+    letterSpacing: -0.5,
   },
   cardUnit: {
-    fontSize: 11,
-    color: COLORS.textMuted,
+    fontSize: 12,
+    color: '#94A3B8',
     fontWeight: '500',
-    marginTop: 1,
+    marginTop: 2,
   },
   cardGoodUnit: {
-    fontSize: 12,
-    color: COLORS.primary, // Brand teal #00897B
-    fontWeight: '700',
-    marginTop: 1,
+    fontSize: 13,
+    color: '#16A34A',
+    fontWeight: '600',
+    marginTop: 2,
   },
   horizontalCard: {
     marginTop: 12,
     paddingHorizontal: 16,
     paddingVertical: 14,
-    borderRadius: 22,
+    borderRadius: 24,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1.2,
-    borderColor: 'rgba(224, 242, 241, 0.8)',
+    borderWidth: 1,
+    borderColor: 'rgba(226, 232, 240, 0.8)',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    shadowColor: '#004D40',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.04,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
     shadowRadius: 8,
     elevation: 2,
   },
@@ -188,31 +192,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   horizontalIconCircle: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: '#E0F2F1', // Brand mint tint
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#E0F2F1',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
+    marginRight: 12,
   },
   horizontalTitle: {
-    fontSize: 14,
+    fontSize: 15,
     fontWeight: '700',
-    color: '#004D40',
+    color: '#0F172A',
   },
   horizontalRight: {
     alignItems: 'flex-end',
   },
   horizontalCount: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '800',
-    color: '#004D40',
-    lineHeight: 22,
+    color: '#0F172A',
+    lineHeight: 24,
   },
   horizontalStatus: {
     fontSize: 11,
-    color: COLORS.textMuted,
+    color: '#64748B',
     fontWeight: '500',
+    marginTop: 2,
   },
 });

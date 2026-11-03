@@ -6,6 +6,7 @@
   "scripts": {
     "sync:engine": "node scripts/syncEngine.js",
     "test:engine-sync": "node scripts/checkEngineSync.js",
-    "test": "node scripts/checkEngineSync.js"
+    "test:solar": "node tests/solar.test.js",
+    "test": "node scripts/checkEngineSync.js && node tests/solar.test.js"
   }
 }

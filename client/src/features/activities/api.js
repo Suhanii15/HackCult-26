@@ -232,7 +232,11 @@ export const FALLBACK_ACTIVITIES = [
   },
 ];
 
-const likedIds = new Set(['energy_switch_off_unused']);
+const likedIds = new Set([
+  'energy_switch_off_unused',
+  'transport_public_transit',
+  'waste_segregate',
+]);
 const inMemoryActiveCycles = new Map();
 const inMemoryCompleted = new Set();
 const inMemoryDismissed = new Set();
@@ -568,10 +572,8 @@ export const toggleLikeActivity = async (activityId) => {
   return { activityId, liked };
 };
 
-export const fetchHiddenActivities = async () => {
-  return [];
+export const isActivityLiked = (activityId) => {
+  return likedIds.has(activityId);
 };
 
-export const toggleHideActivity = async (id) => {
-  return { id, hidden: false };
-};
+

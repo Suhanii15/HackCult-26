@@ -2,8 +2,7 @@ import { useQuery, useMutation } from '@tanstack/react-query';
 import {
   fetchUserProfile,
   fetchProfileLikedActivities,
-  fetchProfileHiddenActivities,
-  restoreHiddenActivity,
+  updateUserProfile,
 } from './api';
 import { queryClient, QUERY_KEYS } from '../../services/queryClient';
 
@@ -12,8 +11,9 @@ export function useProfile(currentUser) {
     queryKey: QUERY_KEYS.profile.me(),
     queryFn: () => fetchUserProfile(currentUser),
     initialData: currentUser || {
-      fullName: 'Priya Patel',
+      fullName: 'Alex Jacob',
       district: 'Ahmedabad',
+      state: 'Gujarat',
       totalPoints: 120,
     },
   });
@@ -26,19 +26,13 @@ export function useProfileLikedActivities() {
   });
 }
 
-export function useProfileHiddenActivities() {
-  return useQuery({
-    queryKey: QUERY_KEYS.profile.hiddenActivities(),
-    queryFn: fetchProfileHiddenActivities,
-  });
-}
-
-export function useRestoreHiddenActivity() {
+export function useUpdateProfile() {
   return useMutation({
-    mutationFn: restoreHiddenActivity,
-    onSuccess: () => {
+    mutationFn: updateUserProfile,
+    onSuccess: (updated) => {
+      queryClient.setQueryData(QUERY_KEYS.profile.me(), updated);
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.profile.all });
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.activities.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.home.all });
     },
   });
 }

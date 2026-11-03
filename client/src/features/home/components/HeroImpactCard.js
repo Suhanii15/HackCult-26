@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Path, Circle, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { Card } from '../../../components/ui';
-import { COLORS, SPACING } from '../../../theme';
+import { SPACING } from '../../../theme';
 import { useLanguage } from '../../../i18n/LanguageContext';
 
 export default function HeroImpactCard({
@@ -27,35 +27,36 @@ export default function HeroImpactCard({
           </View>
         </View>
 
-        {/* Right Illustration: Soft Eco Cloud Graphic in brand teal palette */}
+        {/* Right Illustration: Soft Eco Cloud Graphic in pastel green palette */}
         <View style={styles.rightCol}>
           <View style={styles.illustrationWrapper}>
-            <Svg width={92} height={92} viewBox="0 0 92 92" fill="none">
+            <Svg width={96} height={96} viewBox="0 0 96 96" fill="none">
               <Defs>
-                <LinearGradient id="tealCloudGrad" x1="0" y1="0" x2="92" y2="92">
-                  <Stop offset="0%" stopColor="#80CBC4" stopOpacity="0.85" />
-                  <Stop offset="100%" stopColor="#4DB6AC" stopOpacity="0.95" />
+                <LinearGradient id="cloudGrad" x1="16" y1="20" x2="80" y2="76">
+                  <Stop offset="0%" stopColor="#A7F3D0" stopOpacity="0.95" />
+                  <Stop offset="50%" stopColor="#6EE7B7" stopOpacity="0.9" />
+                  <Stop offset="100%" stopColor="#34D399" stopOpacity="0.85" />
                 </LinearGradient>
-                <LinearGradient id="tealCircleGrad" x1="0" y1="0" x2="92" y2="92">
+                <LinearGradient id="bubbleGrad" x1="0" y1="0" x2="96" y2="96">
                   <Stop offset="0%" stopColor="#E0F2F1" stopOpacity="0.95" />
-                  <Stop offset="100%" stopColor="#B2DFDB" stopOpacity="0.6" />
+                  <Stop offset="100%" stopColor="#B2DFDB" stopOpacity="0.5" />
                 </LinearGradient>
               </Defs>
 
-              {/* Background soft teal glow bubble */}
-              <Circle cx="46" cy="46" r="40" fill="url(#tealCircleGrad)" />
+              {/* Background soft pastel aura bubble */}
+              <Circle cx="48" cy="48" r="42" fill="url(#bubbleGrad)" />
 
-              {/* Organic Cloud / Canopy shape in brand teal */}
+              {/* Puffy Cloud Canopy */}
               <Path
-                d="M60 54H30C24.4772 54 20 49.5228 20 44C20 38.7822 24.0006 34.5009 29.1322 34.0434C30.7905 27.176 36.9844 22 44.4 22C52.5516 22 59.2662 28.1158 60.2618 36.0278C64.5937 36.8091 68 40.6186 68 45.2C68 50.0601 64.4183 54 60 54Z"
-                fill="url(#tealCloudGrad)"
+                d="M66 58H30C23.3726 58 18 52.6274 18 46C18 39.8824 22.5804 34.8239 28.5369 34.0955C30.4079 26.0461 37.6047 20 46.2 20C55.6793 20 63.4687 27.2361 64.3853 36.5649C69.7548 37.4912 73.8 42.1287 73.8 47.7C73.8 53.3885 69.4115 58 63.723 58H66Z"
+                fill="url(#cloudGrad)"
               />
 
-              {/* Downward Arrow (CO2 reduction indicator in brand deep teal) */}
+              {/* Downward CO2 reduction arrow */}
               <Path
-                d="M46 34V47M46 47L41 42M46 47L51 42"
-                stroke="#004D40"
-                strokeWidth="2.8"
+                d="M48 36V50M48 50L43 45M48 50L53 45"
+                stroke="#065F46"
+                strokeWidth="3"
                 strokeLinecap="round"
                 strokeLinejoin="round"
               />
@@ -75,12 +76,12 @@ const styles = StyleSheet.create({
     padding: 20,
     borderRadius: 24,
     backgroundColor: '#FFFFFF',
-    borderWidth: 1.2,
-    borderColor: 'rgba(224, 242, 241, 0.8)',
-    shadowColor: '#004D40',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(226, 232, 240, 0.8)',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.03,
+    shadowRadius: 8,
     elevation: 2,
   },
   contentRow: {
@@ -94,25 +95,25 @@ const styles = StyleSheet.create({
   caption: {
     fontSize: 13,
     fontWeight: '600',
-    color: '#00695C',
+    color: '#64748B',
     marginBottom: 4,
   },
   heroNumber: {
     fontSize: 38,
     fontWeight: '800',
-    color: '#004D40',
+    color: '#0F172A',
     letterSpacing: -0.5,
     lineHeight: 44,
   },
   unitText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
+    fontWeight: '500',
+    color: '#64748B',
     marginBottom: 10,
   },
   pillBadge: {
     alignSelf: 'flex-start',
-    backgroundColor: '#E0F2F1', // Brand mint tint
+    backgroundColor: '#F1F5F9',
     paddingHorizontal: 10,
     paddingVertical: 5,
     borderRadius: 999,
@@ -120,14 +121,14 @@ const styles = StyleSheet.create({
   pillText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#00695C', // Brand dark teal
+    color: '#334155',
   },
   rightCol: {
     marginLeft: SPACING.sm,
   },
   illustrationWrapper: {
-    width: 92,
-    height: 92,
+    width: 96,
+    height: 96,
     alignItems: 'center',
     justifyContent: 'center',
   },

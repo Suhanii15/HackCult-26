@@ -22,6 +22,7 @@ exports.updateProfile = async (req, res, next) => {
   try {
     const allowedUpdates = [
       'fullName',
+      'avatar',
       'state',
       'district',
       'city',

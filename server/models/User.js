@@ -23,6 +23,10 @@ const UserSchema = new mongoose.Schema(
       sparse: true,
       trim: true,
     },
+    avatar: {
+      type: String,
+      default: '',
+    },
     password: {
       type: String,
       required: [true, 'Please provide a password'],

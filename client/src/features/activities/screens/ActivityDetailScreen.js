@@ -19,7 +19,9 @@ import {
   useDismissActivity,
   useDailyCheckIn,
   useToggleLike,
+  useLikedActivities,
 } from '../hooks';
+import { HeartIcon } from '../../home/components/HomeIcons';
 
 export default function ActivityDetailScreen() {
   const navigation = useNavigation();
@@ -40,12 +42,18 @@ export default function ActivityDetailScreen() {
   const dismissMutation = useDismissActivity();
   const dailyCheckInMutation = useDailyCheckIn();
   const toggleLikeMutation = useToggleLike();
+  const { data: likedActivitiesList } = useLikedActivities();
 
   const [toastMessage, setToastMessage] = useState(null);
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
 
   const activity = detailData?.activity || detailData;
+  const currentActId = activity?.activityId || activity?.id || activityKey;
+  const isLiked = Boolean(
+    likedActivitiesList?.some(
+      (a) => (a.activityId || a.id) === currentActId
+    )
+  );
   const userCycle = detailData?.activeCycle || (activity?.userStatus === 'active' ? activity?.activeCycle : null);
   const status = detailData?.userStatus || activity?.userStatus || 'available';
   const checkInsHistory = detailData?.checkIns || [];
@@ -164,9 +172,8 @@ export default function ActivityDetailScreen() {
   };
 
   const handleToggleLike = () => {
-    if (!activity) return;
-    setIsLiked(!isLiked);
-    toggleLikeMutation.mutate(activity.activityId || activity.id);
+    if (!currentActId) return;
+    toggleLikeMutation.mutate(currentActId);
   };
 
   return (
@@ -188,8 +195,9 @@ export default function ActivityDetailScreen() {
           onPress={handleToggleLike}
           style={styles.likeButton}
           activeOpacity={0.7}
+          accessibilityLabel={isLiked ? 'Unlike activity' : 'Like activity'}
         >
-          <Text style={styles.likeIcon}>{isLiked ? '❤️' : '🤍'}</Text>
+          <HeartIcon size={20} filled={isLiked} />
         </TouchableOpacity>
       </View>
 

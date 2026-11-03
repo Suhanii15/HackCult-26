@@ -14,7 +14,11 @@ export default function EmptyState({
   return (
     <View style={[styles.container, style]}>
       <View style={styles.iconCircle}>
-        <Text style={styles.iconText}>{icon}</Text>
+        {React.isValidElement(icon) ? (
+          icon
+        ) : (
+          <Text style={styles.iconText}>{icon}</Text>
+        )}
       </View>
       {title ? <Text style={styles.title}>{title}</Text> : null}
       {message ? <Text style={styles.message}>{message}</Text> : null}

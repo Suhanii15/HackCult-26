@@ -36,6 +36,10 @@ export const COLORS = {
   info: '#3B82F6',
   infoBg: '#EFF6FF',
 
+  // Category Colors
+  energy: '#D97706',
+  energyBg: '#FEF3C7',
+
   // Ease Chips Colors (Easy = green, Medium = amber, Difficult = red)
   ease: {
     easy: '#10B981',

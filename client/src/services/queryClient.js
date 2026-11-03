@@ -28,7 +28,6 @@ export const QUERY_KEYS = {
     expired: () => ['activities', 'expired'],
     cycle: (cycleId) => ['activities', 'cycle', cycleId],
     liked: () => ['activities', 'liked'],
-    hidden: () => ['activities', 'hidden'],
   },
   community: {
     all: ['community'],
@@ -42,6 +41,5 @@ export const QUERY_KEYS = {
     all: ['profile'],
     me: () => ['profile', 'me'],
     likedActivities: () => ['profile', 'liked-activities'],
-    hiddenActivities: () => ['profile', 'hidden-activities'],
   },
 };

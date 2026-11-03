@@ -5,7 +5,13 @@ const repoRoot = path.resolve(__dirname, '..');
 const sharedEngineDir = path.join(repoRoot, 'shared', 'engine');
 const clientEngineDir = path.join(repoRoot, 'client', 'src', 'engine');
 
-const filesToSync = ['config.json', 'footprintEngine.js'];
+const filesToSync = [
+  'config.json',
+  'footprintEngine.js',
+  'solar.js',
+  'config/solar.json',
+  'data/gujarat-yield.json',
+];
 
 console.log('🔄 Syncing engine from shared/engine to client/src/engine...');
 
@@ -18,6 +24,10 @@ for (const file of filesToSync) {
   const dest = path.join(clientEngineDir, file);
 
   if (fs.existsSync(src)) {
+    const destDir = path.dirname(dest);
+    if (!fs.existsSync(destDir)) {
+      fs.mkdirSync(destDir, { recursive: true });
+    }
     fs.copyFileSync(src, dest);
     console.log(`  ✓ Copied ${file}`);
   } else {

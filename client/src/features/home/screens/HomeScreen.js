@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
   StyleSheet,
   ScrollView,
   TouchableOpacity,
+  Image,
   Platform,
 } from 'react-native';
 import Svg, { Rect, Defs, LinearGradient, Stop } from 'react-native-svg';
@@ -13,20 +14,25 @@ import { COLORS, RADII, SPACING } from '../../../theme';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useHomeDashboard } from '../hooks';
 import { useActiveActivities } from '../../activities/hooks';
+import { useProfile } from '../../profile/hooks';
 import HeroImpactCard from '../components/HeroImpactCard';
 import SnapshotSection from '../components/SnapshotSection';
 import SmartSuggestionCard from '../components/SmartSuggestionCard';
+import { BellIcon } from '../../solar/components/SolarIcons';
+import { scheduleDailyWelcomeNotification } from '../../../services/notificationService';
 
 export default function HomeScreen({ user }) {
   const navigation = useNavigation();
-  const { t, openLanguageModal } = useLanguage();
+  const { t } = useLanguage();
   const { data } = useHomeDashboard(user);
   const { data: activeList } = useActiveActivities();
+  const { data: profile } = useProfile(user);
 
-  const currentUser = data?.user || user;
-  const rawName = currentUser?.fullName || currentUser?.name || 'Citizen';
-  const firstName = rawName.split(' ')[0] || 'Friend';
-  const initial = (firstName.trim()[0] || 'C').toUpperCase();
+  const currentUser = profile || data?.user || user;
+  const rawName = currentUser?.fullName || currentUser?.name || 'Alex';
+  const firstName = rawName.split(' ')[0] || 'Alex';
+  const initial = (firstName.trim()[0] || 'A').toUpperCase();
+  const avatarUri = currentUser?.avatar || null;
 
   // Metrics from user & dashboard
   const activeCount = activeList?.length ?? 2;
@@ -66,16 +72,21 @@ export default function HomeScreen({ user }) {
     timeGreeting = 'Good evening';
   }
 
+  // Register daily 9 AM welcome notification with rotating quote
+  useEffect(() => {
+    scheduleDailyWelcomeNotification(firstName);
+  }, [firstName]);
+
   return (
     <View style={styles.container}>
-      {/* Background Brand Teal-Mint Gradient Header */}
+      {/* Restored Brand Teal-Mint Gradient Header */}
       <View style={styles.topCurvedBackground}>
         <Svg width="100%" height="260" viewBox="0 0 400 260" preserveAspectRatio="none">
           <Defs>
             <LinearGradient id="tealHeaderGrad" x1="0" y1="0" x2="0" y2="1">
-              <Stop offset="0%" stopColor="#B2DFDB" stopOpacity="0.85" />
-              <Stop offset="65%" stopColor="#E0F2F1" stopOpacity="0.9" />
-              <Stop offset="100%" stopColor="#F4F9F8" stopOpacity="0" />
+              <Stop offset="0%" stopColor="#B2DFDB" stopOpacity="0.9" />
+              <Stop offset="65%" stopColor="#E0F2F1" stopOpacity="0.85" />
+              <Stop offset="100%" stopColor="#F8FAF9" stopOpacity="0" />
             </LinearGradient>
           </Defs>
           <Rect x="0" y="0" width="400" height="260" fill="url(#tealHeaderGrad)" />
@@ -95,7 +106,11 @@ export default function HomeScreen({ user }) {
           >
             {/* User Avatar Circle */}
             <View style={styles.avatarCircle}>
-              <Text style={styles.avatarText}>{initial}</Text>
+              {avatarUri ? (
+                <Image source={{ uri: avatarUri }} style={styles.avatarImage} />
+              ) : (
+                <Text style={styles.avatarText}>{initial}</Text>
+              )}
             </View>
 
             {/* Greeting */}
@@ -104,14 +119,15 @@ export default function HomeScreen({ user }) {
             </Text>
           </TouchableOpacity>
 
-          {/* Right Action Circle (Bell / Notification / Language) */}
+          {/* Right Action Circle (Alerts & Notifications Screen) */}
           <TouchableOpacity
             style={styles.notificationBtn}
             activeOpacity={0.8}
-            onPress={openLanguageModal}
-            accessibilityLabel="Change language or notifications"
+            onPress={() => navigation.navigate('Notifications')}
+            accessibilityLabel="Open alerts and notifications"
           >
-            <Text style={styles.bellIcon}>🔔</Text>
+            <BellIcon size={19} color="#0F172A" />
+            <View style={styles.notificationDot} />
           </TouchableOpacity>
         </View>
 
@@ -136,7 +152,6 @@ export default function HomeScreen({ user }) {
           suggestion={{
             title: t('smart_suggestion_desc'),
             saving: `${t('smart_suggestion_saving', { val: '128' })}`,
-            icon: '💡',
           }}
           onPress={handleOpenSuggestion}
         />
@@ -158,14 +173,14 @@ const styles = StyleSheet.create({
     height: 260,
   },
   scrollContent: {
-    paddingBottom: 110, // Generous padding so floating glass ellipse bar doesn't overlap
+    paddingBottom: 110, // Padding so floating glass ellipse bar doesn't overlap
   },
   headerBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: SPACING.md,
-    paddingTop: Platform.OS === 'android' ? 14 : 12,
+    paddingTop: Platform.OS === 'android' ? 16 : 14,
     paddingBottom: SPACING.xs,
   },
   profileRow: {
@@ -180,7 +195,7 @@ const styles = StyleSheet.create({
     borderRadius: 22,
     backgroundColor: '#FFFFFF',
     borderWidth: 2,
-    borderColor: '#80CBC4', // Brand teal
+    borderColor: '#80CBC4',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 10,
@@ -189,16 +204,22 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.08,
     shadowRadius: 6,
     elevation: 2,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
   },
   avatarText: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#004D40', // Brand deep teal
+    color: '#004D40',
   },
   greetingText: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: '700',
-    color: '#004D40', // Brand deep teal
+    color: '#0F172A', // Crisp dark text
     letterSpacing: -0.2,
   },
   notificationBtn: {
@@ -210,13 +231,22 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 1,
     borderColor: 'rgba(224, 242, 241, 0.8)',
-    shadowColor: '#004D40',
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.08,
+    shadowOpacity: 0.05,
     shadowRadius: 6,
     elevation: 2,
+    position: 'relative',
   },
-  bellIcon: {
-    fontSize: 16,
+  notificationDot: {
+    position: 'absolute',
+    top: 8,
+    right: 9,
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: COLORS.primary,
+    borderWidth: 1.5,
+    borderColor: '#FFFFFF',
   },
 });

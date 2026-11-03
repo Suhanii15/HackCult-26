@@ -5,7 +5,13 @@ const repoRoot = path.resolve(__dirname, '..');
 const sharedEngineDir = path.join(repoRoot, 'shared', 'engine');
 const clientEngineDir = path.join(repoRoot, 'client', 'src', 'engine');
 
-const filesToCompare = ['config.json', 'footprintEngine.js'];
+const filesToCompare = [
+  'config.json',
+  'footprintEngine.js',
+  'solar.js',
+  'config/solar.json',
+  'data/gujarat-yield.json',
+];
 
 let hasDiff = false;
 

@@ -12,9 +12,7 @@ import {
   submitDailyCheckIn,
   fetchCycleDetails,
   fetchLikedActivities,
-  fetchHiddenActivities,
   toggleLikeActivity,
-  toggleHideActivity,
 } from './api';
 import { queryClient, QUERY_KEYS } from '../../services/queryClient';
 
@@ -119,28 +117,12 @@ export function useLikedActivities() {
   });
 }
 
-export function useHiddenActivities() {
-  return useQuery({
-    queryKey: QUERY_KEYS.activities.hidden(),
-    queryFn: fetchHiddenActivities,
-  });
-}
-
 export function useToggleLike() {
   return useMutation({
     mutationFn: (activityId) => toggleLikeActivity(activityId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.activities.all });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.profile.all });
-    },
-  });
-}
-
-export function useToggleHide() {
-  return useMutation({
-    mutationFn: toggleHideActivity,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.activities.all });
     },
   });
 }

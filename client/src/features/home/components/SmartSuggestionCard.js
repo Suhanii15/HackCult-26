@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { Card } from '../../../components/ui';
-import { COLORS, RADII, SPACING } from '../../../theme';
+import { SPACING } from '../../../theme';
 import { useLanguage } from '../../../i18n/LanguageContext';
+import { EcoProductIcon, ArrowUpRightIcon } from './HomeIcons';
 
 export default function SmartSuggestionCard({
   suggestion,
@@ -12,7 +13,6 @@ export default function SmartSuggestionCard({
 
   const title = suggestion?.title || t('smart_suggestion_desc');
   const saving = suggestion?.saving || '128 kg CO₂';
-  const icon = suggestion?.icon || '💡';
 
   return (
     <View style={styles.container}>
@@ -22,7 +22,7 @@ export default function SmartSuggestionCard({
         <View style={styles.row}>
           {/* Left Thumbnail Box */}
           <View style={styles.thumbnailBox}>
-            <Text style={styles.thumbIcon}>{icon}</Text>
+            <EcoProductIcon size={30} />
           </View>
 
           {/* Middle Text Details */}
@@ -35,9 +35,9 @@ export default function SmartSuggestionCard({
             </View>
           </View>
 
-          {/* Right Arrow Button */}
+          {/* Right Vector Arrow Button */}
           <View style={styles.arrowBox}>
-            <Text style={styles.arrowText}>↗</Text>
+            <ArrowUpRightIcon size={18} color="#64748B" />
           </View>
         </View>
       </Card>
@@ -53,17 +53,18 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '800',
-    color: '#111827',
+    fontWeight: '700',
+    color: '#0F172A',
     marginBottom: 10,
     paddingHorizontal: 2,
+    letterSpacing: -0.2,
   },
   card: {
     padding: 14,
-    borderRadius: 22,
+    borderRadius: 24,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#EDF2F7',
+    borderColor: 'rgba(226, 232, 240, 0.8)',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.03,
@@ -77,21 +78,18 @@ const styles = StyleSheet.create({
   thumbnailBox: {
     width: 48,
     height: 48,
-    borderRadius: 14,
-    backgroundColor: '#FEF3C7',
+    borderRadius: 16,
+    backgroundColor: '#FFFBEB',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
-  },
-  thumbIcon: {
-    fontSize: 22,
+    marginRight: 14,
   },
   textBox: {
     flex: 1,
   },
   descText: {
     fontSize: 13,
-    color: COLORS.textSecondary,
+    color: '#64748B',
     fontWeight: '500',
     marginBottom: 2,
   },
@@ -102,7 +100,7 @@ const styles = StyleSheet.create({
   savingBold: {
     fontSize: 14,
     fontWeight: '800',
-    color: COLORS.textPrimary,
+    color: '#0F172A',
   },
   arrowBox: {
     width: 32,
@@ -111,10 +109,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginLeft: 8,
-  },
-  arrowText: {
-    fontSize: 18,
-    fontWeight: '700',
-    color: '#6B7280',
   },
 });
