@@ -116,6 +116,11 @@ const UserSchema = new mongoose.Schema(
       default: 50, // Starting welcome bonus
       index: -1,
     },
+    ecoScore: {
+      type: Number,
+      default: 72, // 0-100 sustainability efficiency index
+      index: -1,
+    },
     currentStreakDays: {
       type: Number,
       default: 1,
@@ -136,6 +141,13 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+// Fast compound indexes for multi-scope leaderboards
+UserSchema.index({ district: 1, totalPoints: -1 });
+UserSchema.index({ district: 1, ecoScore: -1 });
+UserSchema.index({ district: 1, baselineAnnualCO2Kg: 1 });
+UserSchema.index({ state: 1, totalPoints: -1 });
+UserSchema.index({ city: 1, totalPoints: -1 });
 
 // Encrypt password before saving
 UserSchema.pre('save', async function (next) {

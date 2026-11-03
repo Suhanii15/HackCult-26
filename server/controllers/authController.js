@@ -21,6 +21,7 @@ const sendTokenResponse = (user, statusCode, res) => {
       currentStreakDays: user.currentStreakDays,
       baselineAnnualCO2Kg: user.baselineAnnualCO2Kg,
       household: user.household,
+      ecoScore: user.ecoScore,
     },
   });
 };
