@@ -3,7 +3,7 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Card } from '../../../components/ui';
 import { COLORS, RADII, SPACING, TYPOGRAPHY } from '../../../theme';
 import { formatInr } from '../utils/formatters';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import { WalletIcon, ClockIcon, AlertTriangleIcon } from './SolarIcons';
 
 export default function SolarStatCards({ year1SavingsInr, paybackYears, verdict }) {
@@ -20,7 +20,7 @@ export default function SolarStatCards({ year1SavingsInr, paybackYears, verdict 
         </View>
         <Text style={styles.cardLabel}>{t('solar_stat_annual_savings') || 'Annual Savings'}</Text>
         <Text style={styles.savingsValue}>{formatInr(year1SavingsInr)}</Text>
-        <Text style={styles.subtext}>/ year on bills</Text>
+        <Text style={styles.subtext}>{tr('/ year on bills')}</Text>
       </Card>
 
       {/* Payback Period Card */}

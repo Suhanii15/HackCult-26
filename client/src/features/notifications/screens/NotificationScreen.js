@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import { Card, Button, EmptyState } from '../../../components/ui';
 import { COLORS, RADII, SPACING, TYPOGRAPHY } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import {
   getDefaultNotifications,
   triggerDeviceNotification,
@@ -172,7 +172,7 @@ export default function NotificationScreen({ navigation, user }) {
           {unreadCount > 0 ? (
             <Text style={styles.unreadSubtitle}>{unreadCount} unread alert{unreadCount > 1 ? 's' : ''}</Text>
           ) : (
-            <Text style={styles.swipeHintSubtitle}>Swipe right to delete</Text>
+            <Text style={styles.swipeHintSubtitle}>{tr('Swipe right to delete')}</Text>
           )}
         </View>
 
@@ -232,14 +232,14 @@ export default function NotificationScreen({ navigation, user }) {
         <Animated.View style={[styles.undoToastContainer, { opacity: toastFadeAnim }]}>
           <View style={styles.undoToastInner}>
             <Text style={styles.undoToastText} numberOfLines={1}>
-              Notification deleted
+              {tr('Notification deleted')}
             </Text>
             <TouchableOpacity
               onPress={handleUndoDelete}
               style={styles.undoBtn}
               activeOpacity={0.8}
             >
-              <Text style={styles.undoBtnText}>UNDO</Text>
+              <Text style={styles.undoBtnText}>{tr('UNDO')}</Text>
             </TouchableOpacity>
           </View>
         </Animated.View>

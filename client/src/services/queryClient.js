@@ -33,6 +33,7 @@ export const QUERY_KEYS = {
   community: {
     all: ['community'],
     overview: () => ['community', 'overview'],
+    feed: (sort, tag) => ['community', 'feed', sort, tag],
   },
   solar: {
     all: ['solar'],

@@ -9,7 +9,7 @@ import {
 import { COLORS } from '../../theme';
 import SliderWithPreview from '../../components/SliderWithPreview';
 import OnboardingFooter from '../../components/OnboardingFooter';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../i18n/LanguageContext';
 
 const TRAVEL_MODES = [
   { key: 'petrol_bike', label: 'Petrol Bike', icon: '🛵', subtitle: 'Motorcycle / Scooter' },
@@ -128,7 +128,7 @@ export default function StepTravel({
                         onPress={() => handleRemoveTrip(trip.id)}
                         style={styles.removeBtn}
                       >
-                        <Text style={styles.removeBtnText}>✕ Remove</Text>
+                        <Text style={styles.removeBtnText}>{tr('✕ Remove')}</Text>
                       </TouchableOpacity>
                     )}
                   </View>

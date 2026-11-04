@@ -8,13 +8,15 @@ import {
   ScrollView,
 } from 'react-native';
 import { COLORS } from '../theme';
-
+
+import { tr, useLanguage } from '../i18n/LanguageContext';
 export default function InfoSheet({
   visible = false,
   title = 'Where do I find this?',
   content = '',
   onClose,
 }) {
+  useLanguage();
   return (
     <Modal
       visible={visible}
@@ -34,7 +36,7 @@ export default function InfoSheet({
             <Text style={styles.bodyText}>{content}</Text>
           </ScrollView>
           <TouchableOpacity style={styles.closeBtn} onPress={onClose}>
-            <Text style={styles.closeBtnText}>Got it</Text>
+            <Text style={styles.closeBtnText}>{tr('Got it')}</Text>
           </TouchableOpacity>
         </View>
       </TouchableOpacity>

@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card, Chip } from '../../../components/ui';
 import { COLORS, RADII, SPACING, TYPOGRAPHY } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import { SunIcon, ZapIcon } from './SolarIcons';
 import SolarGenerationWave from './SolarGenerationWave';
 
@@ -32,7 +32,7 @@ export default function SolarHeroCard({ capacityKw = 3.0, limitingFactor, annual
           </Text>
           <View style={styles.capacityRow}>
             <Text style={styles.capacityNumber}>{capacityKw.toFixed(1)}</Text>
-            <Text style={styles.capacityUnit}>kWp</Text>
+            <Text style={styles.capacityUnit}>{tr('kWp')}</Text>
           </View>
         </View>
 
@@ -45,19 +45,19 @@ export default function SolarHeroCard({ capacityKw = 3.0, limitingFactor, annual
       {/* Bottom Summary Pill Badges from Reference Card */}
       <View style={styles.pillsRow}>
         <View style={[styles.pillBox, styles.pillBoxActive]}>
-          <Text style={styles.pillLabelActive}>Capacity</Text>
+          <Text style={styles.pillLabelActive}>{tr('Capacity')}</Text>
           <Text style={styles.pillValActive}>{`${capacityKw.toFixed(1)} kWp`}</Text>
         </View>
 
         <View style={styles.pillBox}>
-          <Text style={styles.pillLabel}>Annual Gen</Text>
+          <Text style={styles.pillLabel}>{tr('Annual Gen')}</Text>
           <Text style={styles.pillVal}>
             {`${Math.round(annualGenerationKwh).toLocaleString('en-IN')} kWh`}
           </Text>
         </View>
 
         <View style={styles.pillBox}>
-          <Text style={styles.pillLabel}>Roof Used</Text>
+          <Text style={styles.pillLabel}>{tr('Roof Used')}</Text>
           <Text style={styles.pillVal}>{`~${estimatedRoofSqft} sq.ft`}</Text>
         </View>
       </View>

@@ -13,7 +13,7 @@ import StepperPeople from '../../components/StepperPeople';
 import SliderWithPreview from '../../components/SliderWithPreview';
 import InfoSheet from '../../components/InfoSheet';
 import OnboardingFooter from '../../components/OnboardingFooter';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../i18n/LanguageContext';
 import { billInrToKwh } from '../../engine';
 
 export default function StepElectricity({
@@ -282,7 +282,7 @@ export default function StepElectricity({
       {/* Info Sheet modal for finding bill units */}
       <InfoSheet
         visible={showInfoSheet}
-        title="Finding units on your electricity bill ⚡"
+        title={tr('Finding units on your electricity bill ⚡')}
         content={`• In Gujarat (UGVCL, DGVCL, PGVCL, MGVCL, or Torrent Power), check the 'Units Consumed' or 'Total Consumption (kWh)' box on the front page of your bill.\n\n• For Torrent Power bills, look under 'Meter Reading Details' -> 'Units Billed'.\n\n• If you are on solar net-metering, check 'Net Imported Units'.`}
         onClose={() => setShowInfoSheet(false)}
       />

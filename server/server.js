@@ -33,6 +33,12 @@ app.use(
   })
 );
 
+// Request Logger
+app.use((req, res, next) => {
+  console.log(`📥 [${new Date().toLocaleTimeString()}] ${req.method} ${req.originalUrl} from ${req.ip}`);
+  next();
+});
+
 // Health Check Endpoint
 app.get('/api/v1/health', (req, res) => {
   const dbStatusMap = {
@@ -59,6 +65,7 @@ app.use('/api/v1/activities', require('./routes/activityRoutes'));
 app.use('/api/v1/points', require('./routes/pointsRoutes'));
 app.use('/api/v1/solar', require('./routes/solarRoutes'));
 app.use('/api/v1/vendors', require('./routes/vendorRoutes'));
+app.use('/api/v1/community', require('./routes/communityRoutes'));
 
 // Unknown API routes -> JSON 404 instead of an HTML page
 app.use('/api', (req, res) => {
@@ -80,6 +87,11 @@ if (require.main === module) {
         await require('./scripts/seedActivities').seedActivities();
       } catch (err) {
         console.error(`❌ Activity catalogue sync failed: ${err.message}`);
+      }
+      try {
+        await require('./scripts/seedCommunity').seedCommunityPosts();
+      } catch (err) {
+        console.error(`❌ Community posts seed failed: ${err.message}`);
       }
     }
   });

@@ -32,6 +32,14 @@ const protect = async (req, res, next) => {
       });
     }
 
+    if (user.isVerified === false) {
+      return res.status(403).json({
+        success: false,
+        isUnverified: true,
+        message: 'Account not verified. Please verify your OTP to continue.',
+      });
+    }
+
     req.user = user;
     next();
   } catch (err) {

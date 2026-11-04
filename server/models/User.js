@@ -57,6 +57,29 @@ const UserSchema = new mongoose.Schema(
       enum: ['household', 'individual'],
       default: 'household',
     },
+    // Signup OTP Verification
+    isVerified: {
+      type: Boolean,
+      default: false,
+      index: true,
+    },
+    verificationOtpHash: {
+      type: String,
+      select: false,
+    },
+    verificationOtpExpires: {
+      type: Date,
+      select: false,
+    },
+    verificationOtpAttempts: {
+      type: Number,
+      default: 0,
+      select: false,
+    },
+    otpLastSentAt: {
+      type: Date,
+      select: false,
+    },
     // Household & Lifestyle inputs
     household: {
       size: { type: Number, default: 4 },

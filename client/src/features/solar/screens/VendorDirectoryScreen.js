@@ -11,7 +11,7 @@ import {
 import Svg, { Rect, Defs, LinearGradient, Stop } from 'react-native-svg';
 import { Card, Chip, Button, LottieLoader, EmptyState } from '../../../components/ui';
 import { COLORS, RADII, SPACING, TYPOGRAPHY } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import { useSolarVendors } from '../hooks';
 import DistrictPickerModal from '../components/DistrictPickerModal';
 import {
@@ -142,13 +142,13 @@ export default function VendorDirectoryScreen({ route, navigation }) {
 
       {/* Main Vendor List */}
       {isLoading ? (
-        <LottieLoader size={150} message="Finding verified installers in Gujarat..." />
+        <LottieLoader size={150} message={tr('Finding verified installers in Gujarat...')} />
       ) : error && vendors.length === 0 ? (
         <EmptyState
           icon={<AlertTriangleIcon size={28} color={COLORS.danger} />}
-          title="Failed to Load Installers"
+          title={tr('Failed to Load Installers')}
           message={error.message || 'Please check your connection and try again.'}
-          actionLabel="Retry"
+          actionLabel={tr('Retry')}
           onAction={refetch}
         />
       ) : vendors.length === 0 ? (
@@ -234,7 +234,7 @@ export default function VendorDirectoryScreen({ route, navigation }) {
                   {item.isEmpanelled && (
                     <View style={styles.empanelledTag}>
                       <ShieldCheckIcon size={14} color={COLORS.primaryDark} />
-                      <Text style={styles.empanelledText}>GEDA / MNRE Empanelled</Text>
+                      <Text style={styles.empanelledText}>{tr('GEDA / MNRE Empanelled')}</Text>
                     </View>
                   )}
                 </View>

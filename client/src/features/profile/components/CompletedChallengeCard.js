@@ -3,7 +3,9 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Card } from '../../../components/ui';
 import { COLORS, RADII, SPACING } from '../../../theme';
 
+import { tr, useLanguage } from '../../../i18n/LanguageContext';
 export default function CompletedChallengeCard({ item }) {
+  useLanguage();
   // Support either { cycle, activity } or flat item
   const cycle = item.cycle || item;
   const activity = item.activity || item;
@@ -42,7 +44,7 @@ export default function CompletedChallengeCard({ item }) {
         </View>
 
         <View style={styles.statusPill}>
-          <Text style={styles.statusPillText}>🏆 Quest conquered!</Text>
+          <Text style={styles.statusPillText}>{tr('🏆 Quest conquered!')}</Text>
         </View>
       </View>
 
@@ -65,16 +67,16 @@ export default function CompletedChallengeCard({ item }) {
       <View style={styles.rewardsBox}>
         <View style={styles.rewardCol}>
           <Text style={styles.rewardVal}>⚡ +{ecoEarned}</Text>
-          <Text style={styles.rewardLabel}>EcoScore</Text>
+          <Text style={styles.rewardLabel}>{tr('EcoScore')}</Text>
         </View>
         <View style={styles.rewardCol}>
           <Text style={styles.rewardVal}>🪙 +{pointsEarned}</Text>
-          <Text style={styles.rewardLabel}>GreenPoints</Text>
+          <Text style={styles.rewardLabel}>{tr('GreenPoints')}</Text>
         </View>
         {co2Saved ? (
           <View style={styles.rewardCol}>
             <Text style={[styles.rewardVal, { color: '#16A34A' }]}>🌱 ~{co2Saved}kg</Text>
-            <Text style={styles.rewardLabel}>CO₂e Avoided</Text>
+            <Text style={styles.rewardLabel}>{tr('CO₂e Avoided')}</Text>
           </View>
         ) : null}
       </View>
@@ -82,7 +84,7 @@ export default function CompletedChallengeCard({ item }) {
       {/* Completed Timestamp footer */}
       <View style={styles.footerRow}>
         <Text style={styles.dateText}>Completed on {completedDate}</Text>
-        <Text style={styles.verifiedBadge}>Verified Reward ✓</Text>
+        <Text style={styles.verifiedBadge}>{tr('Verified Reward ✓')}</Text>
       </View>
     </Card>
   );

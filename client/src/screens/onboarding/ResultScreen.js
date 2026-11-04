@@ -11,7 +11,7 @@ import { COLORS } from '../../theme';
 import BrandLogo from '../../components/BrandLogo';
 import AppSafeArea from '../../components/AppSafeArea';
 import LanguageCircleButton from '../../components/LanguageCircleButton';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../i18n/LanguageContext';
 
 export default function ResultScreen({
   footprintResult,
@@ -85,7 +85,7 @@ export default function ResultScreen({
           <Text style={styles.resultLabel}>{t('result_title')}</Text>
           <View style={styles.numberRow}>
             <Text style={styles.mainNumber}>{displayTotal}</Text>
-            <Text style={styles.unitSuffix}>kg CO₂e</Text>
+            <Text style={styles.unitSuffix}>{tr('kg CO₂e')}</Text>
           </View>
           <Text style={styles.perMonthText}>{t('per_month')}</Text>
 
@@ -114,7 +114,7 @@ export default function ResultScreen({
         {/* Partial Coverage Warning & Return Button */}
         {isPartial && (
           <View style={styles.partialCard}>
-            <Text style={styles.partialTitle}>⚠️ Partial Footprint</Text>
+            <Text style={styles.partialTitle}>{tr('⚠️ Partial Footprint')}</Text>
             <Text style={styles.partialDesc}>
               {categories.electricity.kg === null
                 ? 'Add your electricity bill to complete your baseline.'
@@ -130,7 +130,7 @@ export default function ResultScreen({
                 else onReturnToStep(4);
               }}
             >
-              <Text style={styles.completeStepText}>Complete Missing Step →</Text>
+              <Text style={styles.completeStepText}>{tr('Complete Missing Step →')}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -207,12 +207,12 @@ export default function ResultScreen({
 
         {showFormula && (
           <View style={styles.formulaCard}>
-            <Text style={styles.formulaLine}>• <Text style={{ fontWeight: '700' }}>Electricity</Text>: netGridKwh × 0.71 kg CO₂e/kWh (CEA Baseline Ver 19)</Text>
-            <Text style={styles.formulaLine}>• <Text style={{ fontWeight: '700' }}>LPG</Text>: cylinders/mo × cylinderKg × 2.98 kg CO₂e/kg (IPCC)</Text>
-            <Text style={styles.formulaLine}>• <Text style={{ fontWeight: '700' }}>PNG</Text>: scm/mo × 2.15 kg CO₂e/SCM (PPAC)</Text>
-            <Text style={styles.formulaLine}>• <Text style={{ fontWeight: '700' }}>Transport</Text>: km/day × days/mo × passenger-km emission factor</Text>
+            <Text style={styles.formulaLine}>• <Text style={{ fontWeight: '700' }}>{tr('Electricity')}</Text>: netGridKwh × 0.71 kg CO₂e/kWh (CEA Baseline Ver 19)</Text>
+            <Text style={styles.formulaLine}>• <Text style={{ fontWeight: '700' }}>{tr('LPG')}</Text>: cylinders/mo × cylinderKg × 2.98 kg CO₂e/kg (IPCC)</Text>
+            <Text style={styles.formulaLine}>• <Text style={{ fontWeight: '700' }}>{tr('PNG')}</Text>: scm/mo × 2.15 kg CO₂e/SCM (PPAC)</Text>
+            <Text style={styles.formulaLine}>• <Text style={{ fontWeight: '700' }}>{tr('Transport')}</Text>: km/day × days/mo × passenger-km emission factor</Text>
             <Text style={styles.boundaryNote}>
-              📌 Boundary statement: Scope includes domestic energy and passenger transport only. Municipal waste, food lifecycle, and consumer goods are excluded from this baseline.
+              {tr('📌 Boundary statement: Scope includes domestic energy and passenger transport only. Municipal waste, food lifecycle, and consumer goods are excluded from this baseline.')}
             </Text>
             <Text style={styles.factorVerText}>Factor version: {footprintResult?.factorVersion || '2026.1-GEDA'}</Text>
           </View>

@@ -12,7 +12,7 @@ import {
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { Skeleton, EmptyState, LungsLoader } from '../../../components/ui';
 import { COLORS, RADII, SPACING } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import { useActivities } from '../hooks';
 import ActivityCard from '../components/ActivityCard';
 import {
@@ -113,7 +113,7 @@ export default function ActivityListScreen() {
           <Text style={styles.searchIcon}>🔍</Text>
           <TextInput
             style={styles.searchInput}
-            placeholder="Search by action, appliance, habit..."
+            placeholder={tr('Search by action, appliance, habit...')}
             placeholderTextColor="#9CA3AF"
             value={searchQuery}
             onChangeText={setSearchQuery}
@@ -156,7 +156,7 @@ export default function ActivityListScreen() {
             onPress={handleResetFilters}
             activeOpacity={0.7}
           >
-            <Text style={styles.resetButtonText}>Reset</Text>
+            <Text style={styles.resetButtonText}>{tr('Reset')}</Text>
           </TouchableOpacity>
         ) : null}
 
@@ -195,15 +195,15 @@ export default function ActivityListScreen() {
         ) : (
           <View style={styles.emptyWrap}>
             <EmptyState
-              title="No matching activities"
-              message="Try adjusting your search terms or clearing your active filters."
+              title={tr('No matching activities')}
+              message={tr('Try adjusting your search terms or clearing your active filters.')}
             />
             <TouchableOpacity
               style={styles.emptyResetBtn}
               onPress={handleResetFilters}
               activeOpacity={0.8}
             >
-              <Text style={styles.emptyResetText}>Reset All Filters</Text>
+              <Text style={styles.emptyResetText}>{tr('Reset All Filters')}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -219,7 +219,7 @@ export default function ActivityListScreen() {
         <View style={styles.modalOverlay}>
           <View style={styles.modalSheet}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Filter Activities</Text>
+              <Text style={styles.modalTitle}>{tr('Filter Activities')}</Text>
               <TouchableOpacity onPress={() => setFilterModalVisible(false)}>
                 <Text style={styles.modalClose}>✕</Text>
               </TouchableOpacity>
@@ -227,7 +227,7 @@ export default function ActivityListScreen() {
 
             <ScrollView style={styles.modalBody}>
               {/* Difficulty Filter */}
-              <Text style={styles.filterSectionTitle}>Difficulty</Text>
+              <Text style={styles.filterSectionTitle}>{tr('Difficulty')}</Text>
               <View style={styles.filterChipRow}>
                 {['easy', 'medium', 'hard'].map((diff) => {
                   const sel = filters.difficulties.includes(diff);
@@ -246,7 +246,7 @@ export default function ActivityListScreen() {
               </View>
 
               {/* Duration Filter */}
-              <Text style={styles.filterSectionTitle}>Time Commitment</Text>
+              <Text style={styles.filterSectionTitle}>{tr('Time Commitment')}</Text>
               <View style={styles.filterChipRow}>
                 {[
                   { key: 'short', label: 'Short (≤ 10 min)' },
@@ -269,7 +269,7 @@ export default function ActivityListScreen() {
               </View>
 
               {/* Carbon Savings Filter */}
-              <Text style={styles.filterSectionTitle}>Carbon Savings</Text>
+              <Text style={styles.filterSectionTitle}>{tr('Carbon Savings')}</Text>
               <View style={styles.filterChipRow}>
                 {CARBON_BANDS.map((cb) => {
                   const sel = filters.carbon === cb.key;
@@ -288,7 +288,7 @@ export default function ActivityListScreen() {
               </View>
 
               {/* EcoScore Filter */}
-              <Text style={styles.filterSectionTitle}>Min EcoScore</Text>
+              <Text style={styles.filterSectionTitle}>{tr('Min EcoScore')}</Text>
               <View style={styles.filterChipRow}>
                 {ECO_OPTIONS.map((eo) => {
                   const sel = filters.eco === eo.key;
@@ -307,7 +307,7 @@ export default function ActivityListScreen() {
               </View>
 
               {/* GreenPoints Filter */}
-              <Text style={styles.filterSectionTitle}>Min GreenPoints</Text>
+              <Text style={styles.filterSectionTitle}>{tr('Min GreenPoints')}</Text>
               <View style={styles.filterChipRow}>
                 {POINTS_OPTIONS.map((po) => {
                   const sel = filters.points === po.key;
@@ -331,13 +331,13 @@ export default function ActivityListScreen() {
                 style={styles.modalResetBtn}
                 onPress={() => setFilters({ ...DEFAULT_FILTERS })}
               >
-                <Text style={styles.modalResetText}>Clear All</Text>
+                <Text style={styles.modalResetText}>{tr('Clear All')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.modalApplyBtn}
                 onPress={() => setFilterModalVisible(false)}
               >
-                <Text style={styles.modalApplyText}>Apply Filters</Text>
+                <Text style={styles.modalApplyText}>{tr('Apply Filters')}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -357,7 +357,7 @@ export default function ActivityListScreen() {
           onPress={() => setSortModalVisible(false)}
         >
           <View style={styles.sortModalSheet}>
-            <Text style={styles.sortModalTitle}>Sort Activities By</Text>
+            <Text style={styles.sortModalTitle}>{tr('Sort Activities By')}</Text>
             {SORT_OPTIONS.map((opt) => {
               const sel = selectedSort === opt.key;
               return (

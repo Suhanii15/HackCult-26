@@ -7,7 +7,7 @@ import {
   Modal,
 } from 'react-native';
 import { COLORS } from '../theme';
-import { useLanguage } from '../i18n/LanguageContext';
+import { useLanguage, tr } from '../i18n/LanguageContext';
 
 export default function LiveFootprintChip({ footprintResult }) {
   const { t } = useLanguage();
@@ -111,7 +111,7 @@ export default function LiveFootprintChip({ footprintResult }) {
               style={styles.closeBtn}
               onPress={() => setSheetVisible(false)}
             >
-              <Text style={styles.closeBtnText}>Done</Text>
+              <Text style={styles.closeBtnText}>{tr('Done')}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>

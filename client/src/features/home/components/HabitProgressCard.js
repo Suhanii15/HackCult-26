@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card, ProgressBar, Button } from '../../../components/ui';
 import { COLORS, SPACING } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 
 export default function HabitProgressCard({
   streakDays = 4,
@@ -17,7 +17,7 @@ export default function HabitProgressCard({
         <View style={styles.badgePill}>
           <Text style={styles.badgeText}>🔥 {streakDays} {t('days_streak', { count: streakDays })}</Text>
         </View>
-        <Text style={styles.pointsPill}>+15 pts/day</Text>
+        <Text style={styles.pointsPill}>{tr('+15 pts/day')}</Text>
       </View>
 
       <Text style={styles.title}>{t('home_streak_title')}</Text>

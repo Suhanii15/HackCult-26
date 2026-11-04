@@ -3,12 +3,14 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-nati
 import { Card, Button } from '../../../../components/ui';
 import { COLORS, RADII, SPACING } from '../../../../theme';
 
+import { tr, useLanguage } from '../../../../i18n/LanguageContext';
 export default function PersonalizedPlanView({
   plan,
   onStartChallenge,
   onRetake,
   loading = false,
 }) {
+  useLanguage();
   if (!plan) return null;
 
   // 1. Current habit display
@@ -67,7 +69,7 @@ export default function PersonalizedPlanView({
       <Card style={styles.heroCard} elevation="subtle">
         <View style={styles.badgeRow}>
           <View style={styles.statusBadge}>
-            <Text style={styles.statusBadgeText}>✨ TAILORED FOR YOU</Text>
+            <Text style={styles.statusBadgeText}>{tr('✨ TAILORED FOR YOU')}</Text>
           </View>
         </View>
 
@@ -75,14 +77,14 @@ export default function PersonalizedPlanView({
 
         <View style={styles.comparisonGrid}>
           <View style={styles.comparisonCol}>
-            <Text style={styles.comparisonLabel}>CURRENT HABIT</Text>
+            <Text style={styles.comparisonLabel}>{tr('CURRENT HABIT')}</Text>
             <Text style={styles.comparisonVal}>{currentUsageText}</Text>
           </View>
           <View style={styles.arrowCol}>
             <Text style={styles.arrowText}>➔</Text>
           </View>
           <View style={styles.comparisonCol}>
-            <Text style={[styles.comparisonLabel, { color: COLORS.primaryDark }]}>RECOMMENDED TARGET</Text>
+            <Text style={[styles.comparisonLabel, { color: COLORS.primaryDark }]}>{tr('RECOMMENDED TARGET')}</Text>
             <Text style={[styles.comparisonVal, { color: COLORS.primaryDark }]}>
               {recommendedTargetText}
             </Text>
@@ -126,8 +128,8 @@ export default function PersonalizedPlanView({
       {/* 7-Day Progressive Plan */}
       {dailyPlan.length > 0 ? (
         <View style={styles.roadmapSection}>
-          <Text style={styles.sectionHeading}>📅 7-Day Action Roadmap</Text>
-          <Text style={styles.sectionSub}>Gradual, achievable steps tailored to your current routine</Text>
+          <Text style={styles.sectionHeading}>{tr('📅 7-Day Action Roadmap')}</Text>
+          <Text style={styles.sectionSub}>{tr('Gradual, achievable steps tailored to your current routine')}</Text>
 
           {dailyPlan.map((step) => (
             <View key={step.day} style={styles.stepRow}>
@@ -147,7 +149,7 @@ export default function PersonalizedPlanView({
 
       {/* Calculation Method & Assumptions */}
       <View style={styles.assumptionsCard}>
-        <Text style={styles.assumptionsTitle}>🔬 Calculation Methodology</Text>
+        <Text style={styles.assumptionsTitle}>{tr('🔬 Calculation Methodology')}</Text>
         {formula ? (
           <Text style={styles.assumptionsText}>📐 Formula: {formula}</Text>
         ) : null}

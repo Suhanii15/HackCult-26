@@ -22,12 +22,14 @@ import DropdownControl from './DropdownControl';
 import MultiSelectChips from './MultiSelectChips';
 import PersonalizedPlanView from './PersonalizedPlanView';
 
+import { tr, useLanguage } from '../../../../i18n/LanguageContext';
 export default function ActivityAssessmentModal({
   visible,
   onClose,
   activity,
   onEnrolled,
 }) {
+  useLanguage();
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [questionnaire, setQuestionnaire] = useState(null);
@@ -219,7 +221,7 @@ export default function ActivityAssessmentModal({
         {loading ? (
           <View style={styles.centerContainer}>
             <ActivityIndicator size="large" color={COLORS.primary} />
-            <Text style={styles.loadingText}>Generating your personalized plan...</Text>
+            <Text style={styles.loadingText}>{tr('Generating your personalized plan...')}</Text>
           </View>
         ) : generatedPlan ? (
           <PersonalizedPlanView
@@ -269,7 +271,7 @@ export default function ActivityAssessmentModal({
                   style={styles.backBtn}
                   activeOpacity={0.75}
                 >
-                  <Text style={styles.backBtnText}>← Back</Text>
+                  <Text style={styles.backBtnText}>{tr('← Back')}</Text>
                 </TouchableOpacity>
               ) : <View style={{ flex: 1 }} />}
 

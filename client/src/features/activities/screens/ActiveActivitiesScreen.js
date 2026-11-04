@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } 
 import { useNavigation } from '@react-navigation/native';
 import { Card, ProgressBar, Toast, Skeleton, EmptyState, LungsLoader } from '../../../components/ui';
 import { COLORS, RADII, SPACING } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import { useActiveActivities, useDailyCheckIn } from '../hooks';
 import {
   getCheckInSuccessMessage,
@@ -80,7 +80,7 @@ export default function ActiveActivitiesScreen() {
           <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>
-          {MICROCOPY.terminology.myActivities}
+          {MICROCOPY.activities.activeTitle}
         </Text>
         <View style={styles.headerRightPlaceholder} />
       </View>
@@ -97,7 +97,7 @@ export default function ActiveActivitiesScreen() {
         }
       >
         {isLoading ? (
-          <LungsLoader label="Loading your active quests..." size={100} style={{ marginVertical: 40 }} />
+          <LungsLoader label={tr('Loading your active quests...')} size={100} style={{ marginVertical: 40 }} />
         ) : activeList && activeList.length > 0 ? (
           activeList.map((item, index) => {
             const cyc = item?.cycle || item;
@@ -160,7 +160,7 @@ export default function ActiveActivitiesScreen() {
                       <View style={styles.checkedTodayRow}>
                         <Text style={styles.checkedTodayIcon}>✓</Text>
                         <Text style={styles.checkedTodayText}>
-                          Today's mission complete!
+                          {tr('Today\'s mission complete!')}
                         </Text>
                       </View>
                       <Text style={styles.nextCheckInNote}>
@@ -170,7 +170,7 @@ export default function ActiveActivitiesScreen() {
                   ) : (
                     <View>
                       <Text style={styles.checkInQuestion}>
-                        Did you practice this sustainability habit today?
+                        {tr('Did you practice this sustainability habit today?')}
                       </Text>
                       <View style={styles.checkInButtonsRow}>
                         <TouchableOpacity
@@ -180,7 +180,7 @@ export default function ActiveActivitiesScreen() {
                           disabled={dailyCheckInMutation.isPending}
                         >
                           <Text style={styles.checkInYesText}>
-                            ✓ Done and dusted
+                            {tr('✓ Done and dusted')}
                           </Text>
                         </TouchableOpacity>
 
@@ -191,7 +191,7 @@ export default function ActiveActivitiesScreen() {
                           disabled={dailyCheckInMutation.isPending}
                         >
                           <Text style={styles.checkInNoText}>
-                            × Missed today
+                            {tr('× Missed today')}
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -204,9 +204,9 @@ export default function ActiveActivitiesScreen() {
         ) : (
           <EmptyState
             icon="🎯"
-            title="No active quests"
+            title={MICROCOPY.activities.activeTitle}
             message={getEmptyActiveMessage()}
-            actionLabel="Discover Side Quests ➔"
+            actionLabel={`${MICROCOPY.activities.buttons.start} ➔`}
             onAction={() => navigation.navigate('ActivityCategories')}
             style={styles.emptyContainer}
           />

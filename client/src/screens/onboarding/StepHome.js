@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { COLORS } from '../../theme';
 import OnboardingFooter from '../../components/OnboardingFooter';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../i18n/LanguageContext';
 import { config } from '../../engine';
 
 const INDIAN_STATES = [
@@ -311,7 +311,7 @@ export default function StepHome({
               ))}
             </ScrollView>
             <TouchableOpacity style={styles.closeBtn} onPress={() => setShowStateModal(false)}>
-              <Text style={styles.closeBtnText}>Cancel</Text>
+              <Text style={styles.closeBtnText}>{tr('Cancel')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -354,7 +354,7 @@ export default function StepHome({
               )}
             </ScrollView>
             <TouchableOpacity style={styles.closeBtn} onPress={() => setShowDistrictModal(false)}>
-              <Text style={styles.closeBtnText}>Cancel</Text>
+              <Text style={styles.closeBtnText}>{tr('Cancel')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -397,7 +397,7 @@ export default function StepHome({
               )}
             </ScrollView>
             <TouchableOpacity style={styles.closeBtn} onPress={() => setShowCityModal(false)}>
-              <Text style={styles.closeBtnText}>Cancel</Text>
+              <Text style={styles.closeBtnText}>{tr('Cancel')}</Text>
             </TouchableOpacity>
           </View>
         </View>

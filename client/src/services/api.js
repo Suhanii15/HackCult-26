@@ -185,6 +185,24 @@ export const apiLogin = async ({ identifier, password }) => {
   return result;
 };
 
+export const apiVerifyOtp = async ({ identifier, otp }) => {
+  const result = await request('/auth/verify-otp', {
+    method: 'POST',
+    body: JSON.stringify({ identifier, otp }),
+  });
+  if (result.token) {
+    setAuthToken(result.token);
+  }
+  return result;
+};
+
+export const apiResendOtp = async ({ identifier }) => {
+  return await request('/auth/resend-otp', {
+    method: 'POST',
+    body: JSON.stringify({ identifier }),
+  });
+};
+
 export const apiGetMe = async () => {
   return await request('/auth/me', {
     method: 'GET',

@@ -2,11 +2,13 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import Svg, { Path, Defs, LinearGradient, Stop, Circle, Line } from 'react-native-svg';
 import { COLORS } from '../../../theme';
-
+
+import { tr, useLanguage } from '../../../i18n/LanguageContext';
 /**
  * Solar generation daylight bell curve matching the reference UI chart
  */
 export default function SolarGenerationWave({ peakKw = 3.0 }) {
+  useLanguage();
   return (
     <View style={styles.container}>
       <Svg width="100%" height="90" viewBox="0 0 320 90" fill="none">
@@ -64,7 +66,7 @@ export default function SolarGenerationWave({ peakKw = 3.0 }) {
       <View style={styles.timeLabelsRow}>
         <Text style={styles.timeText}>06:00</Text>
         <Text style={styles.timeText}>09:00</Text>
-        <Text style={[styles.timeText, styles.timeTextPeak]}>12:00 (Peak)</Text>
+        <Text style={[styles.timeText, styles.timeTextPeak]}>{tr('12:00 (Peak)')}</Text>
         <Text style={styles.timeText}>15:00</Text>
         <Text style={styles.timeText}>18:00</Text>
       </View>

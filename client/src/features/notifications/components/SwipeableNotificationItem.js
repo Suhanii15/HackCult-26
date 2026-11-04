@@ -15,7 +15,8 @@ import {
   ChevronDownIcon,
   ChevronUpIcon,
 } from '../../solar/components/SolarIcons';
-
+
+import { tr, useLanguage } from '../../../i18n/LanguageContext';
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 120;
 
@@ -25,6 +26,7 @@ export default function SwipeableNotificationItem({
   onPress,
   icon,
 }) {
+  useLanguage();
   const [isExpanded, setIsExpanded] = useState(false);
   const translateX = useRef(new Animated.Value(0)).current;
 
@@ -74,7 +76,7 @@ export default function SwipeableNotificationItem({
       <Animated.View style={[styles.deleteBackground, { opacity: deleteBgOpacity }]}>
         <View style={styles.deleteContent}>
           <TrashIcon size={18} color="#DC2626" />
-          <Text style={styles.deleteText}>Delete</Text>
+          <Text style={styles.deleteText}>{tr('Delete')}</Text>
         </View>
       </Animated.View>
 

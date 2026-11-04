@@ -10,7 +10,8 @@ import { COLORS } from '../../theme';
 import SliderWithPreview from '../../components/SliderWithPreview';
 import OnboardingFooter from '../../components/OnboardingFooter';
 import { config } from '../../engine';
-
+
+import { tr, useLanguage } from '../../i18n/LanguageContext';
 const HABITS = [
   { key: 'switch_off', label: 'Turn off switches & idle chargers', emoji: '🔌' },
   { key: 'ac_26', label: 'Set AC temperature at 25°C–26°C', emoji: '❄️' },
@@ -26,6 +27,7 @@ export default function StepPersonalise({
   onFinish,
   onSkip,
 }) {
+  useLanguage();
   const [selectedApps, setSelectedApps] = useState(data.appliances || [
     { key: 'ceiling_fan', count: 3, hoursPerDay: 8 },
     { key: 'ac', count: 1, hoursPerDay: 6 },
@@ -72,15 +74,15 @@ export default function StepPersonalise({
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
-        <Text style={styles.title}>Personalise Your Profile ✦</Text>
+        <Text style={styles.title}>{tr('Personalise Your Profile ✦')}</Text>
         <Text style={styles.subtitle}>
-          Help us tailor your weekly AI energy saving tips and EcoPulse badges.
+          {tr('Help us tailor your weekly AI energy saving tips and EcoPulse badges.')}
         </Text>
 
         {/* Section 1: Home Appliances */}
-        <Text style={styles.sectionHeader}>Major Household Appliances</Text>
+        <Text style={styles.sectionHeader}>{tr('Major Household Appliances')}</Text>
         <Text style={styles.sectionDesc}>
-          Tap to add appliances you use daily. Used for personalized nudges.
+          {tr('Tap to add appliances you use daily. Used for personalized nudges.')}
         </Text>
 
         <View style={styles.appGrid}>
@@ -112,7 +114,7 @@ export default function StepPersonalise({
                       max={24}
                       step={0.5}
                       unit="hrs/day"
-                      label="Hours used per day"
+                      label={tr('Hours used per day')}
                       snapMarks={[2, 4, 6, 8]}
                       onChange={(h) => updateAppHours(key, h)}
                     />
@@ -124,9 +126,9 @@ export default function StepPersonalise({
         </View>
 
         {/* Section 2: EcoPulse Habits & Pledge */}
-        <Text style={[styles.sectionHeader, { marginTop: 24 }]}>EcoPulse Daily Habits 🌱</Text>
+        <Text style={[styles.sectionHeader, { marginTop: 24 }]}>{tr('EcoPulse Daily Habits 🌱')}</Text>
         <Text style={styles.sectionDesc}>
-          How often do you follow these eco-friendly habits?
+          {tr('How often do you follow these eco-friendly habits?')}
         </Text>
 
         {HABITS.map((item) => {

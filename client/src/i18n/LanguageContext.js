@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useState } from 'react';
+import { PHRASES } from './phrases';
+import { getActiveLanguage, setActiveLanguage } from './activeLanguage';
 
 const TRANSLATIONS = {
   en: {
@@ -278,23 +280,23 @@ const TRANSLATIONS = {
     action_restored_toast: 'Activity restored!',
 
     // Activities & Challenges Feature
-    activities_main_title: 'Your Activities',
-    activities_main_sub: 'Adopt EcoPulse actions, complete daily challenges, and earn Green Points.',
-    activities_active_summary_zero: 'No active activities yet',
-    activities_active_summary_one: '1 activity in progress',
-    activities_active_summary_many: '{count} activities in progress',
-    activities_active_badge: 'Active Challenges',
-    activities_view_all_active: 'View All Active ({count})',
-    activities_recommended_title: 'Recommended Activities',
-    activities_categories_heading: 'Sustainability Categories',
+    activities_main_title: 'Your next green side quest',
+    activities_main_sub: 'Pick your next planet-saving move, complete daily challenges, and earn GreenPoints.',
+    activities_active_summary_zero: 'No quests yet. Wanna change that?',
+    activities_active_summary_one: '1 quest in progress',
+    activities_active_summary_many: '{count} quests in progress',
+    activities_active_badge: 'Active Quests',
+    activities_view_all_active: 'View All Quests ({count})',
+    activities_recommended_title: 'Pick your next planet-saving move',
+    activities_categories_heading: 'Find your next green W',
     activities_actions_available: '{count} available',
     activities_actions_active: '{count} active',
 
-    cat_energy_name: 'Energy Conservation',
+    cat_energy_name: 'Energy Efficiency',
     cat_energy_desc: 'Switch off vampire loads, optimize AC cooling and switch to energy-saving LEDs.',
-    cat_transport_name: 'Sustainable Transportation',
+    cat_transport_name: 'Sustainable Mobility',
     cat_transport_desc: 'Choose cycling, walking, public transit and carpooling for low emissions.',
-    cat_waste_name: 'Waste Management',
+    cat_waste_name: 'Circular Waste',
     cat_waste_desc: 'Segregate dry and wet waste, compost organics and reject single-use plastic.',
     cat_water_name: 'Water Conservation',
     cat_water_desc: 'Turn off taps while brushing, fix leaks promptly and conserve precious groundwater.',
@@ -305,7 +307,7 @@ const TRANSLATIONS = {
 
     status_available: 'Available',
     status_active: 'In Progress',
-    status_completed: 'Completed',
+    status_completed: 'Conquered',
     status_expired: 'Expired',
 
     activity_why_matters: 'Why this matters',
@@ -321,34 +323,34 @@ const TRANSLATIONS = {
     activity_cadence_daily: 'Requires daily check-ins',
     activity_cadence_once: 'One-time completion action',
 
-    action_add_to_goals: 'Add to my goals (+)',
-    action_already_achieved: 'Already achieved (✓)',
+    action_add_to_goals: "Let's get it (+)",
+    action_already_achieved: 'Done and dusted (✓)',
     action_not_for_me: 'Not for me (×)',
     action_already_achieved_confirm_title: 'Confirm Completion',
     action_already_achieved_confirm_desc: 'Have you already completed this one-time action in your daily life? You will receive the EcoScore and Green Points reward once.',
-    action_already_achieved_btn_confirm: 'Yes, I did this',
+    action_already_achieved_btn_confirm: 'Yes, did this!',
     action_already_achieved_btn_cancel: 'Cancel',
     habit_cannot_bypass_error: 'Multi-day habits require daily check-in progression over time and cannot be instantly completed.',
 
-    checkin_today_question: 'Did you do this today?',
-    checkin_btn_yes: 'Yes, completed',
-    checkin_btn_no: 'No, not completed',
-    checkin_recorded_success: "Today's check-in recorded! Keep up the great work.",
-    checkin_already_done_today: "Today's check-in already recorded. Come back tomorrow!",
+    checkin_today_question: 'Did you practice this habit today?',
+    checkin_btn_yes: 'Done and dusted',
+    checkin_btn_no: 'Missed today',
+    checkin_recorded_success: "Slay! You did that. Today's check-in recorded.",
+    checkin_already_done_today: "Already on this quest, bestie! Next check-in unlocks tomorrow.",
     progress_checkins_ratio: '{done} of {required} check-ins completed',
     progress_day_ratio: 'Day {current} of {total}',
     progress_days_left: '{days} days remaining',
 
-    cycle_completed_badge: 'Challenge Completed! 🎉',
+    cycle_completed_badge: 'Quest Conquered! 🏆',
     cycle_completed_rewards: 'You earned +{pts} Green Points and +{eco} EcoScore.',
-    cycle_restart_tomorrow_notice: 'Habit master! You can restart this challenge from Day 0 starting tomorrow.',
-    cycle_restart_button: 'Restart Challenge from Day 0',
-    cycle_expired_badge: 'Challenge Expired',
+    cycle_restart_tomorrow_notice: 'Habit master! You can restart this quest from Day 0 starting tomorrow.',
+    cycle_restart_button: 'Restart Quest from Day 0',
+    cycle_expired_badge: 'Quest Expired',
     cycle_expired_desc: 'The duration ended before reaching required check-ins. You can restart immediately from Day 0.',
     cycle_history_title: 'Check-In History',
 
-    active_activities_screen_title: 'Active Challenges',
-    active_activities_empty: 'You have no active challenges. Browse categories and add goals to begin!',
+    active_activities_screen_title: 'Your active quests',
+    active_activities_empty: 'No quests yet. Wanna change that? Your eco era starts now.',
 
     // Dashboard Minimal UI
     your_impact_this_month: 'Your Impact This Month',
@@ -1223,8 +1225,21 @@ const TRANSLATIONS = {
 
 const LanguageContext = createContext();
 
+/**
+ * tr('English text') -> translated text in the active language (English fallback).
+ * Usable anywhere (also in sub-components); screens re-render on language change
+ * because their root component subscribes to useLanguage().
+ */
+export function tr(text) {
+  const lang = getActiveLanguage();
+  if (lang === 'en' || typeof text !== 'string') return text;
+  return (PHRASES[lang] && PHRASES[lang][text]) || text;
+}
+
 export function LanguageProvider({ children }) {
   const [language, setLanguageState] = useState('en'); // 'en' | 'gu' | 'hi'
+  // Keep the module-level language in sync *during render* so every child sees it immediately.
+  setActiveLanguage(language);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   const setLanguage = (lang) => {

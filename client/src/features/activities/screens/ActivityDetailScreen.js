@@ -15,11 +15,12 @@ import { Card, ProgressBar, Toast, Skeleton, Button } from '../../../components/
 import ActivityHeroIllustration from '../components/ActivityHeroIllustration';
 import ActivityAssessmentModal from '../components/assessment/ActivityAssessmentModal';
 import { COLORS, RADII, SPACING, SHADOWS } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import {
   getCheckInSuccessMessage,
   getChallengeCompletionMessage,
   getDuplicateEnrollmentMessage,
+  MICROCOPY,
 } from '../../../constants/microcopy';
 import {
   useActivityDetail,
@@ -418,7 +419,7 @@ export default function ActivityDetailScreen() {
                 {userCycle.isPersonalized ? (
                   <Card style={styles.personalizedPlanCard} elevation="subtle">
                     <View style={styles.planHeaderRow}>
-                      <Text style={styles.planBadgeText}>✨ YOUR PERSONALIZED ROADMAP</Text>
+                      <Text style={styles.planBadgeText}>{tr('✨ YOUR PERSONALIZED ROADMAP')}</Text>
                       {userCycle.recommendedReduction?.percentage ? (
                         <View style={styles.reductionTag}>
                           <Text style={styles.reductionTagText}>
@@ -441,7 +442,7 @@ export default function ActivityDetailScreen() {
                     {/* Baseline vs Target */}
                     <View style={styles.habitCompareRow}>
                       <View style={styles.habitCol}>
-                        <Text style={styles.habitLabel}>BASELINE</Text>
+                        <Text style={styles.habitLabel}>{tr('BASELINE')}</Text>
                         <Text style={styles.habitVal}>
                           {(typeof userCycle.currentUsage === 'string' && userCycle.currentUsage.trim().length > 0)
                             ? userCycle.currentUsage
@@ -453,7 +454,7 @@ export default function ActivityDetailScreen() {
                       </View>
                       <Text style={styles.habitArrow}>➔</Text>
                       <View style={styles.habitCol}>
-                        <Text style={[styles.habitLabel, { color: COLORS.primaryDark }]}>RECOMMENDED TARGET</Text>
+                        <Text style={[styles.habitLabel, { color: COLORS.primaryDark }]}>{tr('RECOMMENDED TARGET')}</Text>
                         <Text style={[styles.habitVal, { color: COLORS.primaryDark }]}>
                           {(typeof userCycle.recommendedTarget === 'string' && userCycle.recommendedTarget.trim().length > 0)
                             ? userCycle.recommendedTarget
@@ -499,13 +500,13 @@ export default function ActivityDetailScreen() {
                     {hasCheckedInToday ? (
                       <View style={styles.checkedTodayBox}>
                         <Text style={styles.checkedTodayText}>
-                          ✓ Today's check-in recorded! Next check-in unlocks tomorrow.
+                          {tr('✓ Today\'s check-in recorded! Next check-in unlocks tomorrow.')}
                         </Text>
                       </View>
                     ) : (
                       <View>
                         <Text style={styles.checkInQuestion}>
-                          Did you complete today's mission?
+                          {tr('Did you complete today\'s mission?')}
                         </Text>
                         <View style={styles.checkInButtonsRow}>
                           <TouchableOpacity
@@ -514,7 +515,7 @@ export default function ActivityDetailScreen() {
                             onPress={() => handleCheckIn(true)}
                             disabled={dailyCheckInMutation.isPending}
                           >
-                            <Text style={styles.checkInYesText}>✓ Yes, Done</Text>
+                            <Text style={styles.checkInYesText}>✓ {MICROCOPY.activities.buttons.complete}</Text>
                           </TouchableOpacity>
 
                           <TouchableOpacity
@@ -523,7 +524,7 @@ export default function ActivityDetailScreen() {
                             onPress={() => handleCheckIn(false)}
                             disabled={dailyCheckInMutation.isPending}
                           >
-                            <Text style={styles.checkInNoText}>× Not Today</Text>
+                            <Text style={styles.checkInNoText}>{tr('× Not Today')}</Text>
                           </TouchableOpacity>
                         </View>
                       </View>
@@ -537,7 +538,7 @@ export default function ActivityDetailScreen() {
             {status === 'completed' ? (
               <View style={styles.sectionContainer}>
                 <Card style={styles.completedCard} elevation="subtle">
-                  <Text style={styles.completedTitle}>🏆 Quest Conquered!</Text>
+                  <Text style={styles.completedTitle}>{tr('🏆 Quest Conquered!')}</Text>
                   <Text style={styles.completedSub}>
                     You unlocked +{greenPoints} GreenPoints and +{ecoScore} EcoScore for this achievement.
                   </Text>
@@ -548,10 +549,10 @@ export default function ActivityDetailScreen() {
                       onPress={handleRestartChallenge}
                       disabled={startMutation.isPending}
                     >
-                      <Text style={styles.restartButtonText}>🔄 Restart Quest (Day 0)</Text>
+                      <Text style={styles.restartButtonText}>{tr('🔄 Restart Quest (Day 0)')}</Text>
                     </TouchableOpacity>
                   ) : (
-                    <Text style={styles.oneTimeDoneBadge}>✓ One-time action completed</Text>
+                    <Text style={styles.oneTimeDoneBadge}>{tr('✓ One-time action completed')}</Text>
                   )}
                 </Card>
               </View>
@@ -562,7 +563,7 @@ export default function ActivityDetailScreen() {
             {/* ══════════════════════════════════════════════════════════ */}
             <View style={styles.sectionContainer}>
               <View style={styles.sectionHeaderRow}>
-                <Text style={styles.sectionTitle}>🌱 ENVIRONMENTAL IMPACT</Text>
+                <Text style={styles.sectionTitle}>{tr('🌱 ENVIRONMENTAL IMPACT')}</Text>
                 <View style={styles.estimatePill}>
                   <Text style={styles.estimatePillText}>
                     {userCycle ? 'ESTIMATED SAVINGS' : 'POTENTIAL IMPACT'}
@@ -575,7 +576,7 @@ export default function ActivityDetailScreen() {
                 <View style={styles.impactGrid}>
                   {/* CO2e Saved */}
                   <View style={[styles.impactBox, { backgroundColor: '#ECFDF5', borderColor: '#A7F3D0' }]}>
-                    <Text style={styles.impactLabel}>CO₂e Avoided</Text>
+                    <Text style={styles.impactLabel}>{tr('CO₂e Avoided')}</Text>
                     <Text style={[styles.impactVal, { color: '#047857' }]}>
                       {carbonPerDay > 0
                         ? `~${carbonPerDay} kg`
@@ -590,7 +591,7 @@ export default function ActivityDetailScreen() {
 
                   {/* Resource Saved */}
                   <View style={[styles.impactBox, { backgroundColor: '#F0F9FF', borderColor: '#BAE6FD' }]}>
-                    <Text style={styles.impactLabel}>Resource Saving</Text>
+                    <Text style={styles.impactLabel}>{tr('Resource Saving')}</Text>
                     <Text style={[styles.impactVal, { color: '#0369A1' }]}>
                       {resourceText ? 'Optimized' : 'Measurable'}
                     </Text>
@@ -615,7 +616,7 @@ export default function ActivityDetailScreen() {
                 {/* Defensible Methodology Note */}
                 <View style={styles.methodologyBox}>
                   <Text style={styles.methodologyText}>
-                    ℹ️ <Text style={{ fontWeight: '700' }}>Baseline Assumption:</Text>{' '}
+                    ℹ️ <Text style={{ fontWeight: '700' }}>{tr('Baseline Assumption:')}</Text>{' '}
                     {assumptionsText}
                   </Text>
                 </View>
@@ -627,7 +628,7 @@ export default function ActivityDetailScreen() {
             {/* (Replaces separate Why Matters and Instructions cards)     */}
             {/* ══════════════════════════════════════════════════════════ */}
             <View style={styles.sectionContainer}>
-              <Text style={styles.sectionTitle}>📋 MISSION BRIEF</Text>
+              <Text style={styles.sectionTitle}>{tr('📋 MISSION BRIEF')}</Text>
 
               <Card style={styles.infoCard} elevation="subtle">
                 <Text style={styles.briefDescription}>
@@ -637,7 +638,7 @@ export default function ActivityDetailScreen() {
                 {/* How to complete it */}
                 {instructionsText ? (
                   <View style={styles.stepsBox}>
-                    <Text style={styles.stepsTitle}>WHAT TO DO:</Text>
+                    <Text style={styles.stepsTitle}>{tr('WHAT TO DO:')}</Text>
                     <Text style={styles.stepsText}>
                       {instructionsText}
                     </Text>
@@ -646,7 +647,7 @@ export default function ActivityDetailScreen() {
 
                 {/* Completion Criteria & Cadence */}
                 <View style={styles.criteriaBox}>
-                  <Text style={styles.criteriaTitle}>COMPLETION CRITERIA:</Text>
+                  <Text style={styles.criteriaTitle}>{tr('COMPLETION CRITERIA:')}</Text>
                   <Text style={styles.criteriaText}>
                     {criteriaText || (
                       isOneTime
@@ -696,7 +697,7 @@ export default function ActivityDetailScreen() {
                     disabled={startMutation.isPending}
                   >
                     <Text style={styles.primaryAddBtnText}>
-                      + Add to My Goals
+                      + {MICROCOPY.activities.buttons.start}
                     </Text>
                   </TouchableOpacity>
 
@@ -708,7 +709,7 @@ export default function ActivityDetailScreen() {
                     disabled={startMutation.isPending}
                   >
                     <Text style={styles.secondaryPersonalizeBtnText}>
-                      🎯 Personalize Your Plan
+                      {MICROCOPY.activities.buttons.assessment}
                     </Text>
                   </TouchableOpacity>
 
@@ -720,7 +721,7 @@ export default function ActivityDetailScreen() {
                       onPress={handlePressAlreadyAchieved}
                       disabled={alreadyAchievedMutation.isPending}
                     >
-                      <Text style={styles.tertiaryBtnText}>✓ Already Achieved</Text>
+                      <Text style={styles.tertiaryBtnText}>{tr('✓ Already Achieved')}</Text>
                     </TouchableOpacity>
 
                     <Text style={styles.tertiarySeparator}>•</Text>
@@ -732,7 +733,7 @@ export default function ActivityDetailScreen() {
                       disabled={dismissMutation.isPending}
                     >
                       <Text style={[styles.tertiaryBtnText, { color: '#94A3B8' }]}>
-                        × Not for Me
+                        {tr('× Not for Me')}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -741,7 +742,7 @@ export default function ActivityDetailScreen() {
                 <View style={styles.activeStatusBar}>
                   <Text style={styles.activeStatusText}>
                     {hasCheckedInToday
-                      ? '✓ Great job today! Check back tomorrow to keep your streak.'
+                      ? `✓ ${MICROCOPY.activities.buttons.keepStreak}! Next check-in unlocks tomorrow.`
                       : '● Quest Active • Record your daily check-in above.'}
                   </Text>
                 </View>
@@ -751,7 +752,7 @@ export default function ActivityDetailScreen() {
             {/* Check-ins History (if any) */}
             {checkInsHistory.length > 0 ? (
               <View style={[styles.sectionContainer, { marginTop: SPACING.md }]}>
-                <Text style={styles.sectionTitle}>📅 CYCLE HISTORY</Text>
+                <Text style={styles.sectionTitle}>{tr('📅 CYCLE HISTORY')}</Text>
                 <Card style={styles.infoCard} elevation="subtle">
                   <View style={styles.historyList}>
                     {checkInsHistory.map((item, idx) => (
@@ -789,7 +790,7 @@ export default function ActivityDetailScreen() {
       >
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Confirm Achievement</Text>
+            <Text style={styles.modalTitle}>{tr('Confirm Achievement')}</Text>
             <Text style={styles.modalBody}>
               Did you already complete this sustainability action? You'll earn +{greenPoints} GreenPoints and +{ecoScore} EcoScore upon confirmation.
             </Text>
@@ -799,7 +800,7 @@ export default function ActivityDetailScreen() {
                 onPress={() => setConfirmModalVisible(false)}
                 activeOpacity={0.7}
               >
-                <Text style={styles.modalCancelText}>Cancel</Text>
+                <Text style={styles.modalCancelText}>{tr('Cancel')}</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={[styles.modalBtn, styles.modalConfirmBtn]}

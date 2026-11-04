@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 import { Card } from '../../../components/ui';
 import { COLORS, RADII, SPACING } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 
 export default function SnapshotSection({
   monthlyCO2Kg = 128,
@@ -41,7 +41,7 @@ export default function SnapshotSection({
           </View>
           <Text style={styles.cardLabel}>{t('carbon_footprint')}</Text>
           <Text style={styles.cardValue}>{Math.round(monthlyCO2Kg)}</Text>
-          <Text style={styles.cardUnit}>kg CO₂</Text>
+          <Text style={styles.cardUnit}>{tr('kg CO₂')}</Text>
         </Card>
 
         {/* Card 2: Eco Score */}

@@ -14,7 +14,8 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { COLORS, RADII, SPACING, TYPOGRAPHY } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
+import { MICROCOPY } from '../../../constants/microcopy';
 import { useProfile, useProfileLikedActivities, useUpdateProfile } from '../hooks';
 import {
   MoreDotsIcon,
@@ -140,7 +141,7 @@ export default function ProfileScreen({ user, onLogout }) {
           >
             <ArrowLeftIcon size={18} color="#0F172A" />
           </TouchableOpacity>
-          <Text style={styles.headerTitle}>{t('profile_title') || 'Profile'}</Text>
+          <Text style={styles.headerTitle}>{MICROCOPY.profile.title}</Text>
         </View>
 
         <TouchableOpacity
@@ -212,8 +213,8 @@ export default function ProfileScreen({ user, onLogout }) {
               <UserCircleIcon size={20} color="#0F172A" />
             </View>
             <View style={styles.menuTextCol}>
-              <Text style={styles.menuTitle}>Account Details</Text>
-              <Text style={styles.menuSubtitle}>Manage your Account Details</Text>
+              <Text style={styles.menuTitle}>{tr('Account Details')}</Text>
+              <Text style={styles.menuSubtitle}>{MICROCOPY.profile.accountRules}</Text>
             </View>
             <ChevronRightIcon size={18} color="#94A3B8" />
           </TouchableOpacity>
@@ -230,7 +231,7 @@ export default function ProfileScreen({ user, onLogout }) {
               <HeartIcon size={20} filled={true} color="#EF4444" />
             </View>
             <View style={styles.menuTextCol}>
-              <Text style={styles.menuTitle}>Liked Activities</Text>
+              <Text style={styles.menuTitle}>{MICROCOPY.profile.hallOfTrophies}</Text>
               <Text style={styles.menuSubtitle}>
                 {likedActivities.length > 0
                   ? `${likedActivities.length} saved action${likedActivities.length > 1 ? 's' : ''}`
@@ -252,7 +253,7 @@ export default function ProfileScreen({ user, onLogout }) {
               <BellIcon size={20} color="#0F172A" />
             </View>
             <View style={styles.menuTextCol}>
-              <Text style={styles.menuTitle}>Notification</Text>
+              <Text style={styles.menuTitle}>{tr('Notification')}</Text>
               <Text style={styles.menuSubtitle}>Alerts, daily tips & reminders</Text>
             </View>
             <ChevronRightIcon size={18} color="#94A3B8" />
@@ -270,7 +271,7 @@ export default function ProfileScreen({ user, onLogout }) {
               <SettingsIcon size={20} color="#0F172A" />
             </View>
             <View style={styles.menuTextCol}>
-              <Text style={styles.menuTitle}>Settings</Text>
+              <Text style={styles.menuTitle}>{tr('Settings')}</Text>
               <Text style={styles.menuSubtitle}>Language & preferences</Text>
             </View>
             <ChevronRightIcon size={18} color="#94A3B8" />
@@ -294,7 +295,7 @@ export default function ProfileScreen({ user, onLogout }) {
               <PhoneCallIcon size={20} color="#0F172A" />
             </View>
             <View style={styles.menuTextCol}>
-              <Text style={styles.menuTitle}>Contact Us</Text>
+              <Text style={styles.menuTitle}>{tr('Contact Us')}</Text>
             </View>
             <ChevronRightIcon size={18} color="#94A3B8" />
           </TouchableOpacity>
@@ -338,7 +339,7 @@ export default function ProfileScreen({ user, onLogout }) {
               <PrivacyShieldIcon size={20} color="#0F172A" />
             </View>
             <View style={styles.menuTextCol}>
-              <Text style={styles.menuTitle}>Privacy Policy</Text>
+              <Text style={styles.menuTitle}>{tr('Privacy Policy')}</Text>
             </View>
             <ChevronRightIcon size={18} color="#94A3B8" />
           </TouchableOpacity>
@@ -360,7 +361,7 @@ export default function ProfileScreen({ user, onLogout }) {
               <HelpCircleIcon size={20} color="#0F172A" />
             </View>
             <View style={styles.menuTextCol}>
-              <Text style={styles.menuTitle}>Get Help</Text>
+              <Text style={styles.menuTitle}>{tr('Get Help')}</Text>
             </View>
             <ChevronRightIcon size={18} color="#94A3B8" />
           </TouchableOpacity>
@@ -377,7 +378,7 @@ export default function ProfileScreen({ user, onLogout }) {
               <LogoutIcon size={20} color="#0F172A" />
             </View>
             <View style={styles.menuTextCol}>
-              <Text style={styles.menuTitle}>Log out</Text>
+              <Text style={styles.menuTitle}>{tr('Log out')}</Text>
             </View>
             <ChevronRightIcon size={18} color="#94A3B8" />
           </TouchableOpacity>
@@ -398,7 +399,7 @@ export default function ProfileScreen({ user, onLogout }) {
         >
           <View style={styles.actionSheetCard}>
             <View style={styles.sheetHandle} />
-            <Text style={styles.sheetTitle}>Profile Photo</Text>
+            <Text style={styles.sheetTitle}>{tr('Profile Photo')}</Text>
 
             {avatarUri ? (
               <TouchableOpacity
@@ -408,7 +409,7 @@ export default function ProfileScreen({ user, onLogout }) {
                   setViewPhotoVisible(true);
                 }}
               >
-                <Text style={styles.sheetOptionText}>👁️ View Photo</Text>
+                <Text style={styles.sheetOptionText}>{tr('👁️ View Photo')}</Text>
               </TouchableOpacity>
             ) : null}
 
@@ -416,14 +417,14 @@ export default function ProfileScreen({ user, onLogout }) {
               style={styles.sheetOption}
               onPress={handlePickFromLibrary}
             >
-              <Text style={styles.sheetOptionText}>🖼️ Choose from Library</Text>
+              <Text style={styles.sheetOptionText}>{tr('🖼️ Choose from Library')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
               style={styles.sheetOption}
               onPress={handleTakePhoto}
             >
-              <Text style={styles.sheetOptionText}>📸 Take Photo</Text>
+              <Text style={styles.sheetOptionText}>{tr('📸 Take Photo')}</Text>
             </TouchableOpacity>
 
             {avatarUri ? (
@@ -432,7 +433,7 @@ export default function ProfileScreen({ user, onLogout }) {
                 onPress={handleRemovePhoto}
               >
                 <Text style={[styles.sheetOptionText, { color: '#EF4444' }]}>
-                  🗑️ Remove Photo
+                  {tr('🗑️ Remove Photo')}
                 </Text>
               </TouchableOpacity>
             ) : null}
@@ -441,7 +442,7 @@ export default function ProfileScreen({ user, onLogout }) {
               style={[styles.sheetOption, styles.sheetCancelOption]}
               onPress={() => setPhotoOptionsVisible(false)}
             >
-              <Text style={styles.sheetCancelText}>Cancel</Text>
+              <Text style={styles.sheetCancelText}>{tr('Cancel')}</Text>
             </TouchableOpacity>
           </View>
         </TouchableOpacity>
@@ -481,16 +482,16 @@ export default function ProfileScreen({ user, onLogout }) {
       >
         <View style={styles.modalBackdrop}>
           <View style={styles.editNameCard}>
-            <Text style={styles.dialogTitle}>Change Name</Text>
+            <Text style={styles.dialogTitle}>{MICROCOPY.profile.buttons.edit}</Text>
             <Text style={styles.dialogSubtitle}>
-              Enter your preferred full name for Mission LiFE.
+              {tr('Enter your preferred full name for Mission LiFE.')}
             </Text>
 
             <TextInput
               style={styles.textInput}
               value={editedName}
               onChangeText={setEditedName}
-              placeholder="Full Name"
+              placeholder={tr('Full Name')}
               placeholderTextColor="#94A3B8"
               autoFocus={true}
               maxLength={60}
@@ -501,14 +502,14 @@ export default function ProfileScreen({ user, onLogout }) {
                 style={styles.cancelBtn}
                 onPress={() => setEditNameVisible(false)}
               >
-                <Text style={styles.cancelBtnText}>Cancel</Text>
+                <Text style={styles.cancelBtnText}>{tr('Cancel')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 style={styles.confirmBtn}
                 onPress={handleSaveName}
               >
-                <Text style={styles.confirmBtnText}>Save Name</Text>
+                <Text style={styles.confirmBtnText}>{MICROCOPY.profile.buttons.update}</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -527,7 +528,7 @@ export default function ProfileScreen({ user, onLogout }) {
             <View style={styles.sheetHeaderRow}>
               <View style={styles.likedHeaderLeft}>
                 <HeartIcon size={22} filled={true} color="#EF4444" />
-                <Text style={styles.likedTitle}>Liked Activities</Text>
+                <Text style={styles.likedTitle}>{MICROCOPY.profile.hallOfTrophies}</Text>
               </View>
               <TouchableOpacity
                 onPress={() => setLikedModalVisible(false)}
@@ -538,16 +539,16 @@ export default function ProfileScreen({ user, onLogout }) {
             </View>
 
             <Text style={styles.likedSubtitle}>
-              Your saved favorite climate actions and habits
+              {tr('Your saved favorite climate actions and habits')}
             </Text>
 
             <ScrollView style={styles.likedListScroll} showsVerticalScrollIndicator={false}>
               {likedActivities.length === 0 ? (
                 <View style={styles.emptyLikedBox}>
                   <Text style={styles.emptyLikedIcon}>🤍</Text>
-                  <Text style={styles.emptyLikedTitle}>No Liked Activities Yet</Text>
+                  <Text style={styles.emptyLikedTitle}>{MICROCOPY.profile.empty.trophies}</Text>
                   <Text style={styles.emptyLikedDesc}>
-                    Explore activities and tap the heart icon on any challenge to save it here!
+                    {MICROCOPY.profile.empty.title} Tap the heart on any quest to save it here!
                   </Text>
                 </View>
               ) : (
@@ -597,7 +598,7 @@ export default function ProfileScreen({ user, onLogout }) {
         <View style={styles.modalBackdrop}>
           <View style={styles.likedSheetCard}>
             <View style={styles.sheetHeaderRow}>
-              <Text style={styles.likedTitle}>Account Details</Text>
+              <Text style={styles.likedTitle}>{tr('Account Details')}</Text>
               <TouchableOpacity
                 onPress={() => setAccountDetailsVisible(false)}
                 style={styles.closeModalBtn}
@@ -607,22 +608,22 @@ export default function ProfileScreen({ user, onLogout }) {
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Full Name</Text>
+              <Text style={styles.detailLabel}>{tr('Full Name')}</Text>
               <Text style={styles.detailValue}>{rawName}</Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Location</Text>
+              <Text style={styles.detailLabel}>{tr('Location')}</Text>
               <Text style={styles.detailValue}>{`${district}, ${stateName}`}</Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Reward Points</Text>
+              <Text style={styles.detailLabel}>{tr('Reward Points')}</Text>
               <Text style={styles.detailValue}>{profile?.totalPoints || 120} pts</Text>
             </View>
 
             <View style={styles.detailRow}>
-              <Text style={styles.detailLabel}>Household Type</Text>
+              <Text style={styles.detailLabel}>{tr('Household Type')}</Text>
               <Text style={styles.detailValue}>
                 {profile?.household?.houseType || 'Apartment'}
               </Text>
@@ -632,7 +633,7 @@ export default function ProfileScreen({ user, onLogout }) {
               style={styles.doneBtn}
               onPress={() => setAccountDetailsVisible(false)}
             >
-              <Text style={styles.doneBtnText}>Close</Text>
+              <Text style={styles.doneBtnText}>{tr('Close')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -655,7 +656,7 @@ export default function ProfileScreen({ user, onLogout }) {
               style={styles.doneBtn}
               onPress={() => setInfoModalContent(null)}
             >
-              <Text style={styles.doneBtnText}>Close</Text>
+              <Text style={styles.doneBtnText}>{tr('Close')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -676,12 +677,12 @@ export default function ProfileScreen({ user, onLogout }) {
           <View style={styles.logoutSheet}>
             <View style={styles.sheetHandle} />
 
-            <Text style={styles.logoutSheetTitle}>Logout</Text>
+            <Text style={styles.logoutSheetTitle}>{tr('Logout')}</Text>
 
             <View style={styles.logoutDivider} />
 
             <Text style={styles.logoutQuestion}>
-              Are you sure you want to log out?
+              {tr('Are you sure you want to log out?')}
             </Text>
 
             <View style={styles.logoutButtonsRow}>
@@ -691,7 +692,7 @@ export default function ProfileScreen({ user, onLogout }) {
                 activeOpacity={0.8}
                 onPress={() => setLogoutModalVisible(false)}
               >
-                <Text style={styles.logoutCancelText}>Cancel</Text>
+                <Text style={styles.logoutCancelText}>{tr('Cancel')}</Text>
               </TouchableOpacity>
 
               {/* Yes, Logout Button */}
@@ -703,7 +704,7 @@ export default function ProfileScreen({ user, onLogout }) {
                   if (onLogout) onLogout();
                 }}
               >
-                <Text style={styles.logoutConfirmText}>Yes, Logout</Text>
+                <Text style={styles.logoutConfirmText}>{tr('Yes, Logout')}</Text>
               </TouchableOpacity>
             </View>
           </View>

@@ -11,7 +11,7 @@ import { COLORS } from '../../theme';
 import IconTile from '../../components/IconTile';
 import SliderWithPreview from '../../components/SliderWithPreview';
 import OnboardingFooter from '../../components/OnboardingFooter';
-import { useLanguage } from '../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../i18n/LanguageContext';
 
 export default function StepCooking({
   data = {},
@@ -164,7 +164,7 @@ export default function StepCooking({
                   }}
                 >
                   <Text style={[styles.sizeBtnText, cylinderSizeKg === 14.2 && styles.sizeBtnTextActive]}>
-                    14.2 kg (Std)
+                    {tr('14.2 kg (Std)')}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
@@ -175,7 +175,7 @@ export default function StepCooking({
                   }}
                 >
                   <Text style={[styles.sizeBtnText, cylinderSizeKg === 5 && styles.sizeBtnTextActive]}>
-                    5 kg
+                    {tr('5 kg')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -233,7 +233,7 @@ export default function StepCooking({
                   notifyChange(selectedFuels, false, cylinderSizeKg, weeksPerCylinder, num);
                 }}
               />
-              <Text style={styles.inputHelper}>1 SCM ≈ 2.15 kg CO₂e</Text>
+              <Text style={styles.inputHelper}>{tr('1 SCM ≈ 2.15 kg CO₂e')}</Text>
             </View>
           </View>
         )}

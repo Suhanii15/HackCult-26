@@ -6,111 +6,126 @@ import {
   Animated,
   TouchableOpacity,
   StatusBar,
+  Easing,
 } from 'react-native';
 import BrandLogo from '../components/BrandLogo';
 import { COLORS } from '../theme';
 import { apiWarmup } from '../services/api';
 
 export default function SplashScreen({ onFinish }) {
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const scaleAnim = useRef(new Animated.Value(0.92)).current;
-  const pulseAnim = useRef(new Animated.Value(0.4)).current;
+  const logoFadeAnim = useRef(new Animated.Value(0)).current;
+  const logoScaleAnim = useRef(new Animated.Value(0.92)).current;
+  const pulseScaleAnim = useRef(new Animated.Value(1)).current;
+  const pulseOpacityAnim = useRef(new Animated.Value(0)).current;
+  const gedaFadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     // 0. Trigger silent backend health warm-up call
     apiWarmup().catch(() => {});
 
-    // 1. Smooth Fade-in and scale up
+    // Sequence:
+    // 1. EcoPulse Logo & Name fade in and scale up slightly
+    // 2. Subtle green pulse ring expands and settles
+    // 3. GEDA branding appears beneath it
     Animated.parallel([
-      Animated.timing(fadeAnim, {
+      Animated.timing(logoFadeAnim, {
         toValue: 1,
-        duration: 900,
+        duration: 750,
+        easing: Easing.out(Easing.cubic),
         useNativeDriver: true,
       }),
-      Animated.spring(scaleAnim, {
+      Animated.spring(logoScaleAnim, {
         toValue: 1,
-        friction: 6,
+        friction: 7,
+        tension: 40,
         useNativeDriver: true,
       }),
-    ]).start();
-
-    // 2. Gentle pulsing animation for the loading glow
-    const pulseLoop = Animated.loop(
+      // Pulse animation starts at 400ms
       Animated.sequence([
-        Animated.timing(pulseAnim, {
+        Animated.delay(350),
+        Animated.parallel([
+          Animated.timing(pulseOpacityAnim, {
+            toValue: 0.45,
+            duration: 400,
+            useNativeDriver: true,
+          }),
+          Animated.timing(pulseScaleAnim, {
+            toValue: 1.35,
+            duration: 900,
+            easing: Easing.out(Easing.ease),
+            useNativeDriver: true,
+          }),
+        ]),
+        Animated.timing(pulseOpacityAnim, {
+          toValue: 0,
+          duration: 400,
+          useNativeDriver: true,
+        }),
+      ]),
+      // GEDA branding fades in smoothly
+      Animated.sequence([
+        Animated.delay(650),
+        Animated.timing(gedaFadeAnim, {
           toValue: 1,
           duration: 700,
+          easing: Easing.out(Easing.quad),
           useNativeDriver: true,
         }),
-        Animated.timing(pulseAnim, {
-          toValue: 0.3,
-          duration: 700,
-          useNativeDriver: true,
-        }),
-      ])
-    );
-    pulseLoop.start();
+      ]),
+    ]).start();
 
-    // 3. Auto-redirect to Welcome screen after 2.8 seconds
+    // Auto-transition after 2.4 seconds
     const timer = setTimeout(() => {
       onFinish();
-    }, 2800);
+    }, 2400);
 
     return () => {
       clearTimeout(timer);
-      pulseLoop.stop();
     };
-  }, []);
+  }, [logoFadeAnim, logoScaleAnim, pulseOpacityAnim, pulseScaleAnim, gedaFadeAnim, onFinish]);
 
   return (
     <TouchableOpacity
       activeOpacity={1}
       onPress={onFinish}
       style={styles.container}
+      accessibilityRole="button"
+      accessibilityLabel="EcoPulse Splash. Tap to skip."
     >
-      <StatusBar barStyle="light-content" backgroundColor={COLORS.primary} />
+      <StatusBar barStyle="light-content" backgroundColor="#022C22" />
 
-      {/* Decorative background watermark icons */}
-      <View style={styles.backgroundDecor} pointerEvents="none">
-        <Text style={[styles.watermarkIcon, { top: '12%', left: '8%' }]}>☀️</Text>
-        <Text style={[styles.watermarkIcon, { top: '18%', right: '10%' }]}>🌱</Text>
-        <Text style={[styles.watermarkIcon, { top: '35%', left: '6%' }]}>⚡</Text>
-        <Text style={[styles.watermarkIcon, { top: '65%', right: '8%' }]}>💧</Text>
-        <Text style={[styles.watermarkIcon, { top: '78%', left: '12%' }]}>🚲</Text>
+      {/* Main Center Content: EcoPulse Logo + Wordmark */}
+      <View style={styles.centerContainer}>
+        {/* Subtle Green Pulse Ring */}
+        <Animated.View
+          style={[
+            styles.pulseRing,
+            {
+              transform: [{ scale: pulseScaleAnim }],
+              opacity: pulseOpacityAnim,
+            },
+          ]}
+        />
+
+        {/* EcoPulse Emblem & Wordmark */}
+        <Animated.View
+          style={[
+            styles.logoWrapper,
+            {
+              opacity: logoFadeAnim,
+              transform: [{ scale: logoScaleAnim }],
+            },
+          ]}
+        >
+          <BrandLogo size="large" color="#FFFFFF" showTagline={false} />
+        </Animated.View>
       </View>
 
-      {/* Main Center Content */}
-      <Animated.View
-        style={[
-          styles.centerBox,
-          {
-            opacity: fadeAnim,
-            transform: [{ scale: scaleAnim }],
-          },
-        ]}
-      >
-        <BrandLogo size="large" color={COLORS.white} />
-
-        {/* Small Slogan / Quote */}
-        <View style={styles.quoteContainer}>
-          <Text style={styles.quoteTitle}>Lifestyle for Environment</Text>
-          <Text style={styles.quoteText}>
-            “Small daily actions create enduring planetary change.”
-          </Text>
+      {/* Bottom Minimal Branded GEDA */}
+      <Animated.View style={[styles.bottomContainer, { opacity: gedaFadeAnim }]}>
+        <View style={styles.gedaBadge}>
+          <Text style={styles.gedaText}>GEDA</Text>
         </View>
-
-        {/* Pulsing loading bar */}
-        <View style={styles.loadingTrack}>
-          <Animated.View style={[styles.loadingThumb, { opacity: pulseAnim }]} />
-        </View>
-      </Animated.View>
-
-      {/* Bottom Authority Line (Reference style: "a ClearYst company") */}
-      <Animated.View style={[styles.footer, { opacity: fadeAnim }]}>
-        <Text style={styles.footerLead}>an initiative by</Text>
-        <Text style={styles.footerOrg}>
-          Gujarat Energy Development Agency (GEDA)
-        </Text>
       </Animated.View>
     </TouchableOpacity>
   );
@@ -119,80 +134,46 @@ export default function SplashScreen({ onFinish }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#022C22', // Deep premium forest green
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 50,
-    paddingHorizontal: 24,
+    paddingVertical: 56,
   },
-  backgroundDecor: {
-    ...StyleSheet.absoluteFillObject,
-    opacity: 0.08,
-  },
-  watermarkIcon: {
-    position: 'absolute',
-    fontSize: 32,
-    color: '#FFFFFF',
-  },
-  centerBox: {
+  centerContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'relative',
     width: '100%',
   },
-  quoteContainer: {
-    marginTop: 24,
-    alignItems: 'center',
-    paddingHorizontal: 20,
+  pulseRing: {
+    position: 'absolute',
+    width: 140,
+    height: 140,
+    borderRadius: 70,
+    backgroundColor: '#10B981',
   },
-  quoteTitle: {
-    color: COLORS.white,
-    fontSize: 15,
-    fontWeight: '700',
-    letterSpacing: 0.8,
-    textTransform: 'uppercase',
-    marginBottom: 6,
-    opacity: 0.95,
-  },
-  quoteText: {
-    color: COLORS.textOnPrimaryMuted,
-    fontSize: 13,
-    textAlign: 'center',
-    fontStyle: 'italic',
-    lineHeight: 18,
-    maxWidth: 280,
-  },
-  loadingTrack: {
-    width: 64,
-    height: 4,
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
-    borderRadius: 2,
-    marginTop: 32,
-    overflow: 'hidden',
+  logoWrapper: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-  loadingThumb: {
-    width: '60%',
-    height: '100%',
-    backgroundColor: COLORS.white,
-    borderRadius: 2,
-  },
-  footer: {
+  bottomContainer: {
     alignItems: 'center',
-    marginBottom: 10,
+    justifyContent: 'center',
+    paddingBottom: 8,
   },
-  footerLead: {
-    color: 'rgba(255, 255, 255, 0.7)',
-    fontSize: 12,
-    fontWeight: '400',
-    letterSpacing: 0.3,
+  gedaBadge: {
+    borderTopWidth: 1,
+    borderColor: 'rgba(52, 211, 153, 0.25)',
+    paddingTop: 12,
+    paddingHorizontal: 24,
+    alignItems: 'center',
   },
-  footerOrg: {
-    color: COLORS.white,
-    fontSize: 13,
-    fontWeight: '700',
-    letterSpacing: 0.5,
-    marginTop: 2,
+  gedaText: {
+    color: '#A7F3D0',
+    fontSize: 15,
+    fontWeight: '900',
+    letterSpacing: 4.5,
+    textTransform: 'uppercase',
   },
 });

@@ -7,11 +7,13 @@ import {
   ScrollView,
   Linking,
   Platform,
+  ActivityIndicator,
 } from 'react-native';
 import Svg, { Circle, Rect, Path } from 'react-native-svg';
 import { TopBar, LottieLoader } from '../../../components/ui';
 import { COLORS, RADII, SPACING, TYPOGRAPHY } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
+import { MICROCOPY } from '../../../constants/microcopy';
 import { calculateSolar } from '../api';
 import { formatInr } from '../utils/formatters';
 import DistrictPickerModal from '../components/DistrictPickerModal';
@@ -56,8 +58,8 @@ function PMSuryaGharEmblem({ size = 30 }) {
         ))}
       </Svg>
       <View style={styles.emblemTextCol}>
-        <Text style={styles.emblemTitle}>PM Surya Ghar:</Text>
-        <Text style={styles.emblemSubtitle}>Muft Bijli Yojana</Text>
+        <Text style={styles.emblemTitle}>{tr('PM Surya Ghar:')}</Text>
+        <Text style={styles.emblemSubtitle}>{tr('Muft Bijli Yojana')}</Text>
       </View>
     </View>
   );
@@ -99,7 +101,7 @@ function WizardHeader({ currentStep, onBack, onClose }) {
               stepIndex === 1 && styles.stepLabelActive,
             ]}
           >
-            1. Consumption
+            {tr('1. Consumption')}
           </Text>
           <Text
             style={[
@@ -171,7 +173,7 @@ function LocationPill({ district, state, onChangePress }) {
           {district}, {state}
         </Text>
         <View style={styles.locationChangeBadge}>
-          <Text style={styles.locationChangeText}>Change</Text>
+          <Text style={styles.locationChangeText}>{tr('Change')}</Text>
           <ChevronDownIcon size={12} color="#004D40" />
         </View>
       </TouchableOpacity>
@@ -535,11 +537,10 @@ export default function SolarCalcScreen({ navigation, user }) {
 
           {/* "Try out solar calculator" Main Card */}
           <View style={styles.landingCard}>
-            <Text style={styles.landingTitle}>Try out solar calculator</Text>
+            <Text style={styles.landingTitle}>{MICROCOPY.solar.title}</Text>
 
             <Text style={styles.landingDescription}>
-              To Calculate your potential savings from solar and fixing a free
-              home visit with the best vendors in your area.
+              {MICROCOPY.solar.subtitle} {MICROCOPY.solar.gamePlan}
             </Text>
 
             {/* Benefit Highlights */}
@@ -549,7 +550,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                   <CheckCircleIcon size={16} color={COLORS.success} />
                 </View>
                 <Text style={styles.highlightText}>
-                  Get up to ₹78,000 direct PM Surya Ghar subsidy
+                  {tr('Get up to ₹78,000 direct PM Surya Ghar subsidy')}
                 </Text>
               </View>
 
@@ -582,7 +583,7 @@ export default function SolarCalcScreen({ navigation, user }) {
             >
               <ZapIcon size={20} color="#FFFFFF" />
               <Text style={styles.primaryActionBtnText}>
-                Start Solar Assessment
+                {MICROCOPY.solar.buttons.checkPotential}
               </Text>
             </TouchableOpacity>
           </View>
@@ -619,8 +620,8 @@ export default function SolarCalcScreen({ navigation, user }) {
           {/* Mascot Speech Bubble with Adjust/Energy Pose */}
           <EcoMascotSpeech
             pose="adjust"
-            title="Tell us about your electricity use"
-            subtitle="Prefilled from your home energy baseline. Direct units (kWh) give the highest precision!"
+            title={MICROCOPY.solar.sunshinePotential}
+            subtitle={tr('Prefilled from your home energy baseline. Direct units (kWh) give the highest precision!')}
           />
 
           {/* Input Mode Selector: kWh vs ₹ */}
@@ -643,7 +644,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                   inputMode === 'kwh' && styles.modeToggleTextActive,
                 ]}
               >
-                Units: kWh / mo (Recommended)
+                {tr('Units: kWh / mo (Recommended)')}
               </Text>
             </TouchableOpacity>
 
@@ -661,7 +662,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                   inputMode === 'bill' && styles.modeToggleTextActive,
                 ]}
               >
-                Use bill amount (₹)
+                {tr('Use bill amount (₹)')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -671,7 +672,7 @@ export default function SolarCalcScreen({ navigation, user }) {
             {inputMode === 'kwh' ? (
               <>
                 <InteractiveSlider
-                  label="Monthly Electricity Use"
+                  label={tr('Monthly Electricity Use')}
                   value={monthlyKwh}
                   min={50}
                   max={1500}
@@ -695,7 +696,7 @@ export default function SolarCalcScreen({ navigation, user }) {
             ) : (
               <>
                 <InteractiveSlider
-                  label="Monthly Electricity Bill"
+                  label={tr('Monthly Electricity Bill')}
                   value={monthlyBill}
                   min={500}
                   max={10000}
@@ -773,15 +774,15 @@ export default function SolarCalcScreen({ navigation, user }) {
           {/* Mascot Speech Bubble with Surveying Pose */}
           <EcoMascotSpeech
             pose="survey"
-            title="Roof area & dwelling type"
-            subtitle="Caps maximum solar capacity and determines RWA/NOC eligibility notes."
+            title={MICROCOPY.solar.assessmentPrompt}
+            subtitle={tr('Caps maximum solar capacity and determines RWA/NOC eligibility notes.')}
           />
 
           {/* Form Card */}
           <View style={styles.formCard}>
             {/* 1. Shadow-Free Roof Area Slider (Required) */}
             <InteractiveSlider
-              label="Shadow-Free Roof Area"
+              label={tr('Shadow-Free Roof Area')}
               value={roofAreaSqft}
               min={100}
               max={2000}
@@ -804,7 +805,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                 Home Type <Text style={styles.requiredAsterisk}>*</Text>
               </Text>
               <Text style={styles.fieldSubLabel}>
-                Roof access and subsidy eligibility criteria
+                {tr('Roof access and subsidy eligibility criteria')}
               </Text>
 
               <View style={styles.chipRow}>
@@ -823,9 +824,9 @@ export default function SolarCalcScreen({ navigation, user }) {
                       homeType === 'independent' && styles.chipLabelActive,
                     ]}
                   >
-                    Independent House
+                    {tr('Independent House')}
                   </Text>
-                  <Text style={styles.chipNote}>Full Roof Rights</Text>
+                  <Text style={styles.chipNote}>{tr('Full Roof Rights')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -843,9 +844,9 @@ export default function SolarCalcScreen({ navigation, user }) {
                       homeType === 'apartment' && styles.chipLabelActive,
                     ]}
                   >
-                    Apartment / Society
+                    {tr('Apartment / Society')}
                   </Text>
-                  <Text style={styles.chipNote}>RWA NOC Required</Text>
+                  <Text style={styles.chipNote}>{tr('RWA NOC Required')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -863,9 +864,9 @@ export default function SolarCalcScreen({ navigation, user }) {
                       homeType === 'other' && styles.chipLabelActive,
                     ]}
                   >
-                    Other / Commercial
+                    {tr('Other / Commercial')}
                   </Text>
-                  <Text style={styles.chipNote}>Custom Evaluation</Text>
+                  <Text style={styles.chipNote}>{tr('Custom Evaluation')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -880,7 +881,7 @@ export default function SolarCalcScreen({ navigation, user }) {
             >
               <View style={styles.optionalHeaderLeft}>
                 <Text style={styles.optionalHeaderTitle}>
-                  ⚙️ Optional Refinements
+                  {tr('⚙️ Optional Refinements')}
                 </Text>
                 <Text style={styles.optionalHeaderSub}>
                   Orientation, sanctioned load, subsidy & existing solar (can skip)
@@ -906,7 +907,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                     Roof Orientation & Shading
                   </Text>
                   <Text style={styles.refineNote}>
-                    South orientation provides maximum sunlight yield in Gujarat
+                    {tr('South orientation provides maximum sunlight yield in Gujarat')}
                   </Text>
                   <View style={styles.miniChipRow}>
                     {[
@@ -942,7 +943,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                     Sanctioned Load & Connection Phase
                   </Text>
                   <Text style={styles.refineNote}>
-                    Rooftop capacity is typically limited by sanctioned load
+                    {tr('Rooftop capacity is typically limited by sanctioned load')}
                   </Text>
                   <View style={styles.miniChipRow}>
                     {[
@@ -975,7 +976,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                 {/* C. Apply for Subsidy? */}
                 <View style={styles.refineGroup}>
                   <Text style={styles.refineLabel}>
-                    Apply for PM Surya Ghar Subsidy?
+                    {tr('Apply for PM Surya Ghar Subsidy?')}
                   </Text>
                   <View style={styles.miniChipRow}>
                     <TouchableOpacity
@@ -992,7 +993,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                           applySubsidy && styles.miniChipTextActive,
                         ]}
                       >
-                        ✅ Yes (Up to ₹78,000 Govt Aid)
+                        {tr('✅ Yes (Up to ₹78,000 Govt Aid)')}
                       </Text>
                     </TouchableOpacity>
 
@@ -1010,7 +1011,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                           !applySubsidy && styles.miniChipTextActive,
                         ]}
                       >
-                        ❌ No Subsidy (Gross Only)
+                        {tr('❌ No Subsidy (Gross Only)')}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -1019,7 +1020,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                 {/* D. Existing Solar Capacity */}
                 <View style={styles.refineGroup}>
                   <Text style={styles.refineLabel}>
-                    Already have rooftop solar installed?
+                    {tr('Already have rooftop solar installed?')}
                   </Text>
                   <View style={styles.miniChipRow}>
                     <TouchableOpacity
@@ -1036,7 +1037,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                           !alreadyHasSolar && styles.miniChipTextActive,
                         ]}
                       >
-                        🌱 No, New Plant
+                        {tr('🌱 No, New Plant')}
                       </Text>
                     </TouchableOpacity>
 
@@ -1054,7 +1055,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                           alreadyHasSolar && styles.miniChipTextActive,
                         ]}
                       >
-                        ☀️ Yes, Already Installed
+                        {tr('☀️ Yes, Already Installed')}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -1062,7 +1063,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                   {alreadyHasSolar && (
                     <View style={styles.existingSolarInputBox}>
                       <Text style={styles.existingSolarLabel}>
-                        Existing Capacity:
+                        {tr('Existing Capacity:')}
                       </Text>
                       <View style={styles.existingPillRow}>
                         {[1, 2, 3, 5, 10].map((kw) => (
@@ -1101,10 +1102,10 @@ export default function SolarCalcScreen({ navigation, user }) {
             activeOpacity={0.88}
           >
             {isCalculating ? (
-              <LottieLoader size={24} color="#FFFFFF" />
+              <ActivityIndicator size="small" color="#FFFFFF" />
             ) : (
               <Text style={styles.primaryActionBtnText}>
-                Calculate Solar Plan ✨
+                {MICROCOPY.solar.buttons.calculate + ' ⚡'}
               </Text>
             )}
           </TouchableOpacity>
@@ -1150,9 +1151,9 @@ export default function SolarCalcScreen({ navigation, user }) {
           {/* Mascot Speech Bubble with Celebration Pose */}
           <EcoMascotSpeech
             pose="celebrate"
-            title={`Hi ${firstName}!`}
-            subtitle="Congratulations, find below the detailed plan for lifetime savings!"
-            badgeText="⚡ CLEAN ENERGY"
+            title={MICROCOPY.solar.savingsProjection}
+            subtitle={tr('Congratulations, find below the detailed plan for lifetime savings!')}
+            badgeText={tr('⚡ CLEAN ENERGY')}
           />
 
           {/* Existing Solar Optimization Banner if user already has solar */}
@@ -1162,11 +1163,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                 🌟 Existing {existingSolarCapacity} kW System Detected
               </Text>
               <Text style={styles.existingNoticeBody}>
-                You are already generating solar clean energy! Rather than
-                adding additional panels that may exceed your sanctioned load,
-                our recommendation is to install a battery energy storage system
-                (BESS) or optimize daytime appliance scheduling to eliminate
-                peak grid tariffs.
+                {tr('You are already generating solar clean energy! Rather than adding additional panels that may exceed your sanctioned load, our recommendation is to install a battery energy storage system (BESS) or optimize daytime appliance scheduling to eliminate peak grid tariffs.')}
               </Text>
             </View>
           )}
@@ -1175,19 +1172,19 @@ export default function SolarCalcScreen({ navigation, user }) {
           <View style={styles.metricGrid}>
             {/* Card 1: Capacity */}
             <View style={styles.metricCard}>
-              <Text style={styles.metricCardLabel}>Solar plant capacity</Text>
+              <Text style={styles.metricCardLabel}>{tr('Solar plant capacity')}</Text>
               <Text style={styles.metricCardValue}>{capacityKw} kW</Text>
             </View>
 
             {/* Card 2: Cost */}
             <View style={styles.metricCard}>
-              <Text style={styles.metricCardLabel}>Total Solar Plant cost</Text>
+              <Text style={styles.metricCardLabel}>{tr('Total Solar Plant cost')}</Text>
               <Text style={styles.metricCardValue}>{grossCostFormatted}</Text>
             </View>
 
             {/* Card 3: Central Subsidy */}
             <View style={styles.metricCard}>
-              <Text style={styles.metricCardLabel}>Govt of India Subsidy</Text>
+              <Text style={styles.metricCardLabel}>{tr('Govt of India Subsidy')}</Text>
               <Text style={[styles.metricCardValue, styles.subsidyValue]}>
                 {subsidyFormatted}
               </Text>
@@ -1195,7 +1192,7 @@ export default function SolarCalcScreen({ navigation, user }) {
 
             {/* Card 4: Bank Loan */}
             <View style={styles.metricCard}>
-              <Text style={styles.metricCardLabel}>Bank Loan available</Text>
+              <Text style={styles.metricCardLabel}>{tr('Bank Loan available')}</Text>
               <Text style={styles.metricCardValue}>&lt;6% interest</Text>
             </View>
           </View>
@@ -1203,7 +1200,7 @@ export default function SolarCalcScreen({ navigation, user }) {
           {/* Big Lifetime Savings Hero Callout */}
           <View style={styles.lifetimeSavingsBlock}>
             <Text style={styles.lifetimeSavingsLabel}>
-              Total lifetime savings
+              {tr('Total lifetime savings')}
             </Text>
             <Text style={styles.lifetimeSavingsValue}>
               {lifetimeSavingsLakhs}
@@ -1219,7 +1216,7 @@ export default function SolarCalcScreen({ navigation, user }) {
             onPress={() => setActiveStep('step4')}
             activeOpacity={0.88}
           >
-            <Text style={styles.primaryActionBtnText}>See nearby vendors</Text>
+            <Text style={styles.primaryActionBtnText}>{tr('See nearby vendors')}</Text>
           </TouchableOpacity>
         </ScrollView>
       </View>
@@ -1279,7 +1276,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                   activeOpacity={0.8}
                 >
                   <PhoneIcon size={16} color="#92400E" />
-                  <Text style={styles.vendorCallBtnText}>Call now</Text>
+                  <Text style={styles.vendorCallBtnText}>{tr('Call now')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -1290,7 +1287,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                   activeOpacity={0.8}
                 >
                   <WhatsAppIcon size={16} color="#065F46" />
-                  <Text style={styles.vendorWhatsAppBtnText}>WhatsApp Us</Text>
+                  <Text style={styles.vendorWhatsAppBtnText}>{tr('WhatsApp Us')}</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -1304,7 +1301,7 @@ export default function SolarCalcScreen({ navigation, user }) {
           activeOpacity={0.8}
         >
           <Text style={styles.secondaryRecalcText}>
-            Recalculate with different inputs
+            {tr('Recalculate with different inputs')}
           </Text>
         </TouchableOpacity>
       </ScrollView>

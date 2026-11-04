@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import { COLORS, RADII, SPACING } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import { LungsLoader } from '../../../components/ui';
 import { useHomeDashboard } from '../hooks';
 import { useActiveActivities, useActivities } from '../../activities/hooks';
@@ -198,7 +198,7 @@ export default function HomeScreen({ user }) {
   if (isDashboardLoading && !dashboardData && isActiveLoading && !activeList) {
     return (
       <View style={styles.fullScreenLoader}>
-        <LungsLoader label="Loading your planet dashboard..." />
+        <LungsLoader label={tr('Loading your planet dashboard...')} />
       </View>
     );
   }
@@ -230,7 +230,7 @@ export default function HomeScreen({ user }) {
             </View>
             <View>
               <Text style={styles.nameHeader}>{firstName}</Text>
-              <Text style={styles.badgeLabel}>Mission LiFE Citizen</Text>
+              <Text style={styles.badgeLabel}>{tr('Mission LiFE Citizen')}</Text>
             </View>
           </TouchableOpacity>
 
@@ -268,7 +268,7 @@ export default function HomeScreen({ user }) {
         <View style={styles.greetingSection}>
           <View style={styles.heroTagRow}>
             <View style={styles.eraPill}>
-              <Text style={styles.eraPillText}>YOUR GREEN ERA 🌱</Text>
+              <Text style={styles.eraPillText}>{tr('YOUR GREEN ERA 🌱')}</Text>
             </View>
           </View>
 
@@ -287,28 +287,28 @@ export default function HomeScreen({ user }) {
                   <View style={styles.limeIconBubble}>
                     <Text style={styles.limeIcon}>⚡</Text>
                   </View>
-                  <Text style={styles.ecoScoreLabel}>ECOSCORE</Text>
+                  <Text style={styles.ecoScoreLabel}>{tr('ECOSCORE')}</Text>
                 </View>
                 <View style={styles.tileValueRow}>
                   <Text style={styles.ecoScoreVal}>{ecoScoreVal}</Text>
                   <Text style={styles.ecoScoreMax}>/100</Text>
                 </View>
-                <Text style={styles.ecoScoreSub}>Planet rating</Text>
+                <Text style={styles.ecoScoreSub}>{tr('Planet rating')}</Text>
               </View>
 
               {/* GreenPoints Tile */}
-              <View style={[styles.statTile, styles.darkTile]}>
+              <View style={[styles.statTile, styles.greenPointsTile]}>
                 <View style={styles.tileHeader}>
-                  <View style={styles.darkIconBubble}>
-                    <Text style={styles.darkIcon}>🌿</Text>
+                  <View style={styles.mintIconBubble}>
+                    <Text style={styles.mintIcon}>🌿</Text>
                   </View>
-                  <Text style={styles.darkTileLabel}>GREENPOINTS</Text>
+                  <Text style={styles.greenPointsLabel}>{tr('GREENPOINTS')}</Text>
                 </View>
                 <View style={styles.tileValueRow}>
-                  <Text style={styles.darkTileVal}>{greenPointsVal}</Text>
-                  <Text style={styles.darkTileUnit}>pts</Text>
+                  <Text style={styles.greenPointsVal}>{greenPointsVal}</Text>
+                  <Text style={styles.greenPointsUnit}>{tr('pts')}</Text>
                 </View>
-                <Text style={styles.darkTileSub}>Reward balance</Text>
+                <Text style={styles.greenPointsSub}>{tr('Reward balance')}</Text>
               </View>
             </View>
 
@@ -316,35 +316,35 @@ export default function HomeScreen({ user }) {
             <View style={styles.statsRow}>
               {/* Active Quests Tile */}
               <TouchableOpacity
-                style={[styles.statTile, styles.darkTile]}
+                style={[styles.statTile, styles.activeQuestsTile]}
                 activeOpacity={0.8}
                 onPress={handleOpenActiveQuests}
               >
                 <View style={styles.tileHeader}>
-                  <View style={styles.darkIconBubble}>
-                    <Text style={styles.darkIcon}>🎯</Text>
+                  <View style={styles.tealIconBubble}>
+                    <Text style={styles.tealIcon}>🎯</Text>
                   </View>
-                  <Text style={styles.darkTileLabel}>ACTIVE QUESTS</Text>
+                  <Text style={styles.activeQuestsLabel}>{tr('ACTIVE QUESTS')}</Text>
                 </View>
                 <View style={styles.tileValueRow}>
-                  <Text style={styles.darkTileVal}>{activeCount}</Text>
-                  <Text style={styles.darkTileUnit}>active</Text>
+                  <Text style={styles.activeQuestsVal}>{activeCount}</Text>
+                  <Text style={styles.activeQuestsUnit}>{tr('active')}</Text>
                 </View>
-                <Text style={styles.darkTileSub}>In progress ➔</Text>
+                <Text style={styles.activeQuestsSub}>{tr('In progress ➔')}</Text>
               </TouchableOpacity>
 
               {/* CO2 Avoided Tile */}
-              <View style={[styles.statTile, styles.co2Tile]}>
+              <View style={[styles.statTile, styles.co2AvoidedTile]}>
                 <View style={styles.tileHeader}>
-                  <View style={styles.warmIconBubble}>
-                    <Text style={styles.warmIcon}>🌱</Text>
+                  <View style={styles.sageIconBubble}>
+                    <Text style={styles.sageIcon}>🌱</Text>
                   </View>
-                  <Text style={styles.co2Label}>CO₂ AVOIDED</Text>
+                  <Text style={styles.co2AvoidedLabel}>{tr('CO₂ AVOIDED')}</Text>
                 </View>
                 <View style={styles.tileValueRow}>
-                  <Text style={styles.co2Val}>{formattedCO2}</Text>
+                  <Text style={styles.co2AvoidedVal}>{formattedCO2}</Text>
                 </View>
-                <Text style={styles.co2Sub}>Verified saved</Text>
+                <Text style={styles.co2AvoidedSub}>{tr('Verified saved')}</Text>
               </View>
             </View>
           </View>
@@ -368,9 +368,9 @@ export default function HomeScreen({ user }) {
               <View style={styles.missionLeft}>
                 <View style={styles.missionDotEmpty} />
                 <View style={{ flex: 1 }}>
-                  <Text style={styles.missionHeading}>No active quests today</Text>
+                  <Text style={styles.missionHeading}>{tr('No active quests today')}</Text>
                   <Text style={styles.missionSub}>
-                    Start a side quest below to begin your green journey!
+                    {tr('Start a side quest below to begin your green journey!')}
                   </Text>
                 </View>
               </View>
@@ -379,7 +379,7 @@ export default function HomeScreen({ user }) {
                 activeOpacity={0.8}
                 onPress={handleOpenActivities}
               >
-                <Text style={styles.missionActionText}>Explore ➔</Text>
+                <Text style={styles.missionActionText}>{tr('Explore ➔')}</Text>
               </TouchableOpacity>
             </View>
           ) : (
@@ -475,9 +475,9 @@ export default function HomeScreen({ user }) {
         {/* 3. FEATURED DAILY SIDE QUEST */}
         <View style={styles.sectionContainer}>
           <View style={styles.sectionHeaderRow}>
-            <Text style={styles.sectionTitle}>TODAY'S SIDE QUEST</Text>
+            <Text style={styles.sectionTitle}>{tr('TODAY\'S SIDE QUEST')}</Text>
             <View style={styles.dailyBadge}>
-              <Text style={styles.dailyBadgeText}>FEATURED</Text>
+              <Text style={styles.dailyBadgeText}>{tr('FEATURED')}</Text>
             </View>
           </View>
 
@@ -543,7 +543,7 @@ export default function HomeScreen({ user }) {
                 Browse All 59 Missions & Quests 🌿
               </Text>
               <Text style={styles.exploreSub}>
-                Energy • Transportation • Waste • Water Conservation
+                {tr('Energy • Transportation • Waste • Water Conservation')}
               </Text>
             </View>
             <Text style={styles.exploreArrow}>➔</Text>
@@ -687,134 +687,179 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
 
-  /* 1. EcoScore Card: Bright Lime-Green Accent (Visual Hero) */
+  /* 1. EcoScore Card: Soft Lime Green (Visual Hero) */
   ecoScoreTile: {
-    backgroundColor: '#A3E635', // Radiant vibrant lime
+    backgroundColor: '#D9F5A5', // Soft lime green
     borderWidth: 1.5,
-    borderColor: '#84CC16',
+    borderColor: '#C0EB75',
     shadowColor: '#84CC16',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.35,
-    shadowRadius: 6,
-    elevation: 4,
-  },
-  limeIconBubble: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: 'rgba(5, 46, 22, 0.14)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  limeIcon: {
-    fontSize: 11,
-  },
-  ecoScoreLabel: {
-    fontSize: 10.5,
-    fontWeight: '800',
-    color: '#052E16', // Deep forest for ultra-clean readability
-    letterSpacing: 0.5,
-  },
-  ecoScoreVal: {
-    fontSize: 25,
-    fontWeight: '900',
-    color: '#052E16',
-    letterSpacing: -0.5,
-  },
-  ecoScoreMax: {
-    fontSize: 12,
-    fontWeight: '800',
-    color: 'rgba(5, 46, 22, 0.65)',
-  },
-  ecoScoreSub: {
-    fontSize: 10.5,
-    fontWeight: '700',
-    color: 'rgba(5, 46, 22, 0.75)',
-  },
-
-  /* 2. & 3. Dark Charcoal/Forest Green Cards (GreenPoints & Active Quests) */
-  darkTile: {
-    backgroundColor: '#022C22', // Deep charcoal/forest green
-    borderWidth: 1.2,
-    borderColor: 'rgba(52, 211, 153, 0.28)',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 4,
-    elevation: 3,
-  },
-  darkIconBubble: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: 'rgba(52, 211, 153, 0.15)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  darkIcon: {
-    fontSize: 11,
-  },
-  darkTileLabel: {
-    fontSize: 10.5,
-    fontWeight: '800',
-    color: '#A7F3D0', // Soft mint accent
-    letterSpacing: 0.5,
-  },
-  darkTileVal: {
-    fontSize: 25,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    letterSpacing: -0.5,
-  },
-  darkTileUnit: {
-    fontSize: 11.5,
-    fontWeight: '700',
-    color: '#6EE7B7',
-  },
-  darkTileSub: {
-    fontSize: 10.5,
-    fontWeight: '600',
-    color: '#9CA3AF',
-  },
-
-  /* 4. CO2 Avoided: Soft Warm Yellow/Mint Contrast Card */
-  co2Tile: {
-    backgroundColor: '#FEF9C3', // Soft warm yellow
-    borderWidth: 1.5,
-    borderColor: '#FDE047',
-    shadowColor: '#CA8A04',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.18,
     shadowRadius: 5,
     elevation: 3,
   },
-  warmIconBubble: {
-    width: 20,
-    height: 20,
-    borderRadius: 10,
-    backgroundColor: 'rgba(113, 63, 18, 0.12)',
+  limeIconBubble: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(20, 83, 45, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  warmIcon: {
-    fontSize: 11,
+  limeIcon: {
+    fontSize: 12,
   },
-  co2Label: {
+  ecoScoreLabel: {
     fontSize: 10.5,
     fontWeight: '800',
-    color: '#713F12', // Warm deep bronze
+    color: '#14532D', // Deep forest green
     letterSpacing: 0.5,
   },
-  co2Val: {
-    fontSize: 22,
+  ecoScoreVal: {
+    fontSize: 25,
     fontWeight: '900',
-    color: '#713F12',
-    letterSpacing: -0.3,
+    color: '#14532D',
+    letterSpacing: -0.5,
   },
-  co2Sub: {
+  ecoScoreMax: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: 'rgba(20, 83, 45, 0.65)',
+  },
+  ecoScoreSub: {
     fontSize: 10.5,
     fontWeight: '700',
-    color: 'rgba(113, 63, 18, 0.75)',
+    color: 'rgba(20, 83, 45, 0.8)',
+  },
+
+  /* 2. GreenPoints Card: Soft Mint Green */
+  greenPointsTile: {
+    backgroundColor: '#D5F1E5', // Soft mint green
+    borderWidth: 1.2,
+    borderColor: '#A7F3D0',
+    shadowColor: '#059669',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  mintIconBubble: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(6, 78, 59, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  mintIcon: {
+    fontSize: 12,
+  },
+  greenPointsLabel: {
+    fontSize: 10.5,
+    fontWeight: '800',
+    color: '#064E3B', // Rich deep teal/forest
+    letterSpacing: 0.5,
+  },
+  greenPointsVal: {
+    fontSize: 25,
+    fontWeight: '900',
+    color: '#064E3B',
+    letterSpacing: -0.5,
+  },
+  greenPointsUnit: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: '#047857',
+  },
+  greenPointsSub: {
+    fontSize: 10.5,
+    fontWeight: '600',
+    color: 'rgba(6, 78, 59, 0.75)',
+  },
+
+  /* 3. Active Quests Card: Light Teal/Green */
+  activeQuestsTile: {
+    backgroundColor: '#CDEEE9', // Light teal/green
+    borderWidth: 1.2,
+    borderColor: '#99F6E4',
+    shadowColor: '#0F766E',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  tealIconBubble: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(4, 78, 70, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  tealIcon: {
+    fontSize: 12,
+  },
+  activeQuestsLabel: {
+    fontSize: 10.5,
+    fontWeight: '800',
+    color: '#044E46', // Deep teal
+    letterSpacing: 0.5,
+  },
+  activeQuestsVal: {
+    fontSize: 25,
+    fontWeight: '900',
+    color: '#044E46',
+    letterSpacing: -0.5,
+  },
+  activeQuestsUnit: {
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: '#0F766E',
+  },
+  activeQuestsSub: {
+    fontSize: 10.5,
+    fontWeight: '600',
+    color: 'rgba(4, 78, 70, 0.75)',
+  },
+
+  /* 4. CO2 Avoided: Soft Mint / Pale Sage Green (No yellow!) */
+  co2AvoidedTile: {
+    backgroundColor: '#E0F2E8', // Soft mint / pale sage green
+    borderWidth: 1.2,
+    borderColor: '#BBE3CE',
+    shadowColor: '#065F46',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.12,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  sageIconBubble: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: 'rgba(6, 78, 59, 0.12)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sageIcon: {
+    fontSize: 12,
+  },
+  co2AvoidedLabel: {
+    fontSize: 10.5,
+    fontWeight: '800',
+    color: '#064E3B', // Rich deep green
+    letterSpacing: 0.5,
+  },
+  co2AvoidedVal: {
+    fontSize: 22,
+    fontWeight: '900',
+    color: '#064E3B',
+    letterSpacing: -0.3,
+  },
+  co2AvoidedSub: {
+    fontSize: 10.5,
+    fontWeight: '700',
+    color: 'rgba(6, 78, 59, 0.75)',
   },
 
   /* Sections */

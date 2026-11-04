@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView, Text, TouchableOpacity, RefreshControl } 
 import { useNavigation } from '@react-navigation/native';
 import { TopBar, Skeleton, Card, LungsLoader } from '../../../components/ui';
 import { COLORS, RADII, SPACING } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import { useCategories, useActiveActivities, useActivities } from '../hooks';
 import CategoryTile from '../components/CategoryTile';
 import ActivityCard from '../components/ActivityCard';
@@ -123,7 +123,7 @@ export default function ActivityCategoriesScreen({ user }) {
         </View>
 
         {isCatsLoading ? (
-          <LungsLoader label="Loading planet-saving categories..." size={90} />
+          <LungsLoader label={tr('Loading planet-saving categories...')} size={90} />
         ) : (
           categories?.map((cat) => (
             <CategoryTile

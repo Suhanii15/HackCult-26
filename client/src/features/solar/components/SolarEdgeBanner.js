@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card } from '../../../components/ui';
 import { COLORS, RADII, SPACING, TYPOGRAPHY } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import { AlertTriangleIcon, InfoIcon, BuildingIcon, MapPinIcon } from './SolarIcons';
 
 export default function SolarEdgeBanner({
@@ -27,7 +27,7 @@ export default function SolarEdgeBanner({
         <Text style={styles.infeasibleMessage}>{infeasibleReason}</Text>
 
         <View style={styles.suggestionBox}>
-          <Text style={styles.suggestionTitle}>Recommendation:</Text>
+          <Text style={styles.suggestionTitle}>{tr('Recommendation:')}</Text>
           <Text style={styles.suggestionText}>
             {limitingFactor === 'roof'
               ? 'Rooftop solar requires at least 100 sq.ft of shadow-free area for a standard 1 kW system. Consider community solar or high-efficiency bifacial panels.'

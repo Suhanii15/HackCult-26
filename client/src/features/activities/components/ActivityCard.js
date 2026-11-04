@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card } from '../../../components/ui';
 import { COLORS, RADII, SPACING } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import { formatCarbonLine } from '../utils/discovery';
 
 const DIFFICULTY_STYLES = {
@@ -128,11 +128,11 @@ export default function ActivityCard({ activity, onPress }) {
         <View style={styles.actionIndicator}>
           {isActive ? (
             <View style={styles.continuePill}>
-              <Text style={styles.continuePillText}>Continue ➔</Text>
+              <Text style={styles.continuePillText}>{tr('Continue ➔')}</Text>
             </View>
           ) : status === 'completed' ? (
             <View style={styles.completedPill}>
-              <Text style={styles.completedPillText}>View Details ➔</Text>
+              <Text style={styles.completedPillText}>{tr('View Details ➔')}</Text>
             </View>
           ) : (
             <Text style={styles.arrowText}>➔</Text>

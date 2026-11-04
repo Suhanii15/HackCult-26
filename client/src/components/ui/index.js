@@ -8,4 +8,5 @@ export { default as Toast } from './Toast';
 export { default as Skeleton } from './Skeleton';
 export { default as EmptyState } from './EmptyState';
 export { default as LungsLoader } from './LungsLoader';
+export { default as LottieLoader } from './LottieLoader';
 export { useReducedMotion } from './useReducedMotion';

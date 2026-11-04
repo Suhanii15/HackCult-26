@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, TouchableOpacity, TextInput } from 'react-nativ
 import { Card, Button } from '../../../components/ui';
 import { COLORS, RADII, SPACING, TYPOGRAPHY } from '../../../theme';
 import { formatInr } from '../utils/formatters';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 import defaultSolarConfig from '../../../engine/config/solar.json';
 import DistrictPickerModal from './DistrictPickerModal';
 import { MapPinIcon, ChevronDownIcon, ZapIcon } from './SolarIcons';
@@ -52,7 +52,7 @@ export default function SolarInputCard({
       <View style={styles.districtRow}>
         <View style={styles.districtLabelCol}>
           <Text style={styles.inputLabel}>{t('solar_district_label') || 'District'}</Text>
-          <Text style={styles.stateSubtitle}>Gujarat (Rooftop Grid Policy)</Text>
+          <Text style={styles.stateSubtitle}>{tr('Gujarat (Rooftop Grid Policy)')}</Text>
         </View>
 
         <TouchableOpacity
@@ -160,7 +160,7 @@ export default function SolarInputCard({
         ) : (
           <TouchableOpacity onPress={() => setIsEditingBill(true)} style={styles.displayValueRow}>
             <Text style={styles.bigValueText}>{formatInr(monthlyBillInr)}</Text>
-            <Text style={styles.monthSuffix}>/ month</Text>
+            <Text style={styles.monthSuffix}>{tr('/ month')}</Text>
           </TouchableOpacity>
         )}
 

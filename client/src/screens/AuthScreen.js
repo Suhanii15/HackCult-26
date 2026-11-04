@@ -15,17 +15,21 @@ import { COLORS } from '../theme';
 import BrandLogo from '../components/BrandLogo';
 import AppSafeArea from '../components/AppSafeArea';
 import LanguageCircleButton from '../components/LanguageCircleButton';
-import { useLanguage } from '../i18n/LanguageContext';
+import { useLanguage, tr } from '../i18n/LanguageContext';
 import { apiRegister, apiLogin } from '../services/api';
+import OtpVerificationView from './OtpVerificationView';
 
 export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBack }) {
   const { t } = useLanguage();
+  const [authStep, setAuthStep] = useState('form'); // 'form' | 'otp'
   const [mode, setMode] = useState(initialMode);
   const [name, setName] = useState('');
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [otpIdentifier, setOtpIdentifier] = useState('');
+  const [devOtp, setDevOtp] = useState(null);
 
   const handleSubmit = async () => {
     const trimmedIdentifier = identifier.trim();
@@ -58,30 +62,54 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
     setLoading(true);
 
     try {
-      let res;
       if (mode === 'signup') {
-        res = await apiRegister({
+        const res = await apiRegister({
           fullName: trimmedName,
           identifier: trimmedIdentifier,
           password,
         });
+
+        setLoading(false);
+        if (res.requiresOtp) {
+          setOtpIdentifier(trimmedIdentifier);
+          if (res.devOtp) setDevOtp(res.devOtp);
+          setAuthStep('otp');
+          return;
+        }
+
+        // If backend auto-verified (fallback)
+        onAuthSuccess({
+          ...(res.user || {}),
+          name: res.user?.fullName || trimmedName || 'Citizen',
+          identifier: res.user?.email || trimmedIdentifier,
+          isNewUser: true,
+          token: res.token,
+        });
       } else {
-        res = await apiLogin({
+        const res = await apiLogin({
           identifier: trimmedIdentifier,
           password,
         });
-      }
 
-      setLoading(false);
-      onAuthSuccess({
-        ...(res.user || {}),
-        name: res.user?.fullName || trimmedName || 'Citizen',
-        identifier: res.user?.email || trimmedIdentifier,
-        isNewUser: mode === 'signup',
-        token: res.token,
-      });
+        setLoading(false);
+        onAuthSuccess({
+          ...(res.user || {}),
+          name: res.user?.fullName || trimmedName || 'Citizen',
+          identifier: res.user?.email || trimmedIdentifier,
+          isNewUser: false,
+          token: res.token,
+        });
+      }
     } catch (err) {
       setLoading(false);
+      // If login failed because account is unverified, guide user to OTP verification
+      if (err.data?.requiresOtp) {
+        setOtpIdentifier(trimmedIdentifier);
+        if (err.data?.devOtp) setDevOtp(err.data.devOtp);
+        setAuthStep('otp');
+        return;
+      }
+
       console.warn('Backend Auth Request failed:', err.message);
       setError(err.message || 'Authentication failed. Please verify your credentials or server connection.');
     }
@@ -98,193 +126,198 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
           contentContainerStyle={styles.scrollContent}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Top Bar with Back Button + Brand Logo + Top-right Language Circle Button */}
+          {/* Top Bar with Back Button + Brand Logo + Language Circle */}
           <View style={styles.topBar}>
-            <TouchableOpacity onPress={onBack} style={styles.backButton}>
+            <TouchableOpacity
+              onPress={authStep === 'otp' ? () => setAuthStep('form') : onBack}
+              style={styles.backButton}
+              accessibilityLabel="Go back"
+            >
               <Text style={styles.backArrow}>←</Text>
             </TouchableOpacity>
             <BrandLogo size="small" color={COLORS.primary} />
             <LanguageCircleButton />
           </View>
 
-          {/* Segmented Mode Selector: Log In / Sign Up */}
-          <View style={styles.segmentContainer}>
-            <TouchableOpacity
-              style={[
-                styles.segmentTab,
-                mode === 'signup' && styles.segmentTabActive,
-              ]}
-              onPress={() => {
-                setMode('signup');
-                setError('');
+          {/* Conditional Screen Rendering: Form vs OTP Verification */}
+          {authStep === 'otp' ? (
+            <OtpVerificationView
+              identifier={otpIdentifier}
+              initialDevOtp={devOtp}
+              onVerificationSuccess={(res) => {
+                onAuthSuccess({
+                  ...(res.user || {}),
+                  name: res.user?.fullName || name.trim() || 'Citizen',
+                  identifier: res.user?.email || otpIdentifier,
+                  isNewUser: true,
+                  token: res.token,
+                });
               }}
-            >
-              <Text
-                style={[
-                  styles.segmentText,
-                  mode === 'signup' && styles.segmentTextActive,
-                ]}
-              >
-                Sign Up
-              </Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.segmentTab,
-                mode === 'login' && styles.segmentTabActive,
-              ]}
-              onPress={() => {
-                setMode('login');
-                setError('');
-              }}
-            >
-              <Text
-                style={[
-                  styles.segmentText,
-                  mode === 'login' && styles.segmentTextActive,
-                ]}
-              >
-                Log In
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {/* Headings */}
-          <View style={styles.headerBox}>
-            <Text style={styles.title}>
-              {mode === 'signup' ? t('auth_signup_title') : t('auth_login_title')}
-            </Text>
-            <Text style={styles.subtitle}>
-              {mode === 'signup' ? t('auth_signup_sub') : t('auth_login_sub')}
-            </Text>
-          </View>
-
-          {/* Form Fields */}
-          <View style={styles.formCard}>
-            {mode === 'signup' && (
-              <View style={styles.inputGroup}>
-                <Text style={styles.label}>{t('auth_name_label')}</Text>
-                <TextInput
-                  style={styles.input}
-                  placeholder={t('auth_name_placeholder')}
-                  placeholderTextColor="#9CA3AF"
-                  value={name}
-                  onChangeText={(text) => {
-                    setName(text);
-                    if (error) setError('');
-                  }}
-                  autoCapitalize="words"
-                />
-              </View>
-            )}
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>{t('auth_id_label')}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder={t('auth_id_placeholder')}
-                placeholderTextColor="#9CA3AF"
-                value={identifier}
-                onChangeText={(text) => {
-                  setIdentifier(text);
-                  if (error) setError('');
-                }}
-                keyboardType="email-address"
-                autoCapitalize="none"
-              />
-            </View>
-
-            <View style={styles.inputGroup}>
-              <Text style={styles.label}>{t('auth_pass_label')}</Text>
-              <TextInput
-                style={styles.input}
-                placeholder="••••••••"
-                placeholderTextColor="#9CA3AF"
-                value={password}
-                onChangeText={setPassword}
-                secureTextEntry
-              />
-            </View>
-
-            {error ? (
-              <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>⚠️ {error}</Text>
+              onBack={() => setAuthStep('form')}
+            />
+          ) : (
+            <>
+              {/* Segmented Mode Selector: Log In / Sign Up */}
+              <View style={styles.segmentContainer}>
                 <TouchableOpacity
+                  style={[
+                    styles.segmentTab,
+                    mode === 'signup' && styles.segmentTabActive,
+                  ]}
                   onPress={() => {
+                    setMode('signup');
                     setError('');
-                    onAuthSuccess({
-                      name: name.trim() || 'Citizen',
-                      identifier: identifier.trim(),
-                      isNewUser: mode === 'signup',
-                      isOfflineDemo: true,
-                    });
                   }}
-                  style={styles.offlineFallbackBtn}
                 >
-                  <Text style={styles.offlineFallbackText}>
-                    Continue in Offline / Demo Mode ➔
+                  <Text
+                    style={[
+                      styles.segmentText,
+                      mode === 'signup' && styles.segmentTextActive,
+                    ]}
+                  >
+                    {tr('Sign Up')}
+                  </Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.segmentTab,
+                    mode === 'login' && styles.segmentTabActive,
+                  ]}
+                  onPress={() => {
+                    setMode('login');
+                    setError('');
+                  }}
+                >
+                  <Text
+                    style={[
+                      styles.segmentText,
+                      mode === 'login' && styles.segmentTextActive,
+                    ]}
+                  >
+                    {tr('Log In')}
                   </Text>
                 </TouchableOpacity>
               </View>
-            ) : null}
 
-            {/* Quick Demo Autofill Pill */}
-            {__DEV__ && (
-              <TouchableOpacity
-                style={styles.demoFillBtn}
-                onPress={() => {
-                  setName('Priya Patel');
-                  setIdentifier('priya.patel@gujarat.in');
-                  setPassword('MissionLife2026!');
-                  setError('');
-                }}
-              >
-                <Text style={styles.demoFillText}>{t('auth_quick_fill')}</Text>
-              </TouchableOpacity>
-            )}
+              {/* Headings */}
+              <View style={styles.headerBox}>
+                <Text style={styles.title}>
+                  {mode === 'signup' ? t('auth_signup_title') : t('auth_login_title')}
+                </Text>
+                <Text style={styles.subtitle}>
+                  {mode === 'signup' ? t('auth_signup_sub') : t('auth_login_sub')}
+                </Text>
+              </View>
 
-              <TouchableOpacity
-                style={[styles.submitBtn, loading && { opacity: 0.7 }]}
-                activeOpacity={0.85}
-                onPress={handleSubmit}
-                disabled={loading}
-              >
-                {loading ? (
-                  <ActivityIndicator color={COLORS.white} />
-                ) : (
-                  <Text style={styles.submitBtnText}>
-                    {mode === 'signup' ? t('auth_btn_signup') : t('auth_btn_login')}
-                  </Text>
+              {/* Form Fields */}
+              <View style={styles.formCard}>
+                {mode === 'signup' && (
+                  <View style={styles.inputGroup}>
+                    <Text style={styles.label}>{t('auth_name_label')}</Text>
+                    <TextInput
+                      style={styles.input}
+                      placeholder={t('auth_name_placeholder')}
+                      placeholderTextColor="#9CA3AF"
+                      value={name}
+                      onChangeText={(text) => {
+                        setName(text);
+                        if (error) setError('');
+                      }}
+                      autoCapitalize="words"
+                    />
+                  </View>
                 )}
-              </TouchableOpacity>
 
-              {/* Separate Offline / Demo Mode Option */}
-              {!error && (
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>{t('auth_id_label')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder={t('auth_id_placeholder')}
+                    placeholderTextColor="#9CA3AF"
+                    value={identifier}
+                    onChangeText={(text) => {
+                      setIdentifier(text);
+                      if (error) setError('');
+                    }}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                  />
+                </View>
+
+                <View style={styles.inputGroup}>
+                  <Text style={styles.label}>{t('auth_pass_label')}</Text>
+                  <TextInput
+                    style={styles.input}
+                    placeholder="••••••••"
+                    placeholderTextColor="#9CA3AF"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry
+                  />
+                </View>
+
+                {error ? (
+                  <View style={styles.errorContainer}>
+                    <Text style={styles.errorText}>⚠️ {error}</Text>
+                    <TouchableOpacity
+                      onPress={() => {
+                        setError('');
+                        onAuthSuccess({
+                          name: name.trim() || 'Citizen',
+                          identifier: identifier.trim(),
+                          isNewUser: mode === 'signup',
+                          isOfflineDemo: true,
+                        });
+                      }}
+                      style={styles.offlineFallbackBtn}
+                    >
+                      <Text style={styles.offlineFallbackText}>
+                        {tr('Continue in Offline / Demo Mode ➔')}
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                ) : null}
+
+                {/* Quick Demo Autofill Pill */}
+                {__DEV__ && (
+                  <TouchableOpacity
+                    style={styles.demoFillBtn}
+                    onPress={() => {
+                      setName('Priya Patel');
+                      setIdentifier('priya.patel@gujarat.in');
+                      setPassword('EcoPulse2026!');
+                      setError('');
+                    }}
+                  >
+                    <Text style={styles.demoFillText}>{t('auth_quick_fill')}</Text>
+                  </TouchableOpacity>
+                )}
+
                 <TouchableOpacity
-                  onPress={() => {
-                    setError('');
-                    onAuthSuccess({
-                      name: name.trim() || 'Priya Patel',
-                      identifier: identifier.trim() || 'demo@missionlife.gujarat.in',
-                      isNewUser: mode === 'signup',
-                      isOfflineDemo: true,
-                    });
-                  }}
-                  style={styles.secondaryDemoBtn}
-                  activeOpacity={0.75}
+                  style={[styles.submitBtn, loading && { opacity: 0.7 }]}
+                  activeOpacity={0.85}
+                  onPress={handleSubmit}
+                  disabled={loading}
                 >
-                  <Text style={styles.secondaryDemoText}>
-                    Continue in Offline / Demo Mode ➔
-                  </Text>
+                  {loading ? (
+                    <ActivityIndicator color={COLORS.white} />
+                  ) : (
+                    <Text style={styles.submitBtnText}>
+                      {mode === 'signup' ? 'Get Verification Code 🌱 ➔' : t('auth_btn_login')}
+                    </Text>
+                  )}
                 </TouchableOpacity>
-              )}
-            </View>
+              </View>
 
-          {/* Bottom Security / Government Tag */}
-          <View style={styles.securityNote}>
-            <Text style={styles.securityText}>{t('auth_security_note')}</Text>
-          </View>
+              {/* Bottom Security / Government Tag */}
+              <View style={styles.securityNote}>
+                <Text style={styles.securityText}>
+                  {tr('🛡️ SSL Encrypted • Government of Gujarat GEDA Portal')}
+                </Text>
+              </View>
+            </>
+          )}
         </ScrollView>
       </KeyboardAvoidingView>
     </AppSafeArea>
@@ -293,176 +326,165 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
 
 const styles = StyleSheet.create({
   safeArea: {
+    flex: 1,
     backgroundColor: '#FFFFFF',
   },
   container: {
     flex: 1,
   },
   scrollContent: {
-    paddingHorizontal: 20,
-    paddingBottom: 30,
+    paddingHorizontal: 24,
+    paddingTop: 8,
+    paddingBottom: 40,
   },
   topBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 10,
+    paddingVertical: 12,
+    marginBottom: 8,
   },
   backButton: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
-    backgroundColor: COLORS.primaryLight,
-    alignItems: 'center',
-    justifyContent: 'center',
+    padding: 8,
+    marginLeft: -8,
   },
   backArrow: {
-    fontSize: 18,
-    color: COLORS.primaryDark,
-    fontWeight: '700',
+    fontSize: 22,
+    color: '#0F172A',
   },
   segmentContainer: {
     flexDirection: 'row',
-    backgroundColor: '#F3F4F6',
+    backgroundColor: '#F1F5F9',
     borderRadius: 14,
     padding: 4,
-    marginTop: 14,
-    marginBottom: 20,
+    marginBottom: 24,
   },
   segmentTab: {
     flex: 1,
     paddingVertical: 10,
     alignItems: 'center',
-    borderRadius: 11,
+    borderRadius: 10,
   },
   segmentTabActive: {
-    backgroundColor: COLORS.white,
+    backgroundColor: '#FFFFFF',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowOpacity: 0.08,
+    shadowRadius: 2,
     elevation: 2,
   },
   segmentText: {
     fontSize: 14,
     fontWeight: '600',
-    color: COLORS.textSecondary,
+    color: '#64748B',
   },
   segmentTextActive: {
-    color: COLORS.primary,
+    color: '#047857',
     fontWeight: '800',
   },
   headerBox: {
-    marginBottom: 20,
+    marginBottom: 24,
   },
   title: {
-    fontSize: 24,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
+    fontSize: 26,
+    fontWeight: '900',
+    color: '#064E3B',
+    marginBottom: 6,
     letterSpacing: -0.4,
   },
   subtitle: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    lineHeight: 19,
-    marginTop: 4,
+    fontSize: 14,
+    color: '#64748B',
+    lineHeight: 20,
   },
   formCard: {
-    backgroundColor: '#FFFFFF',
+    gap: 16,
   },
   inputGroup: {
-    marginBottom: 14,
+    gap: 6,
   },
   label: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#374151',
-    marginBottom: 6,
+    color: '#334155',
   },
   input: {
-    backgroundColor: '#F9FAFB',
+    backgroundColor: '#F8FAFC',
     borderWidth: 1.5,
-    borderColor: '#E5E7EB',
-    borderRadius: 12,
+    borderColor: '#E2E8F0',
+    borderRadius: 14,
     paddingHorizontal: 16,
-    paddingVertical: 12,
+    paddingVertical: 14,
     fontSize: 15,
-    color: COLORS.textPrimary,
+    color: '#0F172A',
   },
   errorContainer: {
-    marginBottom: 12,
+    backgroundColor: '#FEF2F2',
+    borderWidth: 1,
+    borderColor: '#FCA5A5',
+    padding: 12,
+    borderRadius: 12,
+    gap: 8,
   },
   errorText: {
-    color: '#DC2626',
+    color: '#B91C1C',
     fontSize: 13,
     fontWeight: '600',
-    marginBottom: 6,
   },
   offlineFallbackBtn: {
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    backgroundColor: '#FEF3C7',
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#EF4444',
+    paddingVertical: 8,
+    paddingHorizontal: 12,
     borderRadius: 8,
-    alignSelf: 'flex-start',
+    alignItems: 'center',
   },
   offlineFallbackText: {
+    color: '#B91C1C',
     fontSize: 12,
-    color: '#B45309',
     fontWeight: '700',
   },
   demoFillBtn: {
     alignSelf: 'flex-start',
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: '#ECFDF5',
+    borderWidth: 1,
+    borderColor: '#A7F3D0',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 8,
-    marginBottom: 16,
   },
   demoFillText: {
-    color: COLORS.primaryDark,
     fontSize: 12,
     fontWeight: '700',
+    color: '#047857',
   },
   submitBtn: {
-    backgroundColor: COLORS.primary,
-    paddingVertical: 15,
+    backgroundColor: '#047857',
+    paddingVertical: 16,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: COLORS.primary,
+    marginTop: 8,
+    shadowColor: '#047857',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.22,
+    shadowOpacity: 0.25,
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 4,
   },
   submitBtnText: {
-    color: COLORS.white,
+    color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '700',
-  },
-  secondaryDemoBtn: {
-    marginTop: 12,
-    paddingVertical: 11,
-    paddingHorizontal: 14,
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E5E7EB',
-    backgroundColor: '#F9FAFB',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  secondaryDemoText: {
-    fontSize: 13,
-    color: COLORS.textSecondary,
-    fontWeight: '600',
+    fontWeight: '800',
+    letterSpacing: -0.2,
   },
   securityNote: {
-    marginTop: 24,
+    marginTop: 32,
     alignItems: 'center',
   },
   securityText: {
-    fontSize: 12,
-    color: '#9CA3AF',
-    textAlign: 'center',
+    fontSize: 11.5,
+    color: '#94A3B8',
+    fontWeight: '500',
   },
 });

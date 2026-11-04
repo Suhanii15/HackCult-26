@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Card, Chip } from '../../../components/ui';
 import { COLORS, SPACING } from '../../../theme';
-import { useLanguage } from '../../../i18n/LanguageContext';
+import { useLanguage, tr } from '../../../i18n/LanguageContext';
 
 export default function FootprintSummaryCard({ monthlyCO2Kg = 106.5 }) {
   const { t } = useLanguage();
@@ -14,7 +14,7 @@ export default function FootprintSummaryCard({ monthlyCO2Kg = 106.5 }) {
           <Text style={styles.label}>{t('home_footprint_card_title')}</Text>
           <View style={styles.valRow}>
             <Text style={styles.bigVal}>{monthlyCO2Kg}</Text>
-            <Text style={styles.unit}>kg CO₂e</Text>
+            <Text style={styles.unit}>{tr('kg CO₂e')}</Text>
           </View>
           <Text style={styles.subtext}>
             {t('hero_status_better', { val: '24' })}
@@ -22,8 +22,8 @@ export default function FootprintSummaryCard({ monthlyCO2Kg = 106.5 }) {
         </View>
 
         <View style={styles.right}>
-          <Chip label="Gujarat LiFE" active={true} />
-          <Text style={styles.benchmarkNote}>~4.1 t/yr benchmark</Text>
+          <Chip label={tr('Gujarat LiFE')} active={true} />
+          <Text style={styles.benchmarkNote}>{tr('~4.1 t/yr benchmark')}</Text>
         </View>
       </View>
     </Card>
