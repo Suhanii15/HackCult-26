@@ -8,7 +8,8 @@
     "dev": "nodemon server.js",
     "check-db": "node scripts/checkDb.js",
     "sync:engine": "node ../scripts/syncEngine.js",
-    "test:engine-sync": "node ../scripts/checkEngineSync.js"
+    "test:engine-sync": "node ../scripts/checkEngineSync.js",
+    "seed-leaderboard": "node scripts/seedLeaderboard.js"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -21,6 +22,12 @@
   "devDependencies": {
     "nodemon": "^3.1.0"
   },
-  "keywords": ["ecopulse", "sustainability", "geda", "carbon-footprint"],
+  "keywords": [
+    "ecopulse",
+    "sustainability",
+    "geda",
+    "carbon-footprint"
+  ],
+  "author": "EcoPulse Team",
   "license": "ISC"
 }

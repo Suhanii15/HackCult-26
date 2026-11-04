@@ -29,9 +29,9 @@ export default function HomeScreen({ user }) {
   const { data: profile } = useProfile(user);
 
   const currentUser = profile || data?.user || user;
-  const rawName = currentUser?.fullName || currentUser?.name || 'Alex';
-  const firstName = rawName.split(' ')[0] || 'Alex';
-  const initial = (firstName.trim()[0] || 'A').toUpperCase();
+  const rawName = currentUser?.fullName || currentUser?.name || 'Citizen';
+  const firstName = rawName.split(' ')[0] || 'Friend';
+  const initial = (firstName.trim()[0] || 'C').toUpperCase();
   const avatarUri = currentUser?.avatar || null;
 
   // Metrics from user & dashboard
@@ -42,6 +42,10 @@ export default function HomeScreen({ user }) {
 
   const handleOpenProfile = () => {
     navigation.navigate('Profile');
+  };
+
+  const handleOpenLeaderboard = () => {
+    navigation.navigate('Leaderboard');
   };
 
   const handleOpenActivities = () => {
@@ -79,7 +83,7 @@ export default function HomeScreen({ user }) {
 
   return (
     <View style={styles.container}>
-      {/* Restored Brand Teal-Mint Gradient Header */}
+      {/* Brand Teal-Mint Gradient Header */}
       <View style={styles.topCurvedBackground}>
         <Svg width="100%" height="260" viewBox="0 0 400 260" preserveAspectRatio="none">
           <Defs>
@@ -97,7 +101,7 @@ export default function HomeScreen({ user }) {
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Top Header Row matching Reference Image */}
+        {/* Top Header Row */}
         <View style={styles.headerBar}>
           <TouchableOpacity
             style={styles.profileRow}
@@ -119,16 +123,27 @@ export default function HomeScreen({ user }) {
             </Text>
           </TouchableOpacity>
 
-          {/* Right Action Circle (Alerts & Notifications Screen) */}
-          <TouchableOpacity
-            style={styles.notificationBtn}
-            activeOpacity={0.8}
-            onPress={() => navigation.navigate('Notifications')}
-            accessibilityLabel="Open alerts and notifications"
-          >
-            <BellIcon size={19} color="#0F172A" />
-            <View style={styles.notificationDot} />
-          </TouchableOpacity>
+          {/* Header Action Buttons: Leaderboard Trophy & Notification Bell */}
+          <View style={styles.headerActions}>
+            <TouchableOpacity
+              style={styles.actionBtn}
+              activeOpacity={0.8}
+              onPress={handleOpenLeaderboard}
+              accessibilityLabel="Open leaderboard"
+            >
+              <Text style={styles.actionIcon}>🏆</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.notificationBtn}
+              activeOpacity={0.8}
+              onPress={() => navigation.navigate('Notifications')}
+              accessibilityLabel="Open alerts and notifications"
+            >
+              <BellIcon size={19} color="#0F172A" />
+              <View style={styles.notificationDot} />
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* 1. Main Impact Hero Card ("Your Impact This Month") */}
@@ -152,6 +167,7 @@ export default function HomeScreen({ user }) {
           suggestion={{
             title: t('smart_suggestion_desc'),
             saving: `${t('smart_suggestion_saving', { val: '128' })}`,
+            icon: '💡',
           }}
           onPress={handleOpenSuggestion}
         />
@@ -163,7 +179,7 @@ export default function HomeScreen({ user }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F8FAF9', // Clean off-white
+    backgroundColor: '#F8FAF9',
   },
   topCurvedBackground: {
     position: 'absolute',
@@ -173,7 +189,7 @@ const styles = StyleSheet.create({
     height: 260,
   },
   scrollContent: {
-    paddingBottom: 110, // Padding so floating glass ellipse bar doesn't overlap
+    paddingBottom: 110,
   },
   headerBar: {
     flexDirection: 'row',
@@ -219,8 +235,31 @@ const styles = StyleSheet.create({
   greetingText: {
     fontSize: 18,
     fontWeight: '700',
-    color: '#0F172A', // Crisp dark text
+    color: '#0F172A',
     letterSpacing: -0.2,
+  },
+  headerActions: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  actionBtn: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(224, 242, 241, 0.8)',
+    shadowColor: '#004D40',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
+  actionIcon: {
+    fontSize: 16,
   },
   notificationBtn: {
     width: 40,

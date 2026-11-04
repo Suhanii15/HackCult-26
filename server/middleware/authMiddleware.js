@@ -14,7 +14,7 @@ const protect = async (req, res, next) => {
   if (!token) {
     return res.status(401).json({
       success: false,
-      message: 'Not authorized to access this route (token missing)',
+      message: 'Not authorized to access this route. Please provide a Bearer token.',
     });
   }
 
@@ -23,12 +23,12 @@ const protect = async (req, res, next) => {
       token,
       process.env.JWT_SECRET || 'fallback_secret'
     );
-    const user = await User.findById(decoded.id);
 
+    const user = await User.findById(decoded.id);
     if (!user) {
       return res.status(401).json({
         success: false,
-        message: 'User belonging to this token no longer exists',
+        message: 'The user belonging to this token no longer exists.',
       });
     }
 
@@ -37,11 +37,12 @@ const protect = async (req, res, next) => {
   } catch (err) {
     return res.status(401).json({
       success: false,
-      message: 'Not authorized to access this route (invalid or expired token)',
+      message: 'Invalid or expired token.',
     });
   }
 };
 
+// Optional auth - populates req.user if token is present, but doesn't block guests
 const optionalAuth = async (req, res, next) => {
   let token;
 
@@ -53,6 +54,7 @@ const optionalAuth = async (req, res, next) => {
   }
 
   if (!token) {
+    req.user = null;
     return next();
   }
 
@@ -62,13 +64,12 @@ const optionalAuth = async (req, res, next) => {
       process.env.JWT_SECRET || 'fallback_secret'
     );
     const user = await User.findById(decoded.id);
-    if (user) {
-      req.user = user;
-    }
+    req.user = user || null;
+    next();
   } catch (err) {
-    // Ignore invalid tokens on optional auth
+    req.user = null;
+    next();
   }
-  next();
 };
 
 module.exports = { protect, optionalAuth };

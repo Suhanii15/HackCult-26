@@ -6,6 +6,7 @@ import WelcomeScreen from './src/screens/WelcomeScreen';
 import AuthScreen from './src/screens/AuthScreen';
 import OnboardingScreen from './src/screens/OnboardingScreen';
 import { RootShell } from './src/navigation';
+import LeaderboardScreen from './src/screens/LeaderboardScreen';
 import { LanguageProvider, useLanguage } from './src/i18n/LanguageContext';
 import LanguageModal from './src/components/LanguageModal';
 
@@ -28,7 +29,7 @@ function MainApp() {
 
   const handleAuthSuccess = (userData) => {
     setCurrentUser(userData);
-    if (userData?.hasCompletedOnboarding) {
+    if (userData?.hasCompletedOnboarding || userData?.onboardingCompleted) {
       setCurrentScreen('dashboard');
     } else {
       setCurrentScreen('onboarding');
@@ -78,6 +79,12 @@ function MainApp() {
         <RootShell
           user={currentUser}
           onLogout={handleRestartFlow}
+        />
+      )}
+
+      {currentScreen === 'leaderboard' && (
+        <LeaderboardScreen
+          onBack={() => setCurrentScreen('dashboard')}
         />
       )}
 
