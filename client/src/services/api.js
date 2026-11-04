@@ -1,25 +1,97 @@
 import { NativeModules, Platform } from 'react-native';
+import Constants from 'expo-constants';
 
-// Dynamically resolve API URL: uses EXPO_PUBLIC_API_URL if set, or extracts Metro host IP for mobile devices
-const resolveApiBaseUrl = () => {
-  if (process.env.EXPO_PUBLIC_API_URL) {
-    return process.env.EXPO_PUBLIC_API_URL;
+const DEFAULT_API_PORT = process.env.EXPO_PUBLIC_API_PORT || '5000';
+
+const extractHostFromUri = (uri) => {
+  if (!uri || typeof uri !== 'string') return null;
+  const cleaned = uri.replace(/^[a-zA-Z0-9+.-]+:\/\//, '');
+  const host = cleaned.split('/')[0]?.split(':')[0]?.trim();
+  if (!host || host === 'localhost' || host === '127.0.0.1' || host.endsWith('.expo.dev') || host.endsWith('.exp.direct')) {
+    return null;
   }
-  if (Platform.OS !== 'web' && NativeModules?.SourceCode?.scriptURL) {
-    try {
-      const rawUrl = NativeModules.SourceCode.scriptURL;
-      const host = rawUrl.split('://')[1]?.split(':')[0];
-      if (host && host !== 'localhost' && host !== '127.0.0.1') {
-        return `http://${host}:5000/api/v1`;
-      }
-    } catch {
-      // Fallback below
+  return host;
+};
+
+// Dynamically resolve API URL for physical Android/iOS devices (Expo Go), Android emulators, and local web
+export const resolveApiBaseUrl = () => {
+  const envUrl = process.env.EXPO_PUBLIC_API_URL?.trim();
+
+  // Try to discover the host machine's LAN IP from Expo Constants or React Native SourceCode
+  const candidateUris = [
+    Constants?.expoConfig?.hostUri,
+    Constants?.manifest2?.extra?.expoGo?.debuggerHost,
+    Constants?.manifest?.debuggerHost,
+    Constants?.linkingUri,
+    NativeModules?.SourceCode?.scriptURL,
+  ];
+
+  let detectedLanHost = null;
+  for (const uri of candidateUris) {
+    const host = extractHostFromUri(uri);
+    if (host) {
+      detectedLanHost = host;
+      break;
     }
   }
-  return 'http://localhost:5000/api/v1';
+
+  // 1. If EXPO_PUBLIC_API_URL is explicitly configured:
+  if (envUrl) {
+    const normalizedEnvUrl = envUrl.replace(/\/+$/, '');
+    const isLocalhostEnv =
+      normalizedEnvUrl.includes('://localhost') ||
+      normalizedEnvUrl.includes('://127.0.0.1');
+
+    // On mobile (Android/iOS), localhost points to the phone/emulator itself rather than the dev laptop.
+    if (Platform.OS !== 'web' && isLocalhostEnv) {
+      if (detectedLanHost) {
+        return normalizedEnvUrl.replace(/localhost|127\.0\.0\.1/, detectedLanHost);
+      }
+      if (Platform.OS === 'android') {
+        return normalizedEnvUrl.replace(/localhost|127\.0\.0\.1/, '10.0.2.2');
+      }
+    }
+    return normalizedEnvUrl;
+  }
+
+  // 2. Physical device or Expo Go over LAN: use detected Metro bundler host IP
+  if (Platform.OS !== 'web' && detectedLanHost) {
+    return `http://${detectedLanHost}:${DEFAULT_API_PORT}/api/v1`;
+  }
+
+  // 3. Android Emulator fallback (10.0.2.2 routes to host loopback)
+  if (Platform.OS === 'android') {
+    return `http://10.0.2.2:${DEFAULT_API_PORT}/api/v1`;
+  }
+
+  // 4. Web / iOS Simulator local fallback
+  return `http://localhost:${DEFAULT_API_PORT}/api/v1`;
 };
 
 export const API_BASE_URL = resolveApiBaseUrl();
+
+// Format raw fetch / Java / socket exceptions into clear, actionable user messages
+export const formatNetworkError = (error, url = API_BASE_URL) => {
+  const raw = String(error?.message || error || '');
+
+  if (error?.name === 'AbortError' || raw.toLowerCase().includes('timed out')) {
+    return `Connection timed out while reaching the server (${url}). Ensure the backend is running and your device is on the same Wi-Fi network.`;
+  }
+
+  if (
+    raw.includes('ConnectException') ||
+    raw.includes('Failed to connect') ||
+    raw.includes('Network request failed') ||
+    raw.includes('fetch failed') ||
+    raw.includes('ECONNREFUSED') ||
+    raw.includes('ENETUNREACH') ||
+    raw.includes('EHOSTUNREACH')
+  ) {
+    return `Unable to reach the Mission LiFE server (${url}). Please verify that the backend server is running on port ${DEFAULT_API_PORT}, both devices are on the same Wi-Fi network, and your firewall allows port ${DEFAULT_API_PORT}.`;
+  }
+
+  return raw || 'Something went wrong while communicating with the server.';
+};
 
 // Memory token cache for current session
 let authToken = null;
@@ -32,9 +104,10 @@ export const getAuthToken = () => {
   return authToken;
 };
 
-// Generic fetch wrapper with 45s timeout & error handling
+// Generic fetch wrapper with configurable timeout & clear error handling
 export async function request(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
+  const timeoutMs = options.timeoutMs || 15000; // 15s default timeout for responsive mobile feedback
 
   const headers = {
     'Content-Type': 'application/json',
@@ -43,9 +116,10 @@ export async function request(endpoint, options = {}) {
     ...(options.headers || {}),
   };
 
+  let timeoutId;
   try {
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 45000); // 45s timeout for cold start / Render spins
+    timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
     const response = await fetch(url, {
       ...options,
@@ -67,10 +141,15 @@ export async function request(endpoint, options = {}) {
 
     return data;
   } catch (error) {
-    if (error.name === 'AbortError') {
-      throw new Error('Network request timed out. Please check your connection.');
+    if (timeoutId) clearTimeout(timeoutId);
+    // Preserve HTTP status errors returned by the backend
+    if (error.status) {
+      throw error;
     }
-    throw error;
+    const formatted = new Error(formatNetworkError(error, API_BASE_URL));
+    formatted.isNetworkError = true;
+    formatted.cause = error;
+    throw formatted;
   }
 }
 

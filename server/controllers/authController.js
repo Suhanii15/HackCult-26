@@ -16,8 +16,10 @@ const sendTokenResponse = (user, statusCode, res) => {
       district: user.district,
       city: user.city,
       onboardingCompleted: user.onboardingCompleted,
+      hasCompletedOnboarding: Boolean(user.onboardingCompleted),
       onboardingMode: user.onboardingMode,
       totalPoints: user.totalPoints,
+      ecoScore: user.ecoScore,
       currentStreakDays: user.currentStreakDays,
       baselineAnnualCO2Kg: user.baselineAnnualCO2Kg,
       household: user.household,
@@ -32,28 +34,64 @@ exports.register = async (req, res, next) => {
   try {
     const { fullName, email, identifier, password, phone, district, city } = req.body;
 
-    const userEmail = (email || identifier || '').trim().toLowerCase();
+    const rawIdentifier = (email || identifier || '').trim();
+    const userEmail = rawIdentifier.toLowerCase();
+    const cleanName = (fullName || '').trim();
 
-    if (!userEmail || !password || !fullName) {
+    if (!cleanName) {
       return res.status(400).json({
         success: false,
-        message: 'Please provide full name, email/identifier, and password',
+        message: 'Please provide your full name.',
       });
     }
 
-    // Check if user already exists
-    const existingUser = await User.findOne({ email: userEmail });
+    if (!userEmail) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please provide an email address or 10-digit mobile number.',
+      });
+    }
+
+    // Validate email or mobile format
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(userEmail);
+    const isPhone = /^[+]?[0-9\s-]{10,15}$/.test(rawIdentifier);
+    if (!isEmail && !isPhone) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please enter a valid email address or 10-digit mobile number.',
+      });
+    }
+
+    if (!password || String(password).length < 6) {
+      return res.status(400).json({
+        success: false,
+        message: 'Password must be at least 6 characters long.',
+      });
+    }
+
+    const normalizedPhone = phone
+      ? String(phone).trim()
+      : isPhone
+      ? rawIdentifier.replace(/[\s-]/g, '')
+      : undefined;
+
+    // Check if user already exists by email or phone
+    const duplicateQuery = normalizedPhone
+      ? { $or: [{ email: userEmail }, { phone: normalizedPhone }] }
+      : { email: userEmail };
+
+    const existingUser = await User.findOne(duplicateQuery);
     if (existingUser) {
       return res.status(400).json({
         success: false,
-        message: 'An account with this email/identifier already exists. Please log in.',
+        message: 'An account with this email or mobile number already exists. Please log in instead.',
       });
     }
 
     const user = await User.create({
-      fullName: fullName.trim(),
+      fullName: cleanName,
       email: userEmail,
-      phone: phone || (userEmail.match(/^[0-9+]+$/) ? userEmail : undefined),
+      phone: normalizedPhone,
       password,
       district: district || 'Ahmedabad',
       city: city || 'Ahmedabad',

@@ -18,6 +18,9 @@ import {
   useProfileHiddenActivities,
   useRestoreHiddenActivity,
 } from '../hooks';
+import { useCompletedActivities } from '../../activities/hooks';
+import CompletedChallengeCard from '../components/CompletedChallengeCard';
+import { getEmptyCompletedMessage } from '../../../constants/microcopy';
 
 export default function ProfileScreen({ user, onLogout }) {
   const insets = useSafeAreaInsets();
@@ -25,6 +28,7 @@ export default function ProfileScreen({ user, onLogout }) {
   const { t, language, openLanguageModal } = useLanguage();
 
   const { data: profile } = useProfile(user);
+  const { data: completedList } = useCompletedActivities();
   const { data: likedActivities } = useProfileLikedActivities();
   const { data: hiddenActivities } = useProfileHiddenActivities();
   const restoreMutation = useRestoreHiddenActivity();
@@ -32,7 +36,9 @@ export default function ProfileScreen({ user, onLogout }) {
   const rawName = profile?.fullName || profile?.name || 'Priya Patel';
   const initial = (rawName.trim()[0] || 'C').toUpperCase();
   const district = profile?.district || 'Ahmedabad, Gujarat';
-  const points = profile?.totalPoints || 120;
+  const points = profile?.totalPoints || profile?.points || 140;
+
+  const completedCount = completedList?.length || 0;
 
   const langLabel =
     language === 'gu'
@@ -90,6 +96,36 @@ export default function ProfileScreen({ user, onLogout }) {
             />
           </View>
         </Card>
+
+        {/* PART 3: DEDICATED COMPLETED CHALLENGES SECTION */}
+        <View style={styles.sectionHeader}>
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+            <Text style={styles.sectionTitle}>
+              🏆 Completed Challenges
+            </Text>
+            {completedCount > 0 ? (
+              <View style={styles.countBadge}>
+                <Text style={styles.countBadgeText}>{completedCount}</Text>
+              </View>
+            ) : null}
+          </View>
+        </View>
+
+        {completedList && completedList.length > 0 ? (
+          completedList.map((item, idx) => (
+            <CompletedChallengeCard
+              key={item.cycle?._id || item.activityId || idx}
+              item={item}
+            />
+          ))
+        ) : (
+          <EmptyState
+            icon="🏆"
+            title="No quests conquered yet"
+            message={getEmptyCompletedMessage()}
+            style={styles.emptyContainer}
+          />
+        )}
 
         {/* Liked Activities Section */}
         <View style={styles.sectionHeader}>
@@ -199,17 +235,15 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 6,
-    marginRight: SPACING.sm,
   },
   backArrow: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '700',
-    color: COLORS.primaryDark,
+    color: COLORS.textPrimary,
   },
   headerTitle: {
-    flex: 1,
     fontSize: 18,
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.textPrimary,
   },
   placeholder: {
@@ -217,93 +251,114 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: SPACING.md,
-    paddingBottom: 40,
+    paddingBottom: 120,
   },
   profileCard: {
     alignItems: 'center',
-    paddingVertical: SPACING.xl,
+    padding: SPACING.lg,
     marginBottom: SPACING.md,
   },
   avatarCircle: {
-    width: 68,
-    height: 68,
-    borderRadius: RADII.full,
-    backgroundColor: COLORS.primary,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
+    backgroundColor: COLORS.primaryDark,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: SPACING.sm,
   },
   avatarText: {
-    fontSize: 30,
+    fontSize: 32,
     fontWeight: '800',
     color: COLORS.white,
   },
   userName: {
     fontSize: 20,
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.textPrimary,
+    marginBottom: 4,
   },
   userDistrict: {
-    fontSize: 14,
+    fontSize: 13,
     color: COLORS.textSecondary,
-    marginTop: 2,
     marginBottom: SPACING.md,
   },
   pointsPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: '#FEF3C7',
     paddingHorizontal: 16,
     paddingVertical: 8,
     borderRadius: RADII.full,
   },
   pointsLabel: {
     fontSize: 13,
-    fontWeight: '700',
-    color: COLORS.primaryDark,
+    fontWeight: '600',
+    color: '#92400E',
     marginRight: 6,
   },
   pointsValue: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '800',
-    color: COLORS.primary,
+    color: '#B45309',
   },
   settingCard: {
-    marginBottom: SPACING.md,
     padding: SPACING.md,
+    marginBottom: SPACING.lg,
   },
   settingRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   settingTitle: {
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '600',
     color: COLORS.textPrimary,
+    marginBottom: 2,
   },
   settingValue: {
-    fontSize: 13,
+    fontSize: 12,
     color: COLORS.textSecondary,
-    marginTop: 2,
   },
   sectionHeader: {
-    marginTop: SPACING.sm,
-    marginBottom: SPACING.xs,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    marginBottom: SPACING.sm,
+    marginTop: SPACING.xs,
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: '800',
+    fontWeight: '700',
     color: COLORS.textPrimary,
   },
+  countBadge: {
+    marginLeft: 8,
+    backgroundColor: '#ECFDF5',
+    borderColor: '#A7F3D0',
+    borderWidth: 1,
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: RADII.full || 12,
+  },
+  countBadgeText: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: '#065F46',
+  },
+  emptyContainer: {
+    paddingVertical: SPACING.md,
+    marginBottom: SPACING.md,
+  },
   itemCard: {
-    marginBottom: SPACING.sm,
-    padding: SPACING.md,
+    padding: SPACING.sm,
+    marginBottom: SPACING.xs,
   },
   itemRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
   },
   itemInfo: {
     flex: 1,
@@ -311,18 +366,14 @@ const styles = StyleSheet.create({
   },
   itemTitle: {
     fontSize: 14,
-    fontWeight: '700',
+    fontWeight: '600',
     color: COLORS.textPrimary,
-    lineHeight: 18,
+    marginBottom: 2,
   },
   itemPoints: {
     fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.accent,
-    marginTop: 2,
-  },
-  emptyContainer: {
-    paddingVertical: SPACING.md,
+    color: COLORS.primary,
+    fontWeight: '500',
   },
   noneText: {
     fontSize: 13,
@@ -331,5 +382,6 @@ const styles = StyleSheet.create({
   },
   logoutContainer: {
     marginTop: SPACING.lg,
+    paddingBottom: SPACING.xl,
   },
 });

@@ -28,16 +28,29 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!identifier.trim()) {
-      setError('Please enter your email or phone number');
+    const trimmedIdentifier = identifier.trim();
+    const trimmedName = name.trim();
+
+    if (mode === 'signup' && !trimmedName) {
+      setError('Please enter your full name.');
       return;
     }
-    if (mode === 'signup' && !name.trim()) {
-      setError('Please enter your full name');
+    if (!trimmedIdentifier) {
+      setError('Please enter your email or mobile number.');
+      return;
+    }
+    const isEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedIdentifier);
+    const isPhone = /^[+]?[0-9\s-]{10,15}$/.test(trimmedIdentifier);
+    if (!isEmail && !isPhone) {
+      setError('Please enter a valid email address or 10-digit mobile number.');
       return;
     }
     if (!password) {
-      setError('Please enter your password');
+      setError('Please enter your password.');
+      return;
+    }
+    if (mode === 'signup' && password.length < 6) {
+      setError('Password must be at least 6 characters long.');
       return;
     }
 
@@ -48,13 +61,13 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
       let res;
       if (mode === 'signup') {
         res = await apiRegister({
-          fullName: name.trim(),
-          identifier: identifier.trim(),
+          fullName: trimmedName,
+          identifier: trimmedIdentifier,
           password,
         });
       } else {
         res = await apiLogin({
-          identifier: identifier.trim(),
+          identifier: trimmedIdentifier,
           password,
         });
       }
@@ -62,15 +75,15 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
       setLoading(false);
       onAuthSuccess({
         ...(res.user || {}),
-        name: res.user?.fullName || name.trim() || 'Citizen',
-        identifier: res.user?.email || identifier.trim(),
+        name: res.user?.fullName || trimmedName || 'Citizen',
+        identifier: res.user?.email || trimmedIdentifier,
         isNewUser: mode === 'signup',
         token: res.token,
       });
     } catch (err) {
       setLoading(false);
       console.warn('Backend Auth Request failed:', err.message);
-      setError(err.message || 'Authentication failed. Please verify credentials or server.');
+      setError(err.message || 'Authentication failed. Please verify your credentials or server connection.');
     }
   };
 
@@ -231,22 +244,42 @@ export default function AuthScreen({ initialMode = 'signup', onAuthSuccess, onBa
               </TouchableOpacity>
             )}
 
-            {/* Submit CTA */}
-            <TouchableOpacity
-              style={[styles.submitBtn, loading && { opacity: 0.7 }]}
-              activeOpacity={0.85}
-              onPress={handleSubmit}
-              disabled={loading}
-            >
-              {loading ? (
-                <ActivityIndicator color={COLORS.white} />
-              ) : (
-                <Text style={styles.submitBtnText}>
-                  {mode === 'signup' ? t('auth_btn_signup') : t('auth_btn_login')}
-                </Text>
+              <TouchableOpacity
+                style={[styles.submitBtn, loading && { opacity: 0.7 }]}
+                activeOpacity={0.85}
+                onPress={handleSubmit}
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator color={COLORS.white} />
+                ) : (
+                  <Text style={styles.submitBtnText}>
+                    {mode === 'signup' ? t('auth_btn_signup') : t('auth_btn_login')}
+                  </Text>
+                )}
+              </TouchableOpacity>
+
+              {/* Separate Offline / Demo Mode Option */}
+              {!error && (
+                <TouchableOpacity
+                  onPress={() => {
+                    setError('');
+                    onAuthSuccess({
+                      name: name.trim() || 'Priya Patel',
+                      identifier: identifier.trim() || 'demo@missionlife.gujarat.in',
+                      isNewUser: mode === 'signup',
+                      isOfflineDemo: true,
+                    });
+                  }}
+                  style={styles.secondaryDemoBtn}
+                  activeOpacity={0.75}
+                >
+                  <Text style={styles.secondaryDemoText}>
+                    Continue in Offline / Demo Mode ➔
+                  </Text>
+                </TouchableOpacity>
               )}
-            </TouchableOpacity>
-          </View>
+            </View>
 
           {/* Bottom Security / Government Tag */}
           <View style={styles.securityNote}>
@@ -406,6 +439,22 @@ const styles = StyleSheet.create({
     color: COLORS.white,
     fontSize: 16,
     fontWeight: '700',
+  },
+  secondaryDemoBtn: {
+    marginTop: 12,
+    paddingVertical: 11,
+    paddingHorizontal: 14,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: '#E5E7EB',
+    backgroundColor: '#F9FAFB',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  secondaryDemoText: {
+    fontSize: 13,
+    color: COLORS.textSecondary,
+    fontWeight: '600',
   },
   securityNote: {
     marginTop: 24,

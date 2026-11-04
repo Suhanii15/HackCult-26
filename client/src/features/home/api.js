@@ -5,7 +5,7 @@ export const fetchHomeDashboard = async (currentUser) => {
     const meData = await apiGetMe().catch(() => null);
     const historyData = await apiGetFootprintHistory().catch(() => null);
 
-    const user = meData?.user || currentUser || {
+    const user = meData?.data || meData?.user || currentUser || {
       fullName: 'Priya Patel',
       district: 'Ahmedabad',
       totalPoints: 120,

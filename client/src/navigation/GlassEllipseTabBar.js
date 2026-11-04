@@ -7,6 +7,7 @@ import {
   Animated,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COLORS } from '../theme';
 import {
   HomeIcon,
@@ -24,52 +25,39 @@ const ICON_MAP = {
 
 function TabButton({
   route,
-  index,
   isFocused,
   label,
   onPress,
   onLongPress,
 }) {
-  const scaleAnim = useRef(new Animated.Value(isFocused ? 1.08 : 1.0)).current;
+  const scaleAnim = useRef(new Animated.Value(isFocused ? 1.06 : 1.0)).current;
   const pillOpacity = useRef(new Animated.Value(isFocused ? 1 : 0)).current;
+  const pillScale = useRef(new Animated.Value(isFocused ? 1 : 0.9)).current;
 
   useEffect(() => {
     Animated.parallel([
       Animated.spring(scaleAnim, {
-        toValue: isFocused ? 1.08 : 1.0,
-        friction: 5,
-        tension: 90,
+        toValue: isFocused ? 1.06 : 1.0,
+        friction: 6,
+        tension: 100,
         useNativeDriver: true,
       }),
       Animated.timing(pillOpacity, {
         toValue: isFocused ? 1 : 0,
-        duration: 200,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+      Animated.spring(pillScale, {
+        toValue: isFocused ? 1 : 0.88,
+        friction: 6,
+        tension: 100,
         useNativeDriver: true,
       }),
     ]).start();
   }, [isFocused]);
 
-  const handlePress = () => {
-    // Pop enlarge spring animation on click
-    Animated.sequence([
-      Animated.timing(scaleAnim, {
-        toValue: 1.24,
-        duration: 100,
-        useNativeDriver: true,
-      }),
-      Animated.spring(scaleAnim, {
-        toValue: 1.08,
-        friction: 4,
-        tension: 110,
-        useNativeDriver: true,
-      }),
-    ]).start();
-
-    onPress();
-  };
-
   const IconComponent = ICON_MAP[route.name] || HomeIcon;
-  const activeColor = COLORS.primary; // Brand teal #00897B
+  const activeColor = COLORS.primaryDark || '#00695C';
   const inactiveColor = '#64748B'; // Muted slate
 
   return (
@@ -77,9 +65,9 @@ function TabButton({
       accessibilityRole="button"
       accessibilityState={isFocused ? { selected: true } : {}}
       accessibilityLabel={label}
-      onPress={handlePress}
+      onPress={onPress}
       onLongPress={onLongPress}
-      activeOpacity={0.8}
+      activeOpacity={0.75}
       style={styles.tabItem}
     >
       <Animated.View
@@ -90,23 +78,24 @@ function TabButton({
           },
         ]}
       >
-        {/* Active Soft Glass Indicator Pill */}
+        {/* Subtle Mint Pill Background for Active Tab */}
         <Animated.View
           style={[
             styles.activePillBackground,
             {
               opacity: pillOpacity,
+              transform: [{ scale: pillScale }],
             },
           ]}
         />
 
-        {/* Icon */}
+        {/* Compact Icon */}
         <IconComponent
           color={isFocused ? activeColor : inactiveColor}
-          size={isFocused ? 22 : 20}
+          size={isFocused ? 20 : 18}
         />
 
-        {/* Label */}
+        {/* Compact Label */}
         <Text
           style={[
             styles.tabLabel,
@@ -129,8 +118,18 @@ export default function GlassEllipseTabBar({
   descriptors,
   navigation,
 }) {
+  const insets = useSafeAreaInsets();
+  const bottomInset = Math.max(insets.bottom, Platform.OS === 'ios' ? 14 : 8);
+
+  // Check if current focused route specifies tabBarStyle display: 'none'
+  const focusedRoute = state.routes[state.index];
+  const focusedDescriptor = descriptors[focusedRoute.key];
+  if (focusedDescriptor?.options?.tabBarStyle?.display === 'none') {
+    return null;
+  }
+
   return (
-    <View style={styles.floatingContainer}>
+    <View style={[styles.floatingContainer, { bottom: bottomInset }]}>
       <View style={styles.glassBar}>
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
@@ -150,8 +149,21 @@ export default function GlassEllipseTabBar({
               canPreventDefault: true,
             });
 
-            if (!isFocused && !event.defaultPrevented) {
-              navigation.navigate(route.name);
+            if (!event.defaultPrevented) {
+              if (route.name === 'Activities') {
+                // PART 4: Reset Activities to landing root page when switching or selecting
+                navigation.navigate('Activities', {
+                  screen: 'ActivityCategories',
+                });
+              } else if (route.name === 'Home') {
+                navigation.navigate('Home');
+              } else if (route.name === 'Community') {
+                navigation.navigate('Community');
+              } else if (route.name === 'Solar') {
+                navigation.navigate('Solar');
+              } else {
+                navigation.navigate(route.name);
+              }
             }
           };
 
@@ -182,29 +194,29 @@ export default function GlassEllipseTabBar({
 const styles = StyleSheet.create({
   floatingContainer: {
     position: 'absolute',
-    bottom: Platform.OS === 'ios' ? 24 : 14,
-    left: 18,
-    right: 18,
+    left: 20,
+    right: 20,
     alignItems: 'center',
     justifyContent: 'center',
+    zIndex: 99,
   },
   glassBar: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-around',
     width: '100%',
-    height: 66,
-    borderRadius: 36, // Ellipse capsule shape
-    backgroundColor: 'rgba(255, 255, 255, 0.92)', // Glass effect
-    borderWidth: 1.5,
-    borderColor: 'rgba(224, 242, 241, 0.95)', // Brand mint glass border
-    paddingHorizontal: 8,
-    // Subtle teal-tinted elevation shadow
+    height: 54, // Reduced from 66 to 54 for a compact, modern profile
+    borderRadius: 27,
+    backgroundColor: 'rgba(255, 255, 255, 0.94)',
+    borderWidth: 1.2,
+    borderColor: 'rgba(204, 251, 241, 0.95)', // Mint border
+    paddingHorizontal: 6,
+    // Soft elevation shadow
     shadowColor: '#004D40',
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.12,
-    shadowRadius: 16,
-    elevation: 8,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.10,
+    shadowRadius: 12,
+    elevation: 6,
   },
   tabItem: {
     flex: 1,
@@ -215,9 +227,9 @@ const styles = StyleSheet.create({
   tabContent: {
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    minWidth: 60,
+    paddingVertical: 3,
+    paddingHorizontal: 10,
+    minWidth: 54,
   },
   activePillBackground: {
     position: 'absolute',
@@ -225,12 +237,12 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     right: 0,
-    borderRadius: 20,
-    backgroundColor: '#E0F2F1', // Brand mint tint
+    borderRadius: 16,
+    backgroundColor: '#E0F2F1', // Soft mint accent
   },
   tabLabel: {
-    fontSize: 10,
-    marginTop: 2,
+    fontSize: 9.5,
+    marginTop: 1.5,
     letterSpacing: 0.1,
   },
 });

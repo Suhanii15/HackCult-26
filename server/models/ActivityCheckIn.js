@@ -27,6 +27,14 @@ const ActivityCheckInSchema = new mongoose.Schema(
       required: true,
       default: true,
     },
+    quantityCompleted: {
+      type: Number,
+      default: null,
+    },
+    carbonSavedKgCO2e: {
+      type: Number,
+      default: 0,
+    },
     notes: {
       type: String,
       default: '',

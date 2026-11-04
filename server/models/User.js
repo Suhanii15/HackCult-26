@@ -116,6 +116,10 @@ const UserSchema = new mongoose.Schema(
       default: 50, // Starting welcome bonus
       index: -1,
     },
+    totalCarbonSavedKg: {
+      type: Number,
+      default: 0,
+    },
     ecoScore: {
       total: { type: Number, default: 0, min: 0, max: 100 },
       energy: { type: Number, default: 0, min: 0, max: 25 },

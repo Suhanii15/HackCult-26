@@ -5,8 +5,12 @@ import { useReducedMotion } from './useReducedMotion';
 
 export default function ProgressBar({
   current = 0,
+  value,
+  progress,
   total = 7,
-  label, // e.g. "3 of 7 days"
+  label, // e.g. "1 of 7 check-ins completed"
+  threshold, // e.g. 5
+  thresholdLabel,
   color = COLORS.primary,
   trackColor = '#E5E7EB',
   height = 8,
@@ -14,8 +18,9 @@ export default function ProgressBar({
   style,
 }) {
   const reduceMotion = useReducedMotion();
+  const rawCurrent = value !== undefined ? value : progress !== undefined ? progress * total : current;
   const safeTotal = Math.max(1, total);
-  const safeCurrent = Math.max(0, Math.min(current, safeTotal));
+  const safeCurrent = Math.max(0, Math.min(rawCurrent, safeTotal));
   const progressRatio = safeCurrent / safeTotal; // 0 to 1
 
   const animatedWidth = useRef(new Animated.Value(reduceMotion ? progressRatio : 0)).current;
@@ -32,7 +37,7 @@ export default function ProgressBar({
     }
   }, [progressRatio, reduceMotion]);
 
-  const displayLabel = label || `${safeCurrent} of ${safeTotal} days`;
+  const displayLabel = label || `${safeCurrent} of ${safeTotal} check-ins completed`;
 
   const widthInterpolated = animatedWidth.interpolate({
     inputRange: [0, 1],
@@ -55,12 +60,26 @@ export default function ProgressBar({
           style={[
             styles.fill,
             {
+              width: widthInterpolated,
               backgroundColor: color,
-              width: reduceMotion ? `${progressRatio * 100}%` : widthInterpolated,
+              height,
             },
           ]}
         />
+        {/* Optional threshold marker indicator if threshold provided */}
+        {threshold && threshold < safeTotal ? (
+          <View
+            style={[
+              styles.thresholdMarker,
+              { left: `${(threshold / safeTotal) * 100}%` },
+            ]}
+          />
+        ) : null}
       </View>
+
+      {thresholdLabel ? (
+        <Text style={styles.thresholdText}>{thresholdLabel}</Text>
+      ) : null}
     </View>
   );
 }
@@ -68,30 +87,45 @@ export default function ProgressBar({
 const styles = StyleSheet.create({
   container: {
     width: '100%',
+    marginVertical: 4,
   },
   labelRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: SPACING.xs,
+    marginBottom: 6,
   },
   labelText: {
     fontSize: 13,
-    fontWeight: '600',
-    color: COLORS.textSecondary,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
   },
   percentageText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.primary,
+    fontSize: 13,
+    fontWeight: '800',
+    color: COLORS.primaryDark || '#00695C',
   },
   track: {
     width: '100%',
-    borderRadius: RADII.full,
+    borderRadius: RADII.full || 8,
     overflow: 'hidden',
+    position: 'relative',
   },
   fill: {
-    height: '100%',
-    borderRadius: RADII.full,
+    borderRadius: RADII.full || 8,
+  },
+  thresholdMarker: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    width: 2,
+    backgroundColor: '#F59E0B',
+    zIndex: 2,
+  },
+  thresholdText: {
+    fontSize: 11.5,
+    color: COLORS.textSecondary,
+    marginTop: 5,
+    lineHeight: 16,
   },
 });

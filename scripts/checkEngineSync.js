@@ -2,16 +2,22 @@ const fs = require('fs');
 const path = require('path');
 
 const repoRoot = path.resolve(__dirname, '..');
-const sharedEngineDir = path.join(repoRoot, 'shared', 'engine');
-const clientEngineDir = path.join(repoRoot, 'client', 'src', 'engine');
+const sharedDir = path.join(repoRoot, 'shared');
+const clientSrcDir = path.join(repoRoot, 'client', 'src');
 
-const filesToCompare = ['config.json', 'footprintEngine.js'];
+const filesToCompare = [
+  'engine/config.json',
+  'engine/footprintEngine.js',
+  'activities/activityCatalog.js',
+  'activities/questionnaires.js',
+  'activities/recommendationEngine.js',
+];
 
 let hasDiff = false;
 
 for (const file of filesToCompare) {
-  const sharedFile = path.join(sharedEngineDir, file);
-  const clientFile = path.join(clientEngineDir, file);
+  const sharedFile = path.join(sharedDir, file);
+  const clientFile = path.join(clientSrcDir, file);
 
   if (!fs.existsSync(sharedFile)) {
     console.error(`✗ Missing shared file: ${sharedFile}`);
@@ -27,8 +33,8 @@ for (const file of filesToCompare) {
   const clientContent = fs.readFileSync(clientFile, 'utf8').replace(/\r\n/g, '\n').trim();
 
   if (sharedContent !== clientContent) {
-    console.error(`❌ Mismatch detected in ${file} between shared/engine and client/src/engine!`);
-    console.error(`Run "npm run sync:engine" to sync shared engine to client.`);
+    console.error(`❌ Mismatch detected in ${file} between shared and client/src!`);
+    console.error(`Run "npm run sync:engine" to sync shared files to the client.`);
     hasDiff = true;
   } else {
     console.log(`✓ ${file} is in sync.`);
@@ -38,6 +44,6 @@ for (const file of filesToCompare) {
 if (hasDiff) {
   process.exit(1);
 } else {
-  console.log('✅ shared/engine and client/src/engine are perfectly identical.');
+  console.log('✅ shared and client/src copies are perfectly identical.');
   process.exit(0);
 }

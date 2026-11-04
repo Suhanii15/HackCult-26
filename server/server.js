@@ -1,17 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const os = require('os');
 const dotenv = require('dotenv');
 const mongoose = require('mongoose');
-const connectDB = require('./config/db');
-const errorHandler = require('./middleware/errorHandler');
 
 // Load environment variables (supports running from root or server dir)
 dotenv.config();
 dotenv.config({ path: path.resolve(__dirname, '.env') });
 
-// Connect to Database
-connectDB();
+const connectDB = require('./config/db');
+const errorHandler = require('./middleware/errorHandler');
 
 const app = express();
 
@@ -19,11 +18,18 @@ const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Enable CORS
+// CORS: the mobile app authenticates with a Bearer header (no cookies), so credentials are
+// not needed. CLIENT_URL may be "*" (default, dev) or a comma-separated list of web origins.
+const allowedOrigins = (process.env.CLIENT_URL || '*')
+  .split(',')
+  .map((o) => o.trim())
+  .filter(Boolean);
 app.use(
   cors({
-    origin: '*',
-    credentials: true,
+    origin: allowedOrigins.includes('*') ? '*' : allowedOrigins,
+    credentials: false,
+    methods: ['GET', 'POST', 'PATCH', 'PUT', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Accept'],
   })
 );
 
@@ -51,24 +57,61 @@ app.use('/api/v1/users', require('./routes/userRoutes'));
 app.use('/api/v1/footprint', require('./routes/footprintRoutes'));
 app.use('/api/v1/activities', require('./routes/activityRoutes'));
 
+// Unknown API routes -> JSON 404 instead of an HTML page
+app.use('/api', (req, res) => {
+  res.status(404).json({ success: false, message: `Route not found: ${req.method} ${req.originalUrl}` });
+});
+
 // Centralized Error Handler
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
+const HOST = process.env.HOST || '0.0.0.0';
 
 let server;
 if (require.main === module) {
-  server = app.listen(PORT, () => {
+  // Connect to Database, then make sure the activity catalogue exists (idempotent upsert)
+  connectDB().then(async () => {
+    if (mongoose.connection.readyState === 1 && process.env.AUTO_SEED_ACTIVITIES !== 'false') {
+      try {
+        await require('./scripts/seedActivities').seedActivities();
+      } catch (err) {
+        console.error(`❌ Activity catalogue sync failed: ${err.message}`);
+      }
+    }
+  });
+
+  server = app.listen(PORT, HOST, () => {
     console.log(
-      `🚀 Mission LiFE Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`
+      `🚀 Mission LiFE Server running in ${process.env.NODE_ENV || 'development'} mode on ${HOST}:${PORT}`
     );
-    console.log(`📡 Health Check: http://localhost:${PORT}/api/v1/health`);
+    console.log(`📡 Local Health Check: http://localhost:${PORT}/api/v1/health`);
+    try {
+      const nets = os.networkInterfaces();
+      for (const name of Object.keys(nets)) {
+        for (const net of nets[name]) {
+          if (net.family === 'IPv4' && !net.internal) {
+            console.log(`📱 LAN Health Check:   http://${net.address}:${PORT}/api/v1/health  (${name})`);
+          }
+        }
+      }
+    } catch {
+      // Ignore network interface discovery errors
+    }
+  });
+
+  server.on('error', (err) => {
+    if (err.code === 'EADDRINUSE') {
+      console.error(`❌ Port ${PORT} is already in use. Stop the other process or change PORT in server/.env.`);
+      process.exit(1);
+    }
+    throw err;
   });
 }
 
 // Handle unhandled promise rejections
 process.on('unhandledRejection', (err) => {
-  console.error(`💥 Unhandled Rejection: ${err.message}`);
+  console.error(`💥 Unhandled Rejection: ${err && err.message}`);
 });
 
 module.exports = app;

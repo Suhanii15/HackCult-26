@@ -28,7 +28,7 @@ function MainApp() {
 
   const handleAuthSuccess = (userData) => {
     setCurrentUser(userData);
-    if (userData?.hasCompletedOnboarding) {
+    if (userData?.hasCompletedOnboarding || userData?.onboardingCompleted) {
       setCurrentScreen('dashboard');
     } else {
       setCurrentScreen('onboarding');

@@ -9,3 +9,5 @@ build/
 coverage/
 .expo/
 *.local
+.local-db.json
+server/.data/

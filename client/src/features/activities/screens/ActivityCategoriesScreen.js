@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView, Text, TouchableOpacity, RefreshControl } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { TopBar, Skeleton, Card } from '../../../components/ui';
+import { TopBar, Skeleton, Card, LungsLoader } from '../../../components/ui';
 import { COLORS, RADII, SPACING } from '../../../theme';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useCategories, useActiveActivities, useActivities } from '../hooks';
@@ -123,12 +123,7 @@ export default function ActivityCategoriesScreen({ user }) {
         </View>
 
         {isCatsLoading ? (
-          <View style={styles.loadingContainer}>
-            <Skeleton height={88} style={styles.skeleton} />
-            <Skeleton height={88} style={styles.skeleton} />
-            <Skeleton height={88} style={styles.skeleton} />
-            <Skeleton height={88} style={styles.skeleton} />
-          </View>
+          <LungsLoader label="Loading planet-saving categories..." size={90} />
         ) : (
           categories?.map((cat) => (
             <CategoryTile

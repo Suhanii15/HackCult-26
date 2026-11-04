@@ -74,6 +74,7 @@ export function useStartActivity() {
     mutationFn: (activityId) => startActivity(activityId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.activities.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.home.all });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.profile.all });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.home.all });
     },
@@ -85,6 +86,7 @@ export function useAlreadyAchieved() {
     mutationFn: (activityId) => alreadyAchievedActivity(activityId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.activities.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.home.all });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.profile.all });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.home.all });
     },
@@ -96,6 +98,7 @@ export function useDismissActivity() {
     mutationFn: (activityId) => dismissActivity(activityId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.activities.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.home.all });
     },
   });
 }
@@ -106,6 +109,7 @@ export function useDailyCheckIn() {
       submitDailyCheckIn({ cycleId, completed, checkInDate }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.activities.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.home.all });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.profile.all });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.home.all });
     },
@@ -131,6 +135,7 @@ export function useToggleLike() {
     mutationFn: (activityId) => toggleLikeActivity(activityId),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.activities.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.home.all });
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.profile.all });
     },
   });
@@ -141,6 +146,7 @@ export function useToggleHide() {
     mutationFn: toggleHideActivity,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: QUERY_KEYS.activities.all });
+      queryClient.invalidateQueries({ queryKey: QUERY_KEYS.home.all });
     },
   });
 }

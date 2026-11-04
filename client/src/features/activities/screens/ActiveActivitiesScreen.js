@@ -1,10 +1,16 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { Card, ProgressBar, Toast, Skeleton, EmptyState } from '../../../components/ui';
+import { Card, ProgressBar, Toast, Skeleton, EmptyState, LungsLoader } from '../../../components/ui';
 import { COLORS, RADII, SPACING } from '../../../theme';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { useActiveActivities, useDailyCheckIn } from '../hooks';
+import {
+  getCheckInSuccessMessage,
+  getChallengeCompletionMessage,
+  getEmptyActiveMessage,
+  MICROCOPY,
+} from '../../../constants/microcopy';
 
 export default function ActiveActivitiesScreen() {
   const navigation = useNavigation();
@@ -14,19 +20,24 @@ export default function ActiveActivitiesScreen() {
 
   const [toastMessage, setToastMessage] = useState(null);
 
-  const handleCheckIn = (cycle, completed) => {
+  const handleCheckIn = (item, completed) => {
+    const cyc = item?.cycle || item;
+    const cycleId = cyc?._id || item?._id;
+    if (!cycleId) return;
+
     dailyCheckInMutation.mutate(
       {
-        cycleId: cycle._id,
+        cycleId,
         completed,
       },
       {
         onSuccess: (res) => {
+          const isDone = res.justCompleted || res.cycle?.isCompleted;
           setToastMessage({
             type: 'success',
-            msg: res.cycle?.isCompleted
-              ? t('cycle_completed_badge')
-              : t('checkin_recorded_success'),
+            msg: isDone
+              ? getChallengeCompletionMessage()
+              : getCheckInSuccessMessage(),
           });
           refetch();
         },
@@ -40,10 +51,20 @@ export default function ActiveActivitiesScreen() {
     );
   };
 
-  const handleOpenDetail = (cycle) => {
-    const act = cycle.activityId;
-    const key = act?.activityId || cycle.activityCode || act?._id;
-    navigation.navigate('ActivityDetail', { key });
+  const handleOpenDetail = (item) => {
+    const cyc = item?.cycle || item;
+    const act = item?.activity || cyc?.activityId || item?.activityId;
+    const key =
+      item?.activity?.activityId ||
+      cyc?.activityId?.activityId ||
+      (typeof cyc?.activityId === 'string' ? cyc.activityId : null) ||
+      (typeof item?.activityId === 'string' ? item.activityId : null) ||
+      item?.activityCode ||
+      cyc?.activityCode ||
+      act?.activityId ||
+      act?._id ||
+      cyc?._id;
+    navigation.navigate('ActivityDetail', { key, activityId: key });
   };
 
   return (
@@ -58,21 +79,11 @@ export default function ActiveActivitiesScreen() {
         >
           <Text style={styles.backArrow}>←</Text>
         </TouchableOpacity>
-        <Text style={styles.headerTitle} numberOfLines={1}>
-          {t('active_activities_screen_title')}
+        <Text style={styles.headerTitle}>
+          {MICROCOPY.terminology.myActivities}
         </Text>
-        <View style={styles.placeholder} />
+        <View style={styles.headerRightPlaceholder} />
       </View>
-
-      {toastMessage ? (
-        <View style={styles.toastContainer}>
-          <Toast
-            message={toastMessage.msg}
-            type={toastMessage.type}
-            onDismiss={() => setToastMessage(null)}
-          />
-        </View>
-      ) : null}
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
@@ -86,91 +97,101 @@ export default function ActiveActivitiesScreen() {
         }
       >
         {isLoading ? (
-          <View style={styles.loadingContainer}>
-            <Skeleton height={150} style={styles.skeleton} />
-            <Skeleton height={150} style={styles.skeleton} />
-          </View>
+          <LungsLoader label="Loading your active quests..." size={100} style={{ marginVertical: 40 }} />
         ) : activeList && activeList.length > 0 ? (
-          activeList.map((cycle) => {
-            const act = cycle.activityId || {};
-            const title = act.title || cycle.activityCode || 'Challenge';
-            const totalDays = cycle.totalDurationDays || 7;
-            const currentDay = cycle.currentDayIndex || 0;
-            const required = cycle.requiredCheckIns || 6;
-            const successful = cycle.successfulCheckIns || 0;
-            const checkedToday = cycle.hasCheckedInToday;
+          activeList.map((item, index) => {
+            const cyc = item?.cycle || item;
+            const act = item?.activity || cyc?.activityId || item?.activityId;
+            const title =
+              act?.title ||
+              (act?.titleKey && t(act.titleKey)) ||
+              cyc?.title ||
+              item?.title ||
+              'Mission LiFE Quest';
+            const totalDays = cyc?.totalDurationDays || cyc?.durationDays || act?.durationDays || 7;
+            const required = cyc?.requiredCheckIns || act?.requiredCheckIns || 5;
+            const currentDay = Math.min(totalDays, (cyc?.currentDayIndex || 0) + 1);
+            const successful = cyc?.successfulCheckIns || 0;
+            const checkedToday = Boolean(item?.todayCheckedIn || cyc?.hasCheckedInToday);
+            const isMinAchieved = successful >= required;
+            const cardKey = cyc?._id || item?._id || `active_${index}`;
 
             return (
               <Card
-                key={cycle._id}
+                key={cardKey}
                 style={styles.card}
                 elevation="subtle"
-                onPress={() => handleOpenDetail(cycle)}
+                onPress={() => handleOpenDetail(item)}
               >
                 <View style={styles.cardHeader}>
-                  <View style={styles.dayBadge}>
-                    <Text style={styles.dayBadgeText}>
-                      {t('progress_day_ratio', {
-                        current: currentDay,
-                        total: totalDays,
-                      })}
+                  <View style={[styles.dayBadge, checkedToday && styles.doneTodayBadge]}>
+                    <Text style={[styles.dayBadgeText, checkedToday && styles.doneTodayBadgeText]}>
+                      {checkedToday
+                        ? `✓ Checked In Today (Day ${currentDay}/${totalDays})`
+                        : `Day ${currentDay} of ${totalDays}`}
                     </Text>
                   </View>
                   <Text style={styles.daysLeftText}>
-                    {t('progress_days_left', {
-                      days: Math.max(0, totalDays - currentDay),
-                    })}
+                    {Math.max(0, totalDays - currentDay)} days remaining
                   </Text>
                 </View>
 
                 <Text style={styles.actTitle}>{title}</Text>
 
-                {/* Progress Bar */}
+                {/* Progress Bar with Correct Math */}
                 <View style={styles.progressSection}>
                   <ProgressBar
-                    value={successful}
-                    total={required}
-                    label={t('progress_checkins_ratio', {
-                      done: successful,
-                      required,
-                    })}
+                    current={successful}
+                    total={totalDays}
+                    label={`${successful} of ${totalDays} check-ins completed`}
+                    threshold={required}
+                    thresholdLabel={
+                      isMinAchieved
+                        ? `🎉 Minimum requirement achieved (${successful}/${totalDays} days)! Keep going to maximize your streak.`
+                        : `Complete at least ${required} of ${totalDays} days to earn your challenge rewards.`
+                    }
                   />
                 </View>
 
                 {/* Daily Check-in Prompt */}
                 <View style={styles.checkInBox}>
                   {checkedToday ? (
-                    <View style={styles.checkedTodayRow}>
-                      <Text style={styles.checkedTodayIcon}>✓</Text>
-                      <Text style={styles.checkedTodayText}>
-                        {t('checkin_already_done_today')}
+                    <View style={styles.checkedTodayContainer}>
+                      <View style={styles.checkedTodayRow}>
+                        <Text style={styles.checkedTodayIcon}>✓</Text>
+                        <Text style={styles.checkedTodayText}>
+                          Today's mission complete!
+                        </Text>
+                      </View>
+                      <Text style={styles.nextCheckInNote}>
+                        Next check-in unlocks tomorrow. Challenge continues until Day {totalDays}!
                       </Text>
                     </View>
                   ) : (
                     <View>
                       <Text style={styles.checkInQuestion}>
-                        {t('checkin_today_question')}
+                        Did you practice this sustainability habit today?
                       </Text>
                       <View style={styles.checkInButtonsRow}>
                         <TouchableOpacity
                           style={[styles.checkInBtn, styles.checkInYesBtn]}
                           activeOpacity={0.8}
-                          onPress={() => handleCheckIn(cycle, true)}
+                          onPress={() => handleCheckIn(item, true)}
                           disabled={dailyCheckInMutation.isPending}
                         >
                           <Text style={styles.checkInYesText}>
-                            ✓ {t('checkin_btn_yes')}
+                            ✓ Done and dusted
                           </Text>
                         </TouchableOpacity>
 
                         <TouchableOpacity
                           style={[styles.checkInBtn, styles.checkInNoBtn]}
                           activeOpacity={0.8}
-                          onPress={() => handleCheckIn(cycle, false)}
+                          onPress={() => handleCheckIn(item, false)}
                           disabled={dailyCheckInMutation.isPending}
                         >
                           <Text style={styles.checkInNoText}>
-                            × {t('checkin_btn_no')}
+                            × Missed today
                           </Text>
                         </TouchableOpacity>
                       </View>
@@ -182,11 +203,26 @@ export default function ActiveActivitiesScreen() {
           })
         ) : (
           <EmptyState
-            title={t('activities_active_badge')}
-            message={t('active_activities_empty')}
+            icon="🎯"
+            title="No active quests"
+            message={getEmptyActiveMessage()}
+            actionLabel="Discover Side Quests ➔"
+            onAction={() => navigation.navigate('ActivityCategories')}
+            style={styles.emptyContainer}
           />
         )}
       </ScrollView>
+
+      {/* Global Toast Modal Notification */}
+      {toastMessage && (
+        <View style={styles.toastContainer}>
+          <Toast
+            message={toastMessage.msg}
+            type={toastMessage.type}
+            onDismiss={() => setToastMessage(null)}
+          />
+        </View>
+      )}
     </View>
   );
 }
@@ -209,87 +245,99 @@ const styles = StyleSheet.create({
   },
   backButton: {
     padding: 6,
-    marginRight: SPACING.sm,
   },
   backArrow: {
-    fontSize: 22,
+    fontSize: 20,
     fontWeight: '700',
-    color: COLORS.primaryDark,
-  },
-  headerTitle: {
-    flex: 1,
-    fontSize: 18,
-    fontWeight: '800',
     color: COLORS.textPrimary,
   },
-  placeholder: {
+  headerTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: COLORS.textPrimary,
+  },
+  headerRightPlaceholder: {
     width: 32,
   },
   scrollContent: {
-    paddingVertical: SPACING.md,
-    paddingBottom: 40,
-  },
-  toastContainer: {
-    paddingHorizontal: SPACING.md,
-    paddingTop: SPACING.sm,
+    padding: SPACING.md,
+    paddingBottom: 120,
   },
   card: {
-    marginHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
     padding: SPACING.md,
-    borderRadius: RADII.lg,
+    marginBottom: SPACING.md,
+    borderWidth: 1.2,
+    borderColor: '#E2E8F0',
   },
   cardHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 6,
+    marginBottom: 8,
   },
   dayBadge: {
-    backgroundColor: '#DCFCE7',
+    backgroundColor: '#F3F4F6',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: RADII.sm,
   },
+  doneTodayBadge: {
+    backgroundColor: '#DCFCE7',
+  },
   dayBadgeText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
+    color: COLORS.textSecondary,
+  },
+  doneTodayBadgeText: {
     color: '#15803D',
   },
   daysLeftText: {
-    fontSize: 12,
-    color: COLORS.textMuted,
+    fontSize: 11,
     fontWeight: '600',
+    color: COLORS.textSecondary,
   },
   actTitle: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: '700',
     color: COLORS.textPrimary,
-    marginVertical: 4,
+    marginBottom: 10,
   },
   progressSection: {
-    marginVertical: SPACING.sm,
+    marginBottom: 12,
   },
   checkInBox: {
-    backgroundColor: COLORS.surfaceElevated,
-    borderRadius: RADII.md,
-    padding: SPACING.sm,
-    marginTop: 6,
+    borderTopWidth: 1,
+    borderTopColor: COLORS.border,
+    paddingTop: 10,
+  },
+  checkedTodayContainer: {
+    backgroundColor: '#F0FDF4',
+    padding: 10,
+    borderRadius: RADII.sm,
+    borderColor: '#DCFCE7',
+    borderWidth: 1,
   },
   checkedTodayRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginBottom: 2,
   },
   checkedTodayIcon: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#16A34A',
     fontWeight: '800',
     marginRight: 6,
   },
   checkedTodayText: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#16A34A',
+  },
+  nextCheckInNote: {
+    fontSize: 11,
+    color: '#15803D',
+    marginTop: 2,
   },
   checkInQuestion: {
     fontSize: 13,
@@ -309,7 +357,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   checkInYesBtn: {
-    backgroundColor: COLORS.primaryDark,
+    backgroundColor: '#16A34A',
   },
   checkInYesText: {
     color: COLORS.white,
@@ -317,20 +365,21 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   checkInNoBtn: {
-    backgroundColor: COLORS.white,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    backgroundColor: '#F3F4F6',
   },
   checkInNoText: {
     color: COLORS.textSecondary,
     fontSize: 13,
     fontWeight: '600',
   },
-  loadingContainer: {
-    paddingHorizontal: SPACING.md,
+  emptyContainer: {
+    paddingVertical: SPACING.xl,
   },
-  skeleton: {
-    marginBottom: SPACING.md,
-    borderRadius: RADII.lg,
+  toastContainer: {
+    position: 'absolute',
+    bottom: 20,
+    left: 16,
+    right: 16,
+    zIndex: 999,
   },
 });

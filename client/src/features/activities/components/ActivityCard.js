@@ -3,6 +3,13 @@ import { View, Text, StyleSheet } from 'react-native';
 import { Card } from '../../../components/ui';
 import { COLORS, RADII, SPACING } from '../../../theme';
 import { useLanguage } from '../../../i18n/LanguageContext';
+import { formatCarbonLine } from '../utils/discovery';
+
+const DIFFICULTY_STYLES = {
+  easy: { bg: '#DCFCE7', text: '#15803D', label: 'Easy' },
+  medium: { bg: '#FEF3C7', text: '#B45309', label: 'Medium' },
+  hard: { bg: '#FEE2E2', text: '#B91C1C', label: 'Hard' },
+};
 
 export default function ActivityCard({ activity, onPress }) {
   const { t } = useLanguage();
@@ -24,23 +31,32 @@ export default function ActivityCard({ activity, onPress }) {
     typeBg = '#FEF3C7';
   }
 
-  // Duration label
-  const durationText =
-    activity.durationDays && activity.durationDays > 1
-      ? t('activity_duration_days', { days: activity.durationDays })
-      : t('activity_duration_onetime');
+  // Difficulty style
+  const diffStyle = DIFFICULTY_STYLES[activity.difficulty] || DIFFICULTY_STYLES.easy;
+
+  // Time requirement
+  const timeText = activity.timeRequiredText || (activity.estimatedMinutes ? `${activity.estimatedMinutes} min` : null);
+
+  // Carbon saving summary
+  const carbonLine = formatCarbonLine(activity);
 
   // Status mapping
   const status = activity.userStatus || activity.status || 'available';
-  let statusBadge = null;
+  const isActive = status === 'active' || Boolean(activity.activeCycle);
+  const cycle = activity.activeCycle;
+  const checkedToday = Boolean(cycle?.hasCheckedInToday || activity.todayCheckedIn);
 
-  if (status === 'active' || activity.activeCycle) {
-    const cycle = activity.activeCycle;
-    const dayLabel = cycle ? t('progress_day_ratio', { current: cycle.currentDayIndex || 0, total: activity.durationDays || 7 }) : t('status_active');
+  let statusBadge = null;
+  if (isActive) {
+    const dayLabel = cycle
+      ? t('progress_day_ratio', { current: cycle.currentDayIndex || 0, total: activity.durationDays || 7 })
+      : t('status_active');
     statusBadge = (
-      <View style={[styles.statusBadge, { backgroundColor: '#DCFCE7' }]}>
-        <View style={styles.activeDot} />
-        <Text style={[styles.statusText, { color: '#15803D' }]}>{dayLabel}</Text>
+      <View style={[styles.statusBadge, { backgroundColor: checkedToday ? '#DCFCE7' : '#E0F2FE' }]}>
+        <View style={[styles.activeDot, { backgroundColor: checkedToday ? '#15803D' : '#0284C7' }]} />
+        <Text style={[styles.statusText, { color: checkedToday ? '#15803D' : '#0369A1' }]}>
+          {checkedToday ? `✓ Done Today (${dayLabel})` : `● ${dayLabel}`}
+        </Text>
       </View>
     );
   } else if (status === 'completed') {
@@ -62,15 +78,20 @@ export default function ActivityCard({ activity, onPress }) {
 
   return (
     <Card onPress={onPress} style={styles.card} elevation="subtle">
-      {/* Top Header Row: Type chip, Duration, Status Badge */}
+      {/* Top Header Row: Type chip, Difficulty chip, Time chip, Status Badge */}
       <View style={styles.topRow}>
-        <View style={styles.typeAndDuration}>
-          <View style={[styles.typeBadge, { backgroundColor: typeBg }]}>
-            <Text style={[styles.typeText, { color: typeColor }]}>{typeLabel}</Text>
+        <View style={styles.typeAndDifficulty}>
+          <View style={[styles.badge, { backgroundColor: typeBg }]}>
+            <Text style={[styles.badgeText, { color: typeColor }]}>{typeLabel}</Text>
           </View>
-          <View style={styles.durationBadge}>
-            <Text style={styles.durationText}>⏱ {durationText}</Text>
+          <View style={[styles.badge, { backgroundColor: diffStyle.bg }]}>
+            <Text style={[styles.badgeText, { color: diffStyle.text }]}>{diffStyle.label}</Text>
           </View>
+          {timeText ? (
+            <View style={[styles.badge, styles.timeBadge]}>
+              <Text style={styles.timeBadgeText}>⏱ {timeText}</Text>
+            </View>
+          ) : null}
         </View>
         {statusBadge}
       </View>
@@ -85,17 +106,38 @@ export default function ActivityCard({ activity, onPress }) {
         </Text>
       ) : null}
 
-      {/* Footer: EcoScore & Green Points Rewards */}
+      {/* Carbon Saving Line */}
+      {carbonLine ? (
+        <View style={styles.carbonRow}>
+          <Text style={styles.carbonText} numberOfLines={1}>
+            🌱 {carbonLine}
+          </Text>
+        </View>
+      ) : null}
+
+      {/* Footer: EcoScore & Green Points Rewards + Action Indicator */}
       <View style={styles.footerRow}>
         <View style={styles.rewardsRow}>
           <View style={styles.ecoBadge}>
-            <Text style={styles.ecoText}>⚡ {t('activity_ecoscore_badge', { pts: ecoPts })}</Text>
+            <Text style={styles.ecoText}>⚡ +{ecoPts} EcoScore</Text>
           </View>
           <View style={styles.pointsBadge}>
-            <Text style={styles.pointsText}>🌿 {t('activity_greenpoints_badge', { pts: greenPts })}</Text>
+            <Text style={styles.pointsText}>🌿 +{greenPts} GP</Text>
           </View>
         </View>
-        <Text style={styles.arrowText}>➔</Text>
+        <View style={styles.actionIndicator}>
+          {isActive ? (
+            <View style={styles.continuePill}>
+              <Text style={styles.continuePillText}>Continue ➔</Text>
+            </View>
+          ) : status === 'completed' ? (
+            <View style={styles.completedPill}>
+              <Text style={styles.completedPillText}>View Details ➔</Text>
+            </View>
+          ) : (
+            <Text style={styles.arrowText}>➔</Text>
+          )}
+        </View>
       </View>
     </Card>
   );
@@ -104,9 +146,10 @@ export default function ActivityCard({ activity, onPress }) {
 const styles = StyleSheet.create({
   card: {
     marginHorizontal: SPACING.md,
-    marginBottom: SPACING.md,
+    marginBottom: SPACING.sm,
     padding: SPACING.md,
     borderRadius: RADII.lg,
+    backgroundColor: COLORS.white,
   },
   topRow: {
     flexDirection: 'row',
@@ -114,32 +157,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: SPACING.xs,
   },
-  typeAndDuration: {
+  typeAndDifficulty: {
     flexDirection: 'row',
     alignItems: 'center',
     flexWrap: 'wrap',
     gap: 6,
+    flex: 1,
   },
-  typeBadge: {
+  badge: {
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: RADII.sm,
+    borderRadius: RADII.full,
   },
-  typeText: {
+  badgeText: {
     fontSize: 11,
     fontWeight: '700',
   },
-  durationBadge: {
-    backgroundColor: COLORS.surfaceElevated,
-    paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: RADII.sm,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+  timeBadge: {
+    backgroundColor: '#F3F4F6',
   },
-  durationText: {
+  timeBadgeText: {
     fontSize: 11,
-    color: COLORS.textSecondary,
+    color: '#4B5563',
     fontWeight: '600',
   },
   statusBadge: {
@@ -147,24 +186,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 999,
-  },
-  activeDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: '#16A34A',
-    marginRight: 4,
+    borderRadius: RADII.full,
+    marginLeft: 6,
   },
   statusText: {
     fontSize: 11,
     fontWeight: '700',
   },
+  activeDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#15803D',
+    marginRight: 4,
+  },
   title: {
     fontSize: 16,
     fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginTop: 6,
+    color: COLORS.text,
+    marginTop: 4,
     marginBottom: 4,
     lineHeight: 22,
   },
@@ -172,16 +212,29 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: COLORS.textSecondary,
     lineHeight: 18,
-    marginBottom: SPACING.sm,
+    marginBottom: SPACING.xs,
+  },
+  carbonRow: {
+    backgroundColor: '#F0FDF4',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: RADII.sm,
+    marginTop: 4,
+    marginBottom: SPACING.xs,
+  },
+  carbonText: {
+    fontSize: 12,
+    color: '#166534',
+    fontWeight: '600',
   },
   footerRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginTop: 6,
-    paddingTop: 8,
+    marginTop: SPACING.xs,
+    paddingTop: SPACING.xs,
     borderTopWidth: 1,
-    borderTopColor: COLORS.border,
+    borderTopColor: '#F3F4F6',
   },
   rewardsRow: {
     flexDirection: 'row',
@@ -195,24 +248,52 @@ const styles = StyleSheet.create({
     borderRadius: RADII.sm,
   },
   ecoText: {
-    fontSize: 11,
-    fontWeight: '700',
+    fontSize: 12,
     color: '#B45309',
+    fontWeight: '700',
   },
   pointsBadge: {
-    backgroundColor: COLORS.primaryLight,
+    backgroundColor: '#DCFCE7',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: RADII.sm,
   },
   pointsText: {
-    fontSize: 11,
+    fontSize: 12,
+    color: '#15803D',
     fontWeight: '700',
-    color: COLORS.primaryDark,
+  },
+  actionIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  continuePill: {
+    backgroundColor: '#E0F2F1',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: RADII.full,
+    borderWidth: 1,
+    borderColor: '#80CBC4',
+  },
+  continuePillText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#00695C',
+  },
+  completedPill: {
+    backgroundColor: '#F3F4F6',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: RADII.full,
+  },
+  completedPillText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#4B5563',
   },
   arrowText: {
-    fontSize: 16,
-    fontWeight: '700',
+    fontSize: 14,
     color: COLORS.textMuted,
+    fontWeight: 'bold',
   },
 });
