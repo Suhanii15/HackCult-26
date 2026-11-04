@@ -1,6 +1,6 @@
 export const COLORS = {
   // Brand colors
-  primary: '#00897B',        // Vibrant teal-green (JouleBug / Mission LiFE standard)
+  primary: '#00897B',        // Vibrant teal-green (JouleBug / EcoPulse standard)
   primaryDark: '#00695C',    // Deep forest teal
   primaryLight: '#E0F2F1',   // Soft mint tint
   accent: '#10B981',         // Emerald green highlight (Active tab color)

@@ -255,7 +255,7 @@ async function seed() {
     console.log(`  ✓ Synced activity: ${act.title} (${act.category})`);
   }
 
-  console.log(`\n✅ Successfully seeded ${ACTIVITIES_SEED.length} Mission LiFE activities into MongoDB!`);
+  console.log(`\n✅ Successfully seeded ${ACTIVITIES_SEED.length} EcoPulse activities into MongoDB!`);
   await mongoose.disconnect();
 }
 

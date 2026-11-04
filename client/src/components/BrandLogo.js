@@ -37,7 +37,7 @@ export default function BrandLogo({ size = 'medium', color = '#FFFFFF', showTagl
           { color },
         ]}
       >
-        Mission <Text style={styles.boldLife}>LiFE</Text>
+        Eco<Text style={styles.boldLife}>Pulse</Text>
       </Text>
 
       {showTagline && !isSmall && (

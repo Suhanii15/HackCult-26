@@ -1,7 +1,7 @@
 /**
  * tests/solar.test.js
  *
- * Automated verification test suite for Mission LiFE Solar Rooftop Calculator Engine & API.
+ * Automated verification test suite for EcoPulse Solar Rooftop Calculator Engine & API.
  * Uses Node's built-in assert module for deterministic execution.
  */
 
@@ -23,7 +23,7 @@ const gujaratYieldData = require('../shared/engine/data/gujarat-yield.json');
 const { createRateLimiter } = require('../server/middleware/rateLimiter');
 const { calculateSolar, getVendors } = require('../server/controllers/solarController');
 
-console.log('🧪 Starting Mission LiFE Solar Calculator Verification Suite...\n');
+console.log('🧪 Starting EcoPulse Solar Calculator Verification Suite...\n');
 
 let passedTests = 0;
 let totalTests = 0;

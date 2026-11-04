@@ -286,7 +286,7 @@ export default function ProfileScreen({ user, onLogout }) {
             onPress={() =>
               setInfoModalContent({
                 title: 'Contact Us',
-                text: 'Mission LiFE Helpdesk\n\nEmail: contact@missionlife.gov.in\nToll-Free Helpline: 1800-11-2026\nOffice: Paryavaran Bhavan, CGO Complex, New Delhi.',
+                text: 'EcoPulse Helpdesk\n\nEmail: contact@ecopulse.gov.in\nToll-Free Helpline: 1800-11-2026\nOffice: Paryavaran Bhavan, CGO Complex, New Delhi.',
               })
             }
           >
@@ -308,7 +308,7 @@ export default function ProfileScreen({ user, onLogout }) {
             onPress={() =>
               setInfoModalContent({
                 title: 'Terms & Conditions',
-                text: 'By using the Mission LiFE Carbon & Solar Platform, you agree to participate in voluntary sustainable habits, track lifestyle carbon footprints, and explore verified rooftop solar guidelines following Ministry of New and Renewable Energy (MNRE) standards.',
+                text: 'By using the EcoPulse Carbon & Solar Platform, you agree to participate in voluntary sustainable habits, track lifestyle carbon footprints, and explore verified rooftop solar guidelines following Ministry of New and Renewable Energy (MNRE) standards.',
               })
             }
           >
@@ -483,7 +483,7 @@ export default function ProfileScreen({ user, onLogout }) {
           <View style={styles.editNameCard}>
             <Text style={styles.dialogTitle}>Change Name</Text>
             <Text style={styles.dialogSubtitle}>
-              Enter your preferred full name for Mission LiFE.
+              Enter your preferred full name for EcoPulse.
             </Text>
 
             <TextInput

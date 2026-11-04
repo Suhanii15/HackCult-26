@@ -4,13 +4,12 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  TextInput,
   ScrollView,
   Linking,
   Platform,
 } from 'react-native';
-import Svg, { Circle, Rect } from 'react-native-svg';
-import { TopBar, Button, LottieLoader } from '../../../components/ui';
+import Svg, { Circle, Rect, Path } from 'react-native-svg';
+import { TopBar, LottieLoader } from '../../../components/ui';
 import { COLORS, RADII, SPACING, TYPOGRAPHY } from '../../../theme';
 import { useLanguage } from '../../../i18n/LanguageContext';
 import { calculateSolar } from '../api';
@@ -25,7 +24,6 @@ import {
   MapPinIcon,
   ChevronDownIcon,
   PhoneIcon,
-  UserIcon,
   WhatsAppIcon,
   ArrowLeftIcon,
   CloseIcon,
@@ -66,11 +64,10 @@ function PMSuryaGharEmblem({ size = 30 }) {
 }
 
 /**
- * Multi-Step Stepper Header for Step 1, 2, 3
+ * Multi-Step Stepper Header for Input Steps (Step 1 & Step 2)
  */
 function WizardHeader({ currentStep, onBack, onClose }) {
-  // 1: About you, 2: Location, 3: Consumption
-  const stepIndex = currentStep === 'step1' ? 1 : currentStep === 'step2' ? 2 : 3;
+  const stepIndex = currentStep === 'step1' ? 1 : 2;
 
   return (
     <View style={styles.wizardHeader}>
@@ -89,7 +86,7 @@ function WizardHeader({ currentStep, onBack, onClose }) {
           <View
             style={[
               styles.progressBarFill,
-              { width: `${(stepIndex / 3) * 100}%` },
+              { width: `${(stepIndex / 2) * 100}%` },
             ]}
           />
         </View>
@@ -102,7 +99,7 @@ function WizardHeader({ currentStep, onBack, onClose }) {
               stepIndex === 1 && styles.stepLabelActive,
             ]}
           >
-            About you
+            1. Consumption
           </Text>
           <Text
             style={[
@@ -110,15 +107,7 @@ function WizardHeader({ currentStep, onBack, onClose }) {
               stepIndex === 2 && styles.stepLabelActive,
             ]}
           >
-            Location
-          </Text>
-          <Text
-            style={[
-              styles.stepLabel,
-              stepIndex === 3 && styles.stepLabelActive,
-            ]}
-          >
-            Consumption
+            2. Roof & Home
           </Text>
         </View>
       </View>
@@ -165,7 +154,33 @@ function ResultHeader({ onBack, onClose }) {
 }
 
 /**
- * Interactive Touch & Drag Slider with Live Floating Tooltip
+ * Confirmed Location Badge Pill (Prefilled from Profile)
+ */
+function LocationPill({ district, state, onChangePress }) {
+  return (
+    <View style={styles.locationPillContainer}>
+      <TouchableOpacity
+        style={styles.locationPillBtn}
+        onPress={onChangePress}
+        activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel="Change district"
+      >
+        <MapPinIcon size={14} color={COLORS.primary} />
+        <Text style={styles.locationPillText}>
+          {district}, {state}
+        </Text>
+        <View style={styles.locationChangeBadge}>
+          <Text style={styles.locationChangeText}>Change</Text>
+          <ChevronDownIcon size={12} color="#004D40" />
+        </View>
+      </TouchableOpacity>
+    </View>
+  );
+}
+
+/**
+ * Interactive Touch & Drag Slider with Live Floating Tooltip & Stepper Nudge
  */
 function InteractiveSlider({
   label,
@@ -175,6 +190,7 @@ function InteractiveSlider({
   step = 1,
   ticks = [],
   formatValue = (v) => String(v),
+  subHelper = null,
   onChange,
   onSlidingStart,
   onSlidingEnd,
@@ -202,7 +218,7 @@ function InteractiveSlider({
     onChange(nextVal);
   };
 
-  const tooltipWidth = 68;
+  const tooltipWidth = 74;
   const thumbDiameter = 26;
   const thumbX = trackWidth > 0 ? (percent / 100) * (trackWidth - thumbDiameter) : 0;
   const tooltipX = trackWidth > 0 ? (percent / 100) * (trackWidth - tooltipWidth) : 0;
@@ -211,13 +227,16 @@ function InteractiveSlider({
     <View style={styles.sliderGroup}>
       {/* Label and Stepper Nudge Buttons */}
       <View style={styles.sliderHeaderRow}>
-        <Text style={styles.fieldLabel}>
-          {label} <Text style={styles.requiredAsterisk}>*</Text>
-        </Text>
+        <View style={styles.sliderLabelCol}>
+          <Text style={styles.fieldLabel}>
+            {label} <Text style={styles.requiredAsterisk}>*</Text>
+          </Text>
+          {subHelper && <Text style={styles.subHelperText}>{subHelper}</Text>}
+        </View>
         <View style={styles.stepperMiniBtns}>
           <TouchableOpacity
             style={styles.stepperNudgeBtn}
-            onPress={() => handleStep(-step * (label.includes('Bill') ? 5 : 1))}
+            onPress={() => handleStep(-step * 2)}
             activeOpacity={0.7}
             accessibilityLabel={`Decrease ${label}`}
           >
@@ -225,7 +244,7 @@ function InteractiveSlider({
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.stepperNudgeBtn}
-            onPress={() => handleStep(step * (label.includes('Bill') ? 5 : 1))}
+            onPress={() => handleStep(step * 2)}
             activeOpacity={0.7}
             accessibilityLabel={`Increase ${label}`}
           >
@@ -241,7 +260,7 @@ function InteractiveSlider({
             styles.floatingTooltipPillWrapper,
             trackWidth > 0
               ? { left: tooltipX }
-              : { left: `${percent}%`, transform: [{ translateX: -34 }] },
+              : { left: `${percent}%`, transform: [{ translateX: -37 }] },
           ]}
         >
           <View style={styles.tooltipPill}>
@@ -340,22 +359,38 @@ function InteractiveSlider({
 export default function SolarCalcScreen({ navigation, user }) {
   const { t } = useLanguage();
 
-  // Active step: 'landing' | 'step1' | 'step2' | 'step3' | 'step4' | 'step5'
+  // Active step: 'landing' | 'step1' (Consumption) | 'step2' (Roof & Home) | 'step3' (Estimate) | 'step4' (Vendors)
   const [activeStep, setActiveStep] = useState('landing');
 
-  // Form Inputs
-  const [fullName, setFullName] = useState(
-    user?.name || user?.fullName || 'Shravani Pachkawade'
-  );
-  const [mobileNumber, setMobileNumber] = useState(
-    user?.phone || user?.mobile || '8369140551'
-  );
-  const [selectedState, setSelectedState] = useState(user?.state || 'GUJARAT');
+  // User Profile data pre-fills (No redundant screens for Name, Mobile, State, District)
+  const rawName = user?.fullName || user?.name || 'Citizen';
+  const firstName = rawName.split(' ')[0] || 'Friend';
+  const mobileNumber = user?.phone || user?.mobile || '9876543210';
+  const [selectedState, setSelectedState] = useState(user?.state || 'Gujarat');
   const [selectedDistrict, setSelectedDistrict] = useState(
     user?.district || 'Gandhinagar'
   );
-  const [monthlyBill, setMonthlyBill] = useState(5000);
-  const [sanctionedLoad, setSanctionedLoad] = useState(5); // 5 kW default
+
+  // 1. Consumption Parameters (Prefer kWh over ₹)
+  const [inputMode, setInputMode] = useState('kwh'); // 'kwh' | 'bill'
+  const prefilledKwh =
+    user?.household?.electricity?.kwh ||
+    (user?.baselineAnnualCO2Kg ? Math.round(user.baselineAnnualCO2Kg / (12 * 0.71)) : 250);
+  const [monthlyKwh, setMonthlyKwh] = useState(prefilledKwh || 250);
+  const [monthlyBill, setMonthlyBill] = useState(2500);
+
+  // 2. Roof & Home Parameters
+  const [roofAreaSqft, setRoofAreaSqft] = useState(500); // 500 sq ft default
+  const prefilledHomeType = user?.household?.houseType || 'independent';
+  const [homeType, setHomeType] = useState(prefilledHomeType); // 'independent' | 'apartment' | 'other'
+
+  // 3. Optional Refinements (Can be skipped)
+  const [showOptionalRefinements, setShowOptionalRefinements] = useState(false);
+  const [roofOrientation, setRoofOrientation] = useState('south'); // 'south' | 'east_west' | 'not_sure'
+  const [sanctionedLoadKw, setSanctionedLoadKw] = useState(3); // 3 kW default
+  const [applySubsidy, setApplySubsidy] = useState(true); // Yes / No
+  const [alreadyHasSolar, setAlreadyHasSolar] = useState(false); // Yes / No
+  const [existingSolarCapacity, setExistingSolarCapacity] = useState(2); // kW
 
   // Modals & UI States
   const [isDistrictPickerOpen, setIsDistrictPickerOpen] = useState(false);
@@ -363,32 +398,61 @@ export default function SolarCalcScreen({ navigation, user }) {
   const [assessment, setAssessment] = useState(null);
   const [isScrollEnabled, setIsScrollEnabled] = useState(true);
 
-  // Bill & Load Stepper ticks
+  // Stepper Slider Ticks
+  const kwhTicks = [100, 250, 500, 750, 1000];
   const billTicks = [500, 2500, 5000, 7500, 10000];
-  const loadTicks = [1, 2.5, 5, 7.5, 10];
+  const roofTicks = [200, 500, 1000, 1500, 2000];
+
+  // Approximate bill equivalent from units: avg ~₹7.2/kWh
+  const calculatedBillFromKwh = Math.round(monthlyKwh * 7.2 + 80);
+  // Approximate units from bill: (bill - 80) / 7.2
+  const calculatedUnitsFromBill = Math.max(50, Math.round((monthlyBill - 80) / 7.2));
 
   // Perform assessment calculation
   const handleCalculate = useCallback(async () => {
     setIsCalculating(true);
     try {
-      const roofAreaSqft = Math.max(100, Math.round(sanctionedLoad * 100));
+      const effectiveBill = inputMode === 'kwh' ? calculatedBillFromKwh : monthlyBill;
+      const effectiveKwh = inputMode === 'kwh' ? monthlyKwh : calculatedUnitsFromBill;
+
+      // Orientation derating factor: South: 1.0, East-West: 0.92, Not Sure: 0.85
+      const orientationDerating =
+        roofOrientation === 'south' ? 1.0 : roofOrientation === 'east_west' ? 0.92 : 0.85;
+
       const res = await calculateSolar({
-        monthlyBillInr: monthlyBill,
+        monthlyBillInr: effectiveBill,
+        monthlyKwh: effectiveKwh,
         roofAreaSqft,
         district: selectedDistrict,
         state: selectedState,
+        homeType,
+        deratingFactor: orientationDerating,
+        applySubsidy,
       });
+
       setAssessment(res);
-      setActiveStep('step4');
+      setActiveStep('step3');
     } catch (err) {
-      // Graceful fallback to static estimates if calculation fails
-      setActiveStep('step4');
+      // Graceful fallback to static estimates if network or computation fails
+      setActiveStep('step3');
     } finally {
       setIsCalculating(false);
     }
-  }, [monthlyBill, sanctionedLoad, selectedDistrict, selectedState]);
+  }, [
+    inputMode,
+    calculatedBillFromKwh,
+    monthlyBill,
+    monthlyKwh,
+    calculatedUnitsFromBill,
+    roofAreaSqft,
+    selectedDistrict,
+    selectedState,
+    homeType,
+    roofOrientation,
+    applySubsidy,
+  ]);
 
-  // Filtered vendors for Step 5
+  // Filtered vendors for Step 4
   const displayedVendors = useMemo(() => {
     const matched = STATIC_SOLAR_VENDORS.filter(
       (v) =>
@@ -400,27 +464,34 @@ export default function SolarCalcScreen({ navigation, user }) {
     return matched.length >= 2 ? matched : STATIC_SOLAR_VENDORS;
   }, [selectedDistrict]);
 
-  // Derived values for Step 4
+  // Derived values for Estimate Step 3
   const capacityKw = useMemo(() => {
     if (assessment?.capacityKw) return assessment.capacityKw.toFixed(1);
-    return sanctionedLoad.toFixed(1);
-  }, [assessment, sanctionedLoad]);
+    // 100 sq ft per kW capped by roof and consumption
+    const capFromRoof = roofAreaSqft / 100;
+    const capFromKwh = (monthlyKwh * 12 * 0.9) / 1500;
+    const est = Math.min(10, Math.max(1, Math.min(capFromRoof, capFromKwh)));
+    return (Math.floor(est * 2) / 2).toFixed(1);
+  }, [assessment, roofAreaSqft, monthlyKwh]);
 
   const grossCostFormatted = useMemo(() => {
     if (assessment?.financials?.grossCostInr) {
       return formatInr(assessment.financials.grossCostInr);
     }
-    // Standard benchmark: ~₹50,000 / kW
-    return formatInr(sanctionedLoad * 50000);
-  }, [assessment, sanctionedLoad]);
+    const numCap = parseFloat(capacityKw) || 3;
+    return formatInr(numCap * 50000);
+  }, [assessment, capacityKw]);
 
   const subsidyFormatted = useMemo(() => {
-    if (assessment?.financials?.centralSubsidyInr) {
+    if (!applySubsidy) return '₹0 (Opted out)';
+    if (assessment?.financials?.centralSubsidyInr !== undefined) {
       return formatInr(assessment.financials.centralSubsidyInr);
     }
-    // PM Surya Ghar standard: ₹78,000 for 3kW+
-    return sanctionedLoad >= 3 ? '₹78,000' : '₹60,000';
-  }, [assessment, sanctionedLoad]);
+    const numCap = parseFloat(capacityKw) || 3;
+    if (numCap >= 3) return '₹78,000';
+    if (numCap >= 2) return '₹60,000';
+    return '₹30,000';
+  }, [assessment, capacityKw, applySubsidy]);
 
   const lifetimeSavingsLakhs = useMemo(() => {
     if (assessment?.financials?.lifetimeGrossSavingsInr) {
@@ -429,21 +500,20 @@ export default function SolarCalcScreen({ navigation, user }) {
       ).toFixed(2);
       return `₹${lakhs}L`;
     }
-    // Estimated 25-yr lifetime savings ~ 25 * 12 * (monthlyBill * 0.8)
-    const annualEst = monthlyBill * 0.85 * 12 * 25;
+    const effBill = inputMode === 'kwh' ? calculatedBillFromKwh : monthlyBill;
+    const annualEst = effBill * 0.85 * 12 * 25;
     return `₹${(annualEst / 100000).toFixed(2)}L`;
-  }, [assessment, monthlyBill]);
+  }, [assessment, inputMode, calculatedBillFromKwh, monthlyBill]);
 
-  // Handle dial call
+  // Vendor Action handlers
   const handleCallVendor = (phone) => {
     const cleanNumber = phone.replace(/[^0-9+]/g, '');
     Linking.openURL(`tel:${cleanNumber}`).catch(() => {});
   };
 
-  // Handle WhatsApp
-  const handleWhatsAppVendor = (whatsapp, name) => {
+  const handleWhatsAppVendor = (whatsapp, vendorName) => {
     const msg = encodeURIComponent(
-      `Hello ${name}, I saw your profile on Mission LiFE PM Surya Ghar solar portal. I want to book a free rooftop home inspection for ${capacityKw} kW in ${selectedDistrict}.`
+      `Hello ${vendorName}, I saw your profile on EcoPulse PM Surya Ghar solar portal. I want to book a free rooftop home inspection for ${capacityKw} kW in ${selectedDistrict}. My contact is ${rawName} (${mobileNumber}).`
     );
     Linking.openURL(`https://wa.me/${whatsapp}?text=${msg}`).catch(() => {});
   };
@@ -465,7 +535,6 @@ export default function SolarCalcScreen({ navigation, user }) {
 
           {/* "Try out solar calculator" Main Card */}
           <View style={styles.landingCard}>
-
             <Text style={styles.landingTitle}>Try out solar calculator</Text>
 
             <Text style={styles.landingDescription}>
@@ -480,7 +549,7 @@ export default function SolarCalcScreen({ navigation, user }) {
                   <CheckCircleIcon size={16} color={COLORS.success} />
                 </View>
                 <Text style={styles.highlightText}>
-                  Get up to ₹78,000 direct Govt. of India subsidy
+                  Get up to ₹78,000 direct PM Surya Ghar subsidy
                 </Text>
               </View>
 
@@ -513,7 +582,7 @@ export default function SolarCalcScreen({ navigation, user }) {
             >
               <ZapIcon size={20} color="#FFFFFF" />
               <Text style={styles.primaryActionBtnText}>
-                Start Solar Calculator
+                Start Solar Assessment
               </Text>
             </TouchableOpacity>
           </View>
@@ -523,7 +592,7 @@ export default function SolarCalcScreen({ navigation, user }) {
   }
 
   // =========================================================================
-  // VIEW 2: STEP 1 - ABOUT YOU
+  // VIEW 2: STEP 1 - CONSUMPTION (Preferred kWh over ₹)
   // =========================================================================
   if (activeStep === 'step1') {
     return (
@@ -538,144 +607,127 @@ export default function SolarCalcScreen({ navigation, user }) {
           style={styles.scroll}
           contentContainerStyle={styles.stepContent}
           showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
+          scrollEnabled={isScrollEnabled}
         >
-          {/* Mascot Speech Bubble */}
-          <EcoMascotSpeech
-            title="Get your solar plan estimate in just 3 steps"
-            subtitle="Please fill in your name and mobile number"
+          {/* Confirmed Location Badge Pill (from Profile) */}
+          <LocationPill
+            district={selectedDistrict}
+            state={selectedState}
+            onChangePress={() => setIsDistrictPickerOpen(true)}
           />
 
-          {/* Form Card */}
-          <View style={styles.formCard}>
-            {/* Full Name Input */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.fieldLabel}>
-                Full Name <Text style={styles.requiredAsterisk}>*</Text>
-              </Text>
-              <View style={styles.inputBox}>
-                <View style={styles.inputIconWrapper}>
-                  <UserIcon size={20} color={COLORS.textSecondary} />
-                </View>
-                <TextInput
-                  style={styles.textInput}
-                  value={fullName}
-                  onChangeText={setFullName}
-                  placeholder="Enter your full name"
-                  placeholderTextColor={COLORS.textMuted}
-                  autoCapitalize="words"
-                />
-              </View>
-            </View>
+          {/* Mascot Speech Bubble with Adjust/Energy Pose */}
+          <EcoMascotSpeech
+            pose="adjust"
+            title="Tell us about your electricity use"
+            subtitle="Prefilled from your home energy baseline. Direct units (kWh) give the highest precision!"
+          />
 
-            {/* Mobile Number Input */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.fieldLabel}>
-                Mobile Number <Text style={styles.requiredAsterisk}>*</Text>
+          {/* Input Mode Selector: kWh vs ₹ */}
+          <View style={styles.modeToggleContainer}>
+            <TouchableOpacity
+              style={[
+                styles.modeToggleBtn,
+                inputMode === 'kwh' && styles.modeToggleBtnActive,
+              ]}
+              onPress={() => setInputMode('kwh')}
+              activeOpacity={0.8}
+            >
+              <ZapIcon
+                size={16}
+                color={inputMode === 'kwh' ? '#FFFFFF' : COLORS.textSecondary}
+              />
+              <Text
+                style={[
+                  styles.modeToggleText,
+                  inputMode === 'kwh' && styles.modeToggleTextActive,
+                ]}
+              >
+                Units: kWh / mo (Recommended)
               </Text>
-              <View style={styles.inputBox}>
-                <View style={styles.inputIconWrapper}>
-                  <PhoneIcon size={20} color={COLORS.textSecondary} />
-                </View>
-                <TextInput
-                  style={styles.textInput}
-                  value={mobileNumber}
-                  onChangeText={setMobileNumber}
-                  placeholder="10-digit mobile number"
-                  placeholderTextColor={COLORS.textMuted}
-                  keyboardType="phone-pad"
-                  maxLength={10}
-                />
-              </View>
-            </View>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.modeToggleBtn,
+                inputMode === 'bill' && styles.modeToggleBtnActive,
+              ]}
+              onPress={() => setInputMode('bill')}
+              activeOpacity={0.8}
+            >
+              <Text
+                style={[
+                  styles.modeToggleText,
+                  inputMode === 'bill' && styles.modeToggleTextActive,
+                ]}
+              >
+                Use bill amount (₹)
+              </Text>
+            </TouchableOpacity>
           </View>
 
-          {/* Continue Button */}
-          <TouchableOpacity
-            style={[
-              styles.primaryActionButton,
-              styles.bottomContinueBtn,
-              (!fullName.trim() || mobileNumber.length < 10) &&
-                styles.btnDisabled,
-            ]}
-            onPress={() => setActiveStep('step2')}
-            disabled={!fullName.trim() || mobileNumber.length < 10}
-            activeOpacity={0.88}
-          >
-            <Text style={styles.primaryActionBtnText}>Continue</Text>
-          </TouchableOpacity>
-        </ScrollView>
-      </View>
-    );
-  }
-
-  // =========================================================================
-  // VIEW 3: STEP 2 - LOCATION
-  // =========================================================================
-  if (activeStep === 'step2') {
-    return (
-      <View style={styles.mainContainer}>
-        <WizardHeader
-          currentStep="step2"
-          onBack={() => setActiveStep('step1')}
-          onClose={() => setActiveStep('landing')}
-        />
-
-        <ScrollView
-          style={styles.scroll}
-          contentContainerStyle={styles.stepContent}
-          showsVerticalScrollIndicator={false}
-        >
-          {/* Mascot Speech Bubble */}
-          <EcoMascotSpeech
-            title="Get your solar plan estimate in just 2 steps"
-            subtitle="Please select your state and district"
-          />
-
-          {/* Form Card */}
+          {/* Form Card for Consumption Slider */}
           <View style={styles.formCard}>
-            {/* State Picker Row */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.fieldLabel}>
-                State <Text style={styles.requiredAsterisk}>*</Text>
-              </Text>
-              <View style={styles.pickerBox}>
-                <View style={styles.inputIconWrapper}>
-                  <MapPinIcon size={20} color={COLORS.primary} />
-                </View>
-                <Text style={styles.pickerValueText}>{selectedState}</Text>
-                <ChevronDownIcon size={16} color={COLORS.textSecondary} />
-              </View>
-            </View>
+            {inputMode === 'kwh' ? (
+              <>
+                <InteractiveSlider
+                  label="Monthly Electricity Use"
+                  value={monthlyKwh}
+                  min={50}
+                  max={1500}
+                  step={10}
+                  ticks={kwhTicks}
+                  formatValue={(val) => `${val} kWh`}
+                  subHelper="Prefilled from your baseline consumption"
+                  onChange={setMonthlyKwh}
+                  onSlidingStart={() => setIsScrollEnabled(false)}
+                  onSlidingEnd={() => setIsScrollEnabled(true)}
+                  accentColor="#00897B"
+                  trackBgColor="#B2DFDB"
+                />
 
-            {/* District Picker Row */}
-            <View style={styles.inputGroup}>
-              <Text style={styles.fieldLabel}>
-                District <Text style={styles.requiredAsterisk}>*</Text>
-              </Text>
-              <TouchableOpacity
-                style={styles.pickerBox}
-                onPress={() => setIsDistrictPickerOpen(true)}
-                activeOpacity={0.8}
-                accessibilityRole="button"
-                accessibilityLabel="Select district"
-              >
-                <View style={styles.inputIconWrapper}>
-                  <MapPinIcon size={20} color={COLORS.primary} />
+                <View style={styles.conversionInfoPill}>
+                  <Text style={styles.conversionInfoText}>
+                    💡 Equivalent bill: ~₹{calculatedBillFromKwh.toLocaleString('en-IN')}/mo under {selectedDistrict} tariff
+                  </Text>
                 </View>
-                <Text style={styles.pickerValueText}>{selectedDistrict}</Text>
-                <ChevronDownIcon size={16} color={COLORS.textSecondary} />
-              </TouchableOpacity>
-            </View>
+              </>
+            ) : (
+              <>
+                <InteractiveSlider
+                  label="Monthly Electricity Bill"
+                  value={monthlyBill}
+                  min={500}
+                  max={10000}
+                  step={100}
+                  ticks={billTicks}
+                  formatValue={(val) => `₹${val.toLocaleString('en-IN')}`}
+                  subHelper="We'll invert this to units via tariff slabs"
+                  onChange={setMonthlyBill}
+                  onSlidingStart={() => setIsScrollEnabled(false)}
+                  onSlidingEnd={() => setIsScrollEnabled(true)}
+                  accentColor="#F59E0B"
+                  trackBgColor="#FED7AA"
+                />
+
+                <View style={styles.conversionInfoPill}>
+                  <Text style={styles.conversionInfoText}>
+                    ⚡ Estimated units: ~{calculatedUnitsFromBill} kWh/mo
+                  </Text>
+                </View>
+              </>
+            )}
           </View>
 
           {/* Continue Button */}
           <TouchableOpacity
             style={[styles.primaryActionButton, styles.bottomContinueBtn]}
-            onPress={() => setActiveStep('step3')}
+            onPress={() => setActiveStep('step2')}
             activeOpacity={0.88}
           >
-            <Text style={styles.primaryActionBtnText}>Continue</Text>
+            <Text style={styles.primaryActionBtnText}>
+              Next: Roof & Home Details →
+            </Text>
           </TouchableOpacity>
         </ScrollView>
 
@@ -694,14 +746,14 @@ export default function SolarCalcScreen({ navigation, user }) {
   }
 
   // =========================================================================
-  // VIEW 4: STEP 3 - CONSUMPTION
+  // VIEW 3: STEP 2 - ROOF & HOME (Required + Optional Refinements)
   // =========================================================================
-  if (activeStep === 'step3') {
+  if (activeStep === 'step2') {
     return (
       <View style={styles.mainContainer}>
         <WizardHeader
-          currentStep="step3"
-          onBack={() => setActiveStep('step2')}
+          currentStep="step2"
+          onBack={() => setActiveStep('step1')}
           onClose={() => setActiveStep('landing')}
         />
 
@@ -711,50 +763,337 @@ export default function SolarCalcScreen({ navigation, user }) {
           showsVerticalScrollIndicator={false}
           scrollEnabled={isScrollEnabled}
         >
-          {/* Mascot Speech Bubble */}
-          <EcoMascotSpeech
-            title="Just one more step for your solar plan"
-            subtitle="Please indicate your last month's electricity bill and your sanctioned load"
+          {/* Confirmed Location Badge Pill */}
+          <LocationPill
+            district={selectedDistrict}
+            state={selectedState}
+            onChangePress={() => setIsDistrictPickerOpen(true)}
           />
 
-          {/* Slider Inputs Card */}
+          {/* Mascot Speech Bubble with Surveying Pose */}
+          <EcoMascotSpeech
+            pose="survey"
+            title="Roof area & dwelling type"
+            subtitle="Caps maximum solar capacity and determines RWA/NOC eligibility notes."
+          />
+
+          {/* Form Card */}
           <View style={styles.formCard}>
-            {/* 1. Monthly Electricity Bill Slider */}
+            {/* 1. Shadow-Free Roof Area Slider (Required) */}
             <InteractiveSlider
-              label="Last Month's Electricity Bill"
-              value={monthlyBill}
-              min={500}
-              max={10000}
-              step={100}
-              ticks={billTicks}
-              formatValue={(val) => `₹${val.toLocaleString('en-IN')}`}
-              onChange={setMonthlyBill}
+              label="Shadow-Free Roof Area"
+              value={roofAreaSqft}
+              min={100}
+              max={2000}
+              step={50}
+              ticks={roofTicks}
+              formatValue={(val) => `${val} sq ft`}
+              subHelper="1 kW needs ~100 sq ft; 500 sq ft supports up to 5 kW"
+              onChange={setRoofAreaSqft}
               onSlidingStart={() => setIsScrollEnabled(false)}
               onSlidingEnd={() => setIsScrollEnabled(true)}
-              accentColor="#F59E0B"
-              trackBgColor="#FED7AA"
+              accentColor="#00897B"
+              trackBgColor="#B2DFDB"
             />
 
             <View style={styles.formDivider} />
 
-            {/* 2. Sanctioned Load Slider */}
-            <InteractiveSlider
-              label="Sanctioned Load"
-              value={sanctionedLoad}
-              min={1}
-              max={10}
-              step={0.5}
-              ticks={loadTicks}
-              formatValue={(val) => `${val}kW`}
-              onChange={setSanctionedLoad}
-              onSlidingStart={() => setIsScrollEnabled(false)}
-              onSlidingEnd={() => setIsScrollEnabled(true)}
-              accentColor="#F59E0B"
-              trackBgColor="#FED7AA"
-            />
+            {/* 2. Home Type Selector (Required - Prefilled from Onboarding) */}
+            <View style={styles.inputGroup}>
+              <Text style={styles.fieldLabel}>
+                Home Type <Text style={styles.requiredAsterisk}>*</Text>
+              </Text>
+              <Text style={styles.fieldSubLabel}>
+                Roof access and subsidy eligibility criteria
+              </Text>
+
+              <View style={styles.chipRow}>
+                <TouchableOpacity
+                  style={[
+                    styles.homeTypeChip,
+                    homeType === 'independent' && styles.homeTypeChipActive,
+                  ]}
+                  onPress={() => setHomeType('independent')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.chipIcon}>🏠</Text>
+                  <Text
+                    style={[
+                      styles.chipLabel,
+                      homeType === 'independent' && styles.chipLabelActive,
+                    ]}
+                  >
+                    Independent House
+                  </Text>
+                  <Text style={styles.chipNote}>Full Roof Rights</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.homeTypeChip,
+                    homeType === 'apartment' && styles.homeTypeChipActive,
+                  ]}
+                  onPress={() => setHomeType('apartment')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.chipIcon}>🏢</Text>
+                  <Text
+                    style={[
+                      styles.chipLabel,
+                      homeType === 'apartment' && styles.chipLabelActive,
+                    ]}
+                  >
+                    Apartment / Society
+                  </Text>
+                  <Text style={styles.chipNote}>RWA NOC Required</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={[
+                    styles.homeTypeChip,
+                    homeType === 'other' && styles.homeTypeChipActive,
+                  ]}
+                  onPress={() => setHomeType('other')}
+                  activeOpacity={0.8}
+                >
+                  <Text style={styles.chipIcon}>🏘️</Text>
+                  <Text
+                    style={[
+                      styles.chipLabel,
+                      homeType === 'other' && styles.chipLabelActive,
+                    ]}
+                  >
+                    Other / Commercial
+                  </Text>
+                  <Text style={styles.chipNote}>Custom Evaluation</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            <View style={styles.formDivider} />
+
+            {/* 3. Optional Refinements (Expandable Accordion) */}
+            <TouchableOpacity
+              style={styles.optionalHeaderBtn}
+              onPress={() => setShowOptionalRefinements(!showOptionalRefinements)}
+              activeOpacity={0.8}
+            >
+              <View style={styles.optionalHeaderLeft}>
+                <Text style={styles.optionalHeaderTitle}>
+                  ⚙️ Optional Refinements
+                </Text>
+                <Text style={styles.optionalHeaderSub}>
+                  Orientation, sanctioned load, subsidy & existing solar (can skip)
+                </Text>
+              </View>
+              <View style={styles.optionalTogglePill}>
+                <Text style={styles.optionalToggleText}>
+                  {showOptionalRefinements ? 'Hide' : 'Refine'}
+                </Text>
+                <ChevronDownIcon
+                  size={14}
+                  color={COLORS.primary}
+                  style={showOptionalRefinements ? styles.iconRotated : null}
+                />
+              </View>
+            </TouchableOpacity>
+
+            {showOptionalRefinements && (
+              <View style={styles.optionalBody}>
+                {/* A. Roof Orientation & Shading */}
+                <View style={styles.refineGroup}>
+                  <Text style={styles.refineLabel}>
+                    Roof Orientation & Shading
+                  </Text>
+                  <Text style={styles.refineNote}>
+                    South orientation provides maximum sunlight yield in Gujarat
+                  </Text>
+                  <View style={styles.miniChipRow}>
+                    {[
+                      { key: 'south', label: '☀️ South (Optimal 100%)' },
+                      { key: 'east_west', label: '⛅ East-West (92%)' },
+                      { key: 'not_sure', label: '🌥️ Shaded / Not Sure' },
+                    ].map((item) => (
+                      <TouchableOpacity
+                        key={item.key}
+                        style={[
+                          styles.miniChip,
+                          roofOrientation === item.key && styles.miniChipActive,
+                        ]}
+                        onPress={() => setRoofOrientation(item.key)}
+                        activeOpacity={0.8}
+                      >
+                        <Text
+                          style={[
+                            styles.miniChipText,
+                            roofOrientation === item.key && styles.miniChipTextActive,
+                          ]}
+                        >
+                          {item.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+
+                {/* B. Sanctioned Load (kW) & Phase */}
+                <View style={styles.refineGroup}>
+                  <Text style={styles.refineLabel}>
+                    Sanctioned Load & Connection Phase
+                  </Text>
+                  <Text style={styles.refineNote}>
+                    Rooftop capacity is typically limited by sanctioned load
+                  </Text>
+                  <View style={styles.miniChipRow}>
+                    {[
+                      { val: 3, label: '1–3 kW (Single Phase)' },
+                      { val: 5, label: '4–6 kW (3-Phase)' },
+                      { val: 8, label: '>6 kW (3-Phase)' },
+                    ].map((item) => (
+                      <TouchableOpacity
+                        key={item.val}
+                        style={[
+                          styles.miniChip,
+                          sanctionedLoadKw === item.val && styles.miniChipActive,
+                        ]}
+                        onPress={() => setSanctionedLoadKw(item.val)}
+                        activeOpacity={0.8}
+                      >
+                        <Text
+                          style={[
+                            styles.miniChipText,
+                            sanctionedLoadKw === item.val && styles.miniChipTextActive,
+                          ]}
+                        >
+                          {item.label}
+                        </Text>
+                      </TouchableOpacity>
+                    ))}
+                  </View>
+                </View>
+
+                {/* C. Apply for Subsidy? */}
+                <View style={styles.refineGroup}>
+                  <Text style={styles.refineLabel}>
+                    Apply for PM Surya Ghar Subsidy?
+                  </Text>
+                  <View style={styles.miniChipRow}>
+                    <TouchableOpacity
+                      style={[
+                        styles.miniChip,
+                        applySubsidy && styles.miniChipActive,
+                      ]}
+                      onPress={() => setApplySubsidy(true)}
+                      activeOpacity={0.8}
+                    >
+                      <Text
+                        style={[
+                          styles.miniChipText,
+                          applySubsidy && styles.miniChipTextActive,
+                        ]}
+                      >
+                        ✅ Yes (Up to ₹78,000 Govt Aid)
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.miniChip,
+                        !applySubsidy && styles.miniChipActive,
+                      ]}
+                      onPress={() => setApplySubsidy(false)}
+                      activeOpacity={0.8}
+                    >
+                      <Text
+                        style={[
+                          styles.miniChipText,
+                          !applySubsidy && styles.miniChipTextActive,
+                        ]}
+                      >
+                        ❌ No Subsidy (Gross Only)
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+
+                {/* D. Existing Solar Capacity */}
+                <View style={styles.refineGroup}>
+                  <Text style={styles.refineLabel}>
+                    Already have rooftop solar installed?
+                  </Text>
+                  <View style={styles.miniChipRow}>
+                    <TouchableOpacity
+                      style={[
+                        styles.miniChip,
+                        !alreadyHasSolar && styles.miniChipActive,
+                      ]}
+                      onPress={() => setAlreadyHasSolar(false)}
+                      activeOpacity={0.8}
+                    >
+                      <Text
+                        style={[
+                          styles.miniChipText,
+                          !alreadyHasSolar && styles.miniChipTextActive,
+                        ]}
+                      >
+                        🌱 No, New Plant
+                      </Text>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      style={[
+                        styles.miniChip,
+                        alreadyHasSolar && styles.miniChipActive,
+                      ]}
+                      onPress={() => setAlreadyHasSolar(true)}
+                      activeOpacity={0.8}
+                    >
+                      <Text
+                        style={[
+                          styles.miniChipText,
+                          alreadyHasSolar && styles.miniChipTextActive,
+                        ]}
+                      >
+                        ☀️ Yes, Already Installed
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+
+                  {alreadyHasSolar && (
+                    <View style={styles.existingSolarInputBox}>
+                      <Text style={styles.existingSolarLabel}>
+                        Existing Capacity:
+                      </Text>
+                      <View style={styles.existingPillRow}>
+                        {[1, 2, 3, 5, 10].map((kw) => (
+                          <TouchableOpacity
+                            key={kw}
+                            style={[
+                              styles.kwPill,
+                              existingSolarCapacity === kw && styles.kwPillActive,
+                            ]}
+                            onPress={() => setExistingSolarCapacity(kw)}
+                            activeOpacity={0.8}
+                          >
+                            <Text
+                              style={[
+                                styles.kwPillText,
+                                existingSolarCapacity === kw && styles.kwPillTextActive,
+                              ]}
+                            >
+                              {kw} kW
+                            </Text>
+                          </TouchableOpacity>
+                        ))}
+                      </View>
+                    </View>
+                  )}
+                </View>
+              </View>
+            )}
           </View>
 
-          {/* Continue Button */}
+          {/* Continue Button to Calculate */}
           <TouchableOpacity
             style={[styles.primaryActionButton, styles.bottomContinueBtn]}
             onPress={handleCalculate}
@@ -764,22 +1103,35 @@ export default function SolarCalcScreen({ navigation, user }) {
             {isCalculating ? (
               <LottieLoader size={24} color="#FFFFFF" />
             ) : (
-              <Text style={styles.primaryActionBtnText}>Continue</Text>
+              <Text style={styles.primaryActionBtnText}>
+                Calculate Solar Plan ✨
+              </Text>
             )}
           </TouchableOpacity>
         </ScrollView>
+
+        {/* District Picker Modal */}
+        <DistrictPickerModal
+          visible={isDistrictPickerOpen}
+          selectedDistrict={selectedDistrict}
+          onSelect={(d) => {
+            setSelectedDistrict(d);
+            setIsDistrictPickerOpen(false);
+          }}
+          onClose={() => setIsDistrictPickerOpen(false)}
+        />
       </View>
     );
   }
 
   // =========================================================================
-  // VIEW 5: STEP 4 - SOLAR PLAN ESTIMATE
+  // VIEW 4: STEP 3 - SOLAR PLAN ESTIMATE (Results)
   // =========================================================================
-  if (activeStep === 'step4') {
+  if (activeStep === 'step3') {
     return (
       <View style={styles.mainContainer}>
         <ResultHeader
-          onBack={() => setActiveStep('step3')}
+          onBack={() => setActiveStep('step2')}
           onClose={() => setActiveStep('landing')}
         />
 
@@ -788,12 +1140,36 @@ export default function SolarCalcScreen({ navigation, user }) {
           contentContainerStyle={styles.stepContent}
           showsVerticalScrollIndicator={false}
         >
-          {/* Mascot Speech Bubble */}
+          {/* Confirmed Location Badge */}
+          <LocationPill
+            district={selectedDistrict}
+            state={selectedState}
+            onChangePress={() => setIsDistrictPickerOpen(true)}
+          />
+
+          {/* Mascot Speech Bubble with Celebration Pose */}
           <EcoMascotSpeech
-            title={`Hi ${fullName}!`}
-            subtitle="Congratulations, find below the detailed plan for lifetime savings"
+            pose="celebrate"
+            title={`Hi ${firstName}!`}
+            subtitle="Congratulations, find below the detailed plan for lifetime savings!"
             badgeText="⚡ CLEAN ENERGY"
           />
+
+          {/* Existing Solar Optimization Banner if user already has solar */}
+          {alreadyHasSolar && (
+            <View style={styles.existingSolarNoticeCard}>
+              <Text style={styles.existingNoticeTitle}>
+                🌟 Existing {existingSolarCapacity} kW System Detected
+              </Text>
+              <Text style={styles.existingNoticeBody}>
+                You are already generating solar clean energy! Rather than
+                adding additional panels that may exceed your sanctioned load,
+                our recommendation is to install a battery energy storage system
+                (BESS) or optimize daytime appliance scheduling to eliminate
+                peak grid tariffs.
+              </Text>
+            </View>
+          )}
 
           {/* 4 Grid Cards (2x2 layout matching reference screenshot) */}
           <View style={styles.metricGrid}>
@@ -840,7 +1216,7 @@ export default function SolarCalcScreen({ navigation, user }) {
           {/* See Nearby Vendors CTA */}
           <TouchableOpacity
             style={[styles.primaryActionButton, styles.bottomContinueBtn]}
-            onPress={() => setActiveStep('step5')}
+            onPress={() => setActiveStep('step4')}
             activeOpacity={0.88}
           >
             <Text style={styles.primaryActionBtnText}>See nearby vendors</Text>
@@ -851,12 +1227,12 @@ export default function SolarCalcScreen({ navigation, user }) {
   }
 
   // =========================================================================
-  // VIEW 6: STEP 5 - RECOMMENDED PARTNERS / NEARBY VENDORS
+  // VIEW 5: STEP 4 - RECOMMENDED PARTNERS / NEARBY VENDORS
   // =========================================================================
   return (
     <View style={styles.mainContainer}>
       <ResultHeader
-        onBack={() => setActiveStep('step4')}
+        onBack={() => setActiveStep('step3')}
         onClose={() => setActiveStep('landing')}
       />
 
@@ -865,10 +1241,11 @@ export default function SolarCalcScreen({ navigation, user }) {
         contentContainerStyle={styles.stepContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Mascot Speech Bubble */}
+        {/* Mascot Speech Bubble with Partner Pose */}
         <EcoMascotSpeech
-          title={`Hi ${fullName}!`}
-          subtitle="Your solar plan is ready! Here are a few recommended partners for you!"
+          pose="partner"
+          title={`Hi ${firstName}!`}
+          subtitle={`Your solar plan is ready! Here are verified empanelled partners in ${selectedDistrict}:`}
         />
 
         {/* Partner Cards matching reference screenshot */}
@@ -927,7 +1304,7 @@ export default function SolarCalcScreen({ navigation, user }) {
           activeOpacity={0.8}
         >
           <Text style={styles.secondaryRecalcText}>
-            Recalculate with different bill
+            Recalculate with different inputs
           </Text>
         </TouchableOpacity>
       </ScrollView>
@@ -950,41 +1327,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingHorizontal: 16,
-    paddingTop: Platform.OS === 'ios' ? 48 : 16,
+    paddingTop: Platform.OS === 'android' ? 14 : 10,
     paddingBottom: 12,
-    backgroundColor: '#F8FAF9',
+    backgroundColor: '#FFFFFF',
     borderBottomWidth: 1,
-    borderBottomColor: '#EEF2F6',
-  },
-  resultHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    paddingTop: Platform.OS === 'ios' ? 48 : 16,
-    paddingBottom: 12,
-    backgroundColor: '#F8FAF9',
-    borderBottomWidth: 1,
-    borderBottomColor: '#EEF2F6',
+    borderBottomColor: '#F1F5F9',
   },
   headerIconBtn: {
     width: 38,
     height: 38,
     borderRadius: 19,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#F1F5F9',
     alignItems: 'center',
     justifyContent: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    elevation: 1,
   },
   stepperCenter: {
     flex: 1,
-    paddingHorizontal: 12,
+    marginHorizontal: 16,
     alignItems: 'center',
   },
   progressBarBg: {
-    width: '90%',
+    width: '100%',
     height: 4,
     backgroundColor: '#E2E8F0',
     borderRadius: 2,
@@ -993,13 +1356,13 @@ const styles = StyleSheet.create({
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: COLORS.primary,
+    backgroundColor: '#F59E0B',
     borderRadius: 2,
   },
   stepLabelsRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    width: '95%',
+    width: '100%',
   },
   stepLabel: {
     fontSize: 11,
@@ -1007,11 +1370,21 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
   },
   stepLabelActive: {
-    color: COLORS.primaryDark,
+    color: '#0F172A',
     fontWeight: '800',
   },
 
-  // PM Surya Ghar Emblem in header
+  resultHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 16,
+    paddingTop: Platform.OS === 'android' ? 14 : 10,
+    paddingBottom: 12,
+    backgroundColor: '#FFFFFF',
+    borderBottomWidth: 1,
+    borderBottomColor: '#F1F5F9',
+  },
   emblemContainer: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -1020,29 +1393,68 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   emblemTitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '800',
     color: '#0F172A',
-    lineHeight: 16,
+    lineHeight: 14,
   },
   emblemSubtitle: {
     fontSize: 11,
     fontWeight: '600',
-    color: '#475569',
-    lineHeight: 14,
+    color: '#D97706',
+    lineHeight: 13,
   },
 
-  // Landing view
+  // Confirmed Location Pill
+  locationPillContainer: {
+    marginHorizontal: 16,
+    marginTop: 8,
+    marginBottom: 4,
+  },
+  locationPillBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    alignSelf: 'flex-start',
+    backgroundColor: '#E0F2F1',
+    paddingVertical: 5,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    borderWidth: 1,
+    borderColor: '#B2DFDB',
+  },
+  locationPillText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#004D40',
+    marginLeft: 5,
+    marginRight: 8,
+  },
+  locationChangeBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 10,
+  },
+  locationChangeText: {
+    fontSize: 10,
+    fontWeight: '700',
+    color: '#004D40',
+    marginRight: 2,
+  },
+
+  // Landing
   landingContent: {
-    paddingBottom: 36,
+    paddingBottom: 40,
   },
   landingCard: {
     backgroundColor: '#FFFFFF',
     borderRadius: 24,
-    padding: 20,
     marginHorizontal: 16,
-    marginTop: -24,
-    shadowColor: '#000000',
+    marginTop: 16,
+    padding: 24,
+    shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.06,
     shadowRadius: 12,
@@ -1050,191 +1462,200 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
-  landingBadgeRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FEF3C7',
-    paddingVertical: 5,
-    paddingHorizontal: 10,
-    borderRadius: 20,
-    alignSelf: 'flex-start',
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#FDE68A',
-  },
-  landingBadgeText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#92400E',
-    marginLeft: 6,
-  },
   landingTitle: {
     fontSize: 22,
     fontWeight: '800',
     color: '#0F172A',
     marginBottom: 8,
+    letterSpacing: -0.4,
   },
   landingDescription: {
     fontSize: 14,
-    color: '#475569',
+    color: '#64748B',
     lineHeight: 21,
-    marginBottom: 16,
+    marginBottom: 20,
   },
   highlightsContainer: {
-    backgroundColor: '#F8FAFC',
+    backgroundColor: '#F8FAF9',
     borderRadius: 16,
-    padding: 14,
-    marginBottom: 20,
+    padding: 16,
+    marginBottom: 24,
+    gap: 12,
   },
   highlightRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
   },
   highlightCheck: {
     marginRight: 10,
   },
   highlightText: {
-    fontSize: 13.5,
+    fontSize: 13,
     fontWeight: '600',
-    color: '#1E293B',
+    color: '#334155',
     flex: 1,
   },
 
-  // Wizard Step Content
+  // Steps common
   stepContent: {
-    paddingBottom: 40,
+    paddingBottom: 50,
   },
   formCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
-    padding: 20,
+    borderRadius: 20,
     marginHorizontal: 16,
+    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 8,
+    elevation: 2,
     borderWidth: 1,
     borderColor: '#E2E8F0',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-    marginBottom: 24,
   },
-  inputGroup: {
-    marginBottom: 18,
-  },
-  fieldLabel: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#0F172A',
-    marginBottom: 8,
-  },
-  requiredAsterisk: {
-    color: '#EF4444',
-  },
-  inputBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-    paddingHorizontal: 14,
-    height: 52,
-  },
-  inputIconWrapper: {
-    marginRight: 10,
-  },
-  textInput: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#0F172A',
-  },
-  pickerBox: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F8FAFC',
-    borderRadius: 16,
-    borderWidth: 1.5,
-    borderColor: '#E2E8F0',
-    paddingHorizontal: 14,
-    height: 52,
-  },
-  pickerValueText: {
-    flex: 1,
-    fontSize: 15,
-    fontWeight: '700',
-    color: '#0F172A',
+  formDivider: {
+    height: 1,
+    backgroundColor: '#F1F5F9',
+    marginVertical: 18,
   },
 
-  // Sliders in Step 3
+  // Toggle Mode Selector (kWh vs ₹)
+  modeToggleContainer: {
+    flexDirection: 'row',
+    marginHorizontal: 16,
+    marginBottom: 12,
+    backgroundColor: '#E2E8F0',
+    borderRadius: 14,
+    padding: 4,
+    gap: 4,
+  },
+  modeToggleBtn: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 10,
+    borderRadius: 11,
+    gap: 6,
+  },
+  modeToggleBtnActive: {
+    backgroundColor: '#00897B',
+    shadowColor: '#00897B',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  modeToggleText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#64748B',
+  },
+  modeToggleTextActive: {
+    color: '#FFFFFF',
+    fontWeight: '800',
+  },
+
+  conversionInfoPill: {
+    backgroundColor: '#E0F2F1',
+    borderRadius: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 12,
+    marginTop: 10,
+    borderWidth: 1,
+    borderColor: '#B2DFDB',
+  },
+  conversionInfoText: {
+    fontSize: 12,
+    color: '#004D40',
+    fontWeight: '600',
+  },
+
+  // Slider Elements
   sliderGroup: {
-    marginVertical: 4,
+    marginBottom: 6,
   },
   sliderHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: 4,
+    marginBottom: 2,
+  },
+  sliderLabelCol: {
+    flex: 1,
+    marginRight: 8,
+  },
+  fieldLabel: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0F172A',
+  },
+  fieldSubLabel: {
+    fontSize: 11.5,
+    color: '#64748B',
+    marginBottom: 10,
+    marginTop: 2,
+  },
+  subHelperText: {
+    fontSize: 11,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  requiredAsterisk: {
+    color: '#EF4444',
   },
   stepperMiniBtns: {
     flexDirection: 'row',
-    alignItems: 'center',
+    gap: 6,
   },
   stepperNudgeBtn: {
-    width: 28,
-    height: 28,
-    borderRadius: 14,
+    width: 30,
+    height: 30,
+    borderRadius: 15,
     backgroundColor: '#F1F5F9',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: 6,
     borderWidth: 1,
     borderColor: '#E2E8F0',
   },
   stepperNudgeBtnText: {
     fontSize: 16,
-    fontWeight: '800',
-    color: '#334155',
+    fontWeight: '700',
+    color: '#0F172A',
     lineHeight: 18,
   },
   floatingTooltipTrackArea: {
-    height: 38,
+    height: 34,
     position: 'relative',
-    justifyContent: 'flex-end',
-    marginBottom: 2,
+    marginTop: 4,
   },
   floatingTooltipPillWrapper: {
     position: 'absolute',
-    bottom: 0,
-    width: 68,
-    alignItems: 'center',
+    top: 0,
   },
   tooltipPill: {
     backgroundColor: '#FEF3C7',
     paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 12,
+    paddingHorizontal: 10,
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#FDE68A',
     alignItems: 'center',
-    justifyContent: 'center',
-    minWidth: 52,
-    position: 'relative',
     shadowColor: '#D97706',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
     elevation: 2,
   },
   tooltipPillText: {
-    fontSize: 12.5,
+    fontSize: 12,
     fontWeight: '800',
-    color: '#78350F',
+    color: '#92400E',
   },
   tooltipArrow: {
     position: 'absolute',
     bottom: -5,
+    alignSelf: 'center',
     width: 0,
     height: 0,
     borderLeftWidth: 5,
@@ -1245,198 +1666,361 @@ const styles = StyleSheet.create({
     borderTopColor: '#FEF3C7',
   },
   interactiveHitZone: {
-    height: 40,
+    height: 36,
     justifyContent: 'center',
     position: 'relative',
   },
   trackBgBar: {
-    height: 10,
-    borderRadius: 5,
+    height: 8,
+    borderRadius: 4,
     width: '100%',
   },
   trackFillBar: {
+    height: 8,
+    borderRadius: 4,
     position: 'absolute',
     left: 0,
-    height: 10,
-    borderRadius: 5,
   },
   sliderThumbSphere: {
-    position: 'absolute',
     width: 26,
     height: 26,
     borderRadius: 13,
+    position: 'absolute',
+    top: 5,
     borderWidth: 3,
     borderColor: '#FFFFFF',
-    shadowColor: '#D97706',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.45,
-    shadowRadius: 6,
-    elevation: 5,
-    top: 7,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.25,
+    shadowRadius: 5,
+    elevation: 4,
   },
   ticksRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    paddingHorizontal: 2,
     marginTop: 6,
   },
   tickCol: {
     alignItems: 'center',
+    paddingHorizontal: 4,
   },
   tickMarker: {
-    width: 1.5,
-    height: 6,
+    width: 2,
+    height: 5,
     backgroundColor: '#CBD5E1',
     marginBottom: 4,
   },
   tickMarkerActive: {
-    backgroundColor: '#D97706',
-    width: 2,
-    height: 8,
+    backgroundColor: '#0F172A',
+    height: 7,
   },
   tickLabel: {
-    fontSize: 11,
-    color: '#64748B',
-    fontWeight: '500',
+    fontSize: 10,
+    color: '#94A3B8',
+    fontWeight: '600',
   },
   tickLabelActive: {
     color: '#0F172A',
     fontWeight: '800',
   },
-  formDivider: {
-    height: 1,
-    backgroundColor: '#F1F5F9',
-    marginVertical: 18,
+
+  // Home Type Chips
+  chipRow: {
+    flexDirection: 'row',
+    gap: 8,
+  },
+  homeTypeChip: {
+    flex: 1,
+    backgroundColor: '#F8FAF9',
+    borderRadius: 14,
+    padding: 12,
+    borderWidth: 1.5,
+    borderColor: '#E2E8F0',
+    alignItems: 'center',
+  },
+  homeTypeChipActive: {
+    backgroundColor: '#E0F2F1',
+    borderColor: '#00897B',
+  },
+  chipIcon: {
+    fontSize: 22,
+    marginBottom: 4,
+  },
+  chipLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#334155',
+    textAlign: 'center',
+    marginBottom: 2,
+  },
+  chipLabelActive: {
+    color: '#004D40',
+  },
+  chipNote: {
+    fontSize: 9.5,
+    color: '#64748B',
+    textAlign: 'center',
   },
 
-  // Common Action Buttons
-  primaryActionButton: {
+  // Optional Refinements
+  optionalHeaderBtn: {
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingVertical: 6,
+  },
+  optionalHeaderLeft: {
+    flex: 1,
+    marginRight: 10,
+  },
+  optionalHeaderTitle: {
+    fontSize: 13.5,
+    fontWeight: '800',
+    color: '#0F172A',
+  },
+  optionalHeaderSub: {
+    fontSize: 11,
+    color: '#64748B',
+    marginTop: 2,
+  },
+  optionalTogglePill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#F1F5F9',
+    paddingVertical: 5,
+    paddingHorizontal: 10,
+    borderRadius: 12,
+    gap: 4,
+  },
+  optionalToggleText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: COLORS.primary,
+  },
+  iconRotated: {
+    transform: [{ rotate: '180deg' }],
+  },
+  optionalBody: {
+    marginTop: 14,
+    backgroundColor: '#F8FAF9',
+    borderRadius: 14,
+    padding: 14,
+    gap: 14,
+  },
+  refineGroup: {
+    gap: 4,
+  },
+  refineLabel: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#1E293B',
+  },
+  refineNote: {
+    fontSize: 10.5,
+    color: '#64748B',
+    marginBottom: 4,
+  },
+  miniChipRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
+  miniChip: {
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    borderRadius: 10,
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+  },
+  miniChipActive: {
+    backgroundColor: '#E0F2F1',
+    borderColor: '#00897B',
+  },
+  miniChipText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#475569',
+  },
+  miniChipTextActive: {
+    color: '#004D40',
+    fontWeight: '800',
+  },
+  existingSolarInputBox: {
+    marginTop: 8,
+    backgroundColor: '#FFFFFF',
+    padding: 10,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
+  },
+  existingSolarLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#334155',
+    marginBottom: 6,
+  },
+  existingPillRow: {
+    flexDirection: 'row',
+    gap: 6,
+  },
+  kwPill: {
+    paddingVertical: 4,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: '#CBD5E1',
+    backgroundColor: '#F8FAF9',
+  },
+  kwPillActive: {
+    backgroundColor: '#F59E0B',
+    borderColor: '#D97706',
+  },
+  kwPillText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#475569',
+  },
+  kwPillTextActive: {
+    color: '#FFFFFF',
+  },
+
+  // Primary Action Button
+  primaryActionButton: {
+    backgroundColor: '#F59E0B',
+    borderRadius: 18,
+    paddingVertical: 16,
+    paddingHorizontal: 24,
+    alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#00897B', // Our brand primary
-    height: 54,
-    borderRadius: 27,
-    shadowColor: '#00897B',
+    flexDirection: 'row',
+    gap: 8,
+    shadowColor: '#D97706',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.3,
     shadowRadius: 8,
-    elevation: 3,
+    elevation: 4,
   },
   primaryActionBtnText: {
-    color: '#FFFFFF',
     fontSize: 16,
     fontWeight: '800',
-    marginLeft: 6,
+    color: '#FFFFFF',
+    letterSpacing: -0.2,
   },
   bottomContinueBtn: {
     marginHorizontal: 16,
-  },
-  btnDisabled: {
-    backgroundColor: '#94A3B8',
-    shadowOpacity: 0,
-    elevation: 0,
+    marginTop: 20,
   },
 
-  // Step 4 Metrics Grid (2x2 layout)
+  // Results View
+  existingSolarNoticeCard: {
+    backgroundColor: '#FEF3C7',
+    borderRadius: 16,
+    marginHorizontal: 16,
+    marginBottom: 14,
+    padding: 14,
+    borderWidth: 1,
+    borderColor: '#FDE68A',
+  },
+  existingNoticeTitle: {
+    fontSize: 13,
+    fontWeight: '800',
+    color: '#92400E',
+    marginBottom: 4,
+  },
+  existingNoticeBody: {
+    fontSize: 11.5,
+    color: '#78350F',
+    lineHeight: 16,
+  },
   metricGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
     marginHorizontal: 16,
+    gap: 12,
     marginBottom: 16,
   },
   metricCard: {
     width: '48%',
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    flexGrow: 1,
+    backgroundColor: '#1E293B',
+    borderRadius: 16,
     padding: 16,
-    marginBottom: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.04,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.08,
     shadowRadius: 6,
-    elevation: 1,
+    elevation: 3,
   },
   metricCardLabel: {
-    fontSize: 12,
+    fontSize: 11.5,
+    color: '#94A3B8',
     fontWeight: '600',
-    color: '#64748B',
     marginBottom: 6,
   },
   metricCardValue: {
     fontSize: 18,
     fontWeight: '800',
-    color: '#0F172A',
+    color: '#F59E0B',
+    letterSpacing: -0.3,
   },
   subsidyValue: {
-    color: '#00897B',
+    color: '#10B981',
   },
-
-  // Lifetime Savings Hero
   lifetimeSavingsBlock: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    padding: 20,
+    backgroundColor: '#0F172A',
+    borderRadius: 20,
     marginHorizontal: 16,
-    marginBottom: 24,
+    padding: 22,
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    elevation: 2,
+    marginBottom: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 4,
   },
   lifetimeSavingsLabel: {
     fontSize: 13,
     fontWeight: '700',
-    color: '#64748B',
-    textTransform: 'uppercase',
-    letterSpacing: 0.5,
+    color: '#94A3B8',
     marginBottom: 4,
   },
   lifetimeSavingsValue: {
-    fontSize: 36,
+    fontSize: 34,
     fontWeight: '900',
-    color: '#D97706', // Warm golden solar amber
-    marginBottom: 4,
+    color: '#F59E0B',
+    letterSpacing: -0.5,
+    marginBottom: 6,
   },
   lifetimeSavingsSub: {
-    fontSize: 12,
-    color: '#94A3B8',
+    fontSize: 11.5,
+    color: '#64748B',
     textAlign: 'center',
   },
 
-  // Step 5 Vendor Cards
+  // Vendors List
   vendorsList: {
     marginHorizontal: 16,
-    marginBottom: 16,
+    gap: 14,
+    marginBottom: 20,
   },
   vendorCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    borderRadius: 18,
     padding: 18,
-    marginBottom: 14,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.05,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.06,
     shadowRadius: 8,
     elevation: 2,
-    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#E2E8F0',
   },
   vendorName: {
-    fontSize: 16,
+    fontSize: 15,
     fontWeight: '800',
     color: '#0F172A',
-    textAlign: 'center',
-    textTransform: 'uppercase',
-    letterSpacing: 0.3,
     marginBottom: 6,
   },
   vendorLocationRow: {
@@ -1445,77 +2029,71 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   vendorLocationText: {
-    fontSize: 13,
-    color: '#475569',
+    fontSize: 12,
     fontWeight: '600',
+    color: '#64748B',
     marginLeft: 4,
   },
   vendorRatingBadge: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#F1F5F9',
+    alignSelf: 'flex-start',
+    backgroundColor: '#FEF3C7',
     paddingVertical: 3,
-    paddingHorizontal: 10,
-    borderRadius: 12,
-    marginBottom: 16,
+    paddingHorizontal: 8,
+    borderRadius: 8,
+    marginBottom: 14,
+    gap: 4,
   },
   vendorRatingText: {
     fontSize: 12,
     fontWeight: '800',
-    color: '#1E293B',
-    marginLeft: 4,
+    color: '#92400E',
   },
   vendorActionsRow: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    gap: 10,
   },
   vendorCallBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FEF3C7', // Soft warm amber
-    borderWidth: 1,
-    borderColor: '#FDE68A',
-    paddingVertical: 12,
-    borderRadius: 16,
-    marginRight: 6,
+    backgroundColor: '#FED7AA',
+    borderRadius: 12,
+    paddingVertical: 10,
+    gap: 6,
   },
   vendorCallBtnText: {
-    fontSize: 13.5,
+    fontSize: 13,
     fontWeight: '700',
     color: '#92400E',
-    marginLeft: 6,
   },
   vendorWhatsAppBtn: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#D1FAE5', // Soft emerald tint
-    borderWidth: 1,
-    borderColor: '#A7F3D0',
-    paddingVertical: 12,
-    borderRadius: 16,
-    marginLeft: 6,
+    backgroundColor: '#D1FAE5',
+    borderRadius: 12,
+    paddingVertical: 10,
+    gap: 6,
   },
   vendorWhatsAppBtnText: {
-    fontSize: 13.5,
+    fontSize: 13,
     fontWeight: '700',
     color: '#065F46',
-    marginLeft: 6,
   },
   secondaryRecalcBtn: {
-    alignSelf: 'center',
+    alignItems: 'center',
     paddingVertical: 12,
-    paddingHorizontal: 20,
+    marginHorizontal: 16,
     marginBottom: 20,
   },
   secondaryRecalcText: {
-    fontSize: 14,
+    fontSize: 13,
     fontWeight: '700',
-    color: COLORS.primaryDark,
+    color: '#00897B',
     textDecorationLine: 'underline',
   },
 });

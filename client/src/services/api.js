@@ -140,3 +140,10 @@ export const apiUpdateProfile = async (updates) => {
     body: JSON.stringify(updates),
   });
 };
+
+// Leaderboard API
+export const apiGetLeaderboard = async ({ scope = 'district', metric = 'green' } = {}) => {
+  return await request(`/points/leaderboard?scope=${scope}&metric=${metric}`, {
+    method: 'GET',
+  });
+};

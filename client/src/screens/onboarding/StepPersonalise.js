@@ -74,7 +74,7 @@ export default function StepPersonalise({
       <ScrollView contentContainerStyle={styles.scrollContent} keyboardShouldPersistTaps="handled">
         <Text style={styles.title}>Personalise Your Profile ✦</Text>
         <Text style={styles.subtitle}>
-          Help us tailor your weekly AI energy saving tips and Mission LiFE badges.
+          Help us tailor your weekly AI energy saving tips and EcoPulse badges.
         </Text>
 
         {/* Section 1: Home Appliances */}
@@ -123,8 +123,8 @@ export default function StepPersonalise({
           })}
         </View>
 
-        {/* Section 2: Mission LiFE Habits & Pledge */}
-        <Text style={[styles.sectionHeader, { marginTop: 24 }]}>Mission LiFE Daily Habits 🌱</Text>
+        {/* Section 2: EcoPulse Habits & Pledge */}
+        <Text style={[styles.sectionHeader, { marginTop: 24 }]}>EcoPulse Daily Habits 🌱</Text>
         <Text style={styles.sectionDesc}>
           How often do you follow these eco-friendly habits?
         </Text>

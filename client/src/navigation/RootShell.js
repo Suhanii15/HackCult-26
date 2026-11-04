@@ -6,6 +6,7 @@ import { queryClient } from '../services/queryClient';
 import MainTabs from './MainTabs';
 import ProfileScreen from '../features/profile/screens/ProfileScreen';
 import NotificationScreen from '../features/notifications/screens/NotificationScreen';
+import LeaderboardScreen from '../screens/LeaderboardScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -30,6 +31,15 @@ export default function RootShell({ user, onLogout }) {
 
           <Stack.Screen name="Notifications">
             {(props) => <NotificationScreen {...props} user={user} />}
+          </Stack.Screen>
+
+          <Stack.Screen name="Leaderboard">
+            {(props) => (
+              <LeaderboardScreen
+                {...props}
+                onBack={() => props.navigation.goBack()}
+              />
+            )}
           </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>

@@ -50,11 +50,11 @@ async function runTestSuite() {
   console.log('✅ Connected to MongoDB Atlas');
 
   // Find or create test user
-  let testUser = await User.findOne({ email: 'test_activist@missionlife.gov.in' });
+  let testUser = await User.findOne({ email: 'test_activist@ecopulse.gov.in' });
   if (!testUser) {
     testUser = await User.create({
       fullName: 'Test Activist',
-      email: 'test_activist@missionlife.gov.in',
+      email: 'test_activist@ecopulse.gov.in',
       password: 'password123',
       district: 'Ahmedabad',
       city: 'Ahmedabad',

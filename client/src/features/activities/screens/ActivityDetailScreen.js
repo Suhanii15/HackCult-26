@@ -61,7 +61,7 @@ export default function ActivityDetailScreen() {
   const title = activity?.title || (activity?.titleKey && t(activity?.titleKey)) || 'Activity';
   const categoryName = activity?.category
     ? t(`cat_${activity.category}_name`) || activity.category
-    : 'Mission LiFE';
+    : 'EcoPulse';
 
   const durationDays = activity?.durationDays || (activity?.activityType === 'one_time' ? 1 : 7);
   const isOneTime = activity?.activityType === 'one_time';

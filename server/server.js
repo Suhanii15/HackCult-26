@@ -38,7 +38,7 @@ app.get('/api/v1/health', (req, res) => {
 
   res.status(200).json({
     success: true,
-    service: 'Mission LiFE API',
+    service: 'EcoPulse API',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
     database: dbStatusMap[mongoose.connection.readyState] || 'unknown',
@@ -50,6 +50,7 @@ app.use('/api/v1/auth', require('./routes/authRoutes'));
 app.use('/api/v1/users', require('./routes/userRoutes'));
 app.use('/api/v1/footprint', require('./routes/footprintRoutes'));
 app.use('/api/v1/activities', require('./routes/activityRoutes'));
+app.use('/api/v1/points', require('./routes/pointsRoutes'));
 app.use('/api/v1/solar', require('./routes/solarRoutes'));
 app.use('/api/v1/vendors', require('./routes/vendorRoutes'));
 
@@ -60,9 +61,9 @@ const PORT = process.env.PORT || 5000;
 
 let server;
 if (require.main === module) {
-  server = app.listen(PORT, () => {
+  server = app.listen(PORT, '0.0.0.0', () => {
     console.log(
-      `🚀 Mission LiFE Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`
+      `🚀 EcoPulse Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`
     );
     console.log(`📡 Health Check: http://localhost:${PORT}/api/v1/health`);
   });

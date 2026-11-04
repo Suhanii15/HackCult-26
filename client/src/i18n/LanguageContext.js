@@ -8,7 +8,7 @@ const TRANSLATIONS = {
     btn_confirm_language: 'Continue',
 
     // Welcome Screen
-    app_title: 'Mission LiFE',
+    app_title: 'EcoPulse',
     app_subtitle: 'Lifestyle for Environment',
     app_tagline: 'Small daily actions create enduring planetary change.',
     welcome_slide1_badge: 'CARBON FOOTPRINT',
@@ -31,10 +31,10 @@ const TRANSLATIONS = {
 
     btn_create_account: 'Create an Account',
     btn_login: 'Log In',
-    welcome_disclaimer: "By continuing, you join Gujarat's Mission LiFE climate pledge",
+    welcome_disclaimer: "By continuing, you join Gujarat's EcoPulse climate pledge",
 
     // Auth Screen
-    auth_signup_title: 'Join Mission LiFE',
+    auth_signup_title: 'Join EcoPulse',
     auth_signup_sub: 'Create your citizen profile to start tracking your footprint.',
     auth_login_title: 'Welcome Back',
     auth_login_sub: 'Enter your credentials to access your sustainability companion.',
@@ -237,11 +237,11 @@ const TRANSLATIONS = {
     tasks_subtitle: 'Small actions for lasting impact',
     daily_challenge_active: 'Active Daily Challenge',
     community_title: 'Community Impact',
-    community_subtitle: 'Mission LiFE citizens across Gujarat',
+    community_subtitle: 'EcoPulse citizens across Gujarat',
     solar_title: 'Clean Solar Energy',
     solar_subtitle: 'Solar rooftop feasibility & subsidy',
     profile_title: 'Citizen Profile',
-    profile_subtitle: 'Mission LiFE Gujarat',
+    profile_subtitle: 'EcoPulse Gujarat',
     app_preferences: 'App Preferences',
     btn_logout: 'Log Out',
     tab_activities: 'Activities',
@@ -275,7 +275,7 @@ const TRANSLATIONS = {
 
     // Activities & Challenges Feature
     activities_main_title: 'Your Activities',
-    activities_main_sub: 'Adopt Mission LiFE actions, complete daily challenges, and earn Green Points.',
+    activities_main_sub: 'Adopt EcoPulse actions, complete daily challenges, and earn Green Points.',
     activities_active_summary_zero: 'No active activities yet',
     activities_active_summary_one: '1 activity in progress',
     activities_active_summary_many: '{count} activities in progress',
@@ -422,7 +422,7 @@ const TRANSLATIONS = {
     btn_confirm_language: 'ચાલુ રાખો',
 
     // Welcome Screen
-    app_title: 'મિશન LiFE',
+    app_title: 'ઇકોપલ્સ (EcoPulse)',
     app_subtitle: 'પર્યાવરણ માટે જીવનશૈલી',
     app_tagline: 'રોજિંદા નાના પગલાં પૃથ્વીમાં મોટો બદલાવ લાવે છે.',
     welcome_slide1_badge: 'કાર્બન ફૂટપ્રિન્ટ',
@@ -445,10 +445,10 @@ const TRANSLATIONS = {
 
     btn_create_account: 'ખાતું બનાવો',
     btn_login: 'લૉગ ઇન',
-    welcome_disclaimer: 'આગળ વધીને તમે ગુજરાતના મિશન LiFE સંકલ્પમાં જોડાવ છો',
+    welcome_disclaimer: 'આગળ વધીને તમે ગુજરાતના ઇકોપલ્સ (EcoPulse) સંકલ્પમાં જોડાવ છો',
 
     // Auth Screen
-    auth_signup_title: 'મિશન LiFE માં જોડાવો',
+    auth_signup_title: 'ઇકોપલ્સ (EcoPulse) માં જોડાવો',
     auth_signup_sub: 'તમારો ફૂટપ્રિન્ટ માપવા માટે નાગરિક પ્રોફાઇલ બનાવો.',
     auth_login_title: 'સ્વાગત છે',
     auth_login_sub: 'તમારા એકાઉન્ટમાં પ્રવેશ કરવા માહિતી દાખલ કરો.',
@@ -651,17 +651,17 @@ const TRANSLATIONS = {
     tasks_subtitle: 'કાયમી અસર માટે નાના કાર્યો',
     daily_challenge_active: 'સક્રિય દૈનિક પડકાર',
     community_title: 'સમુદાય અસર',
-    community_subtitle: 'સમગ્ર ગુજરાતમાં મિશન LiFE નાગરિકો',
+    community_subtitle: 'સમગ્ર ગુજરાતમાં ઇકોપલ્સ (EcoPulse) નાગરિકો',
     solar_title: 'સ્વચ્છ સૌર ઊર્જા',
     solar_subtitle: 'સોલર રૂફટોપ શક્યતા અને સબસિડી',
     profile_title: 'નાગરિક પ્રોફાઇલ',
-    profile_subtitle: 'મિશન LiFE ગુજરાત',
+    profile_subtitle: 'ઇકોપલ્સ (EcoPulse) ગુજરાત',
     app_preferences: 'એપ્લિકેશન પસંદગીઓ',
     btn_logout: 'લોગ આઉટ',
 
     // Activities & Challenges Feature
     activities_main_title: 'તમારી પ્રવૃત્તિઓ',
-    activities_main_sub: 'મિશન LiFE ક્રિયાઓ અપનાવો, દૈનિક પડકારો પૂર્ણ કરો અને ગ્રીન પોઈન્ટ્સ મેળવો.',
+    activities_main_sub: 'ઇકોપલ્સ (EcoPulse) ક્રિયાઓ અપનાવો, દૈનિક પડકારો પૂર્ણ કરો અને ગ્રીન પોઈન્ટ્સ મેળવો.',
     activities_active_summary_zero: 'હજુ સુધી કોઈ સક્રિય પ્રવૃત્તિ નથી',
     activities_active_summary_one: '1 પ્રવૃત્તિ ચાલુ છે',
     activities_active_summary_many: '{count} પ્રવૃત્તિઓ ચાલુ છે',
@@ -808,7 +808,7 @@ const TRANSLATIONS = {
     btn_confirm_language: 'जारी रखें',
 
     // Welcome Screen
-    app_title: 'मिशन LiFE',
+    app_title: 'इकोपल्स (EcoPulse)',
     app_subtitle: 'पर्यावरण के लिए जीवनशैली',
     app_tagline: 'दैनिक छोटे कदम पृथ्वी में बड़ा बदलाव लाते हैं।',
     welcome_slide1_badge: 'कार्बन फुटप्रिंट',
@@ -831,10 +831,10 @@ const TRANSLATIONS = {
 
     btn_create_account: 'खाता बनाएं',
     btn_login: 'लॉग इन',
-    welcome_disclaimer: 'आगे बढ़कर आप मिशन LiFE के हरित संकल्प में शामिल होते हैं',
+    welcome_disclaimer: 'आगे बढ़कर आप इकोपल्स (EcoPulse) के हरित संकल्प में शामिल होते हैं',
 
     // Auth Screen
-    auth_signup_title: 'मिशन LiFE से जुड़ें',
+    auth_signup_title: 'इकोपल्स (EcoPulse) से जुड़ें',
     auth_signup_sub: 'अपना फुटप्रिंट ट्रैक करने के लिए नागरिक प्रोफाइल बनाएं।',
     auth_login_title: 'वापसी पर स्वागत है',
     auth_login_sub: 'अपने खाते में प्रवेश करने के लिए विवरण दर्ज करें।',
@@ -1037,11 +1037,11 @@ const TRANSLATIONS = {
     tasks_subtitle: 'स्थायी प्रभाव के लिए छोटे कार्य',
     daily_challenge_active: 'सक्रिय दैनिक चुनौती',
     community_title: 'सामुदायिक प्रभाव',
-    community_subtitle: 'पूरे गुजरात में मिशन LiFE नागरिक',
+    community_subtitle: 'पूरे गुजरात में इकोपल्स (EcoPulse) नागरिक',
     solar_title: 'स्वच्छ सौर ऊर्जा',
     solar_subtitle: 'सोलर रूफटॉप संभावना और सब्सिडी',
     profile_title: 'नागरिक प्रोफ़ाइल',
-    profile_subtitle: 'मिशन LiFE गुजरात',
+    profile_subtitle: 'इकोपल्स (EcoPulse) गुजरात',
     app_preferences: 'ऐप प्राथमिकताएं',
     btn_logout: 'लॉग आउट',
     tab_activities: 'गतिविधियाँ',
@@ -1075,7 +1075,7 @@ const TRANSLATIONS = {
 
     // Activities & Challenges Feature
     activities_main_title: 'आपकी गतिविधियाँ',
-    activities_main_sub: 'मिशन LiFE के कार्य अपनाएं, दैनिक चुनौतियाँ पूरी करें और ग्रीन पॉइंट्स अर्जित करें।',
+    activities_main_sub: 'इकोपल्स (EcoPulse) के कार्य अपनाएं, दैनिक चुनौतियाँ पूरी करें और ग्रीन पॉइंट्स अर्जित करें।',
     activities_active_summary_zero: 'अभी कोई सक्रिय गतिविधि नहीं है',
     activities_active_summary_one: '1 गतिविधि प्रगति पर है',
     activities_active_summary_many: '{count} गतिविधियाँ प्रगति पर हैं',

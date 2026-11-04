@@ -113,7 +113,7 @@ export default function NotificationScreen({ navigation, user }) {
     const newNotif = {
       id: `test_${Date.now()}`,
       type: 'alert',
-      title: 'Mission LiFE Grid Alert',
+      title: 'EcoPulse Grid Alert',
       body: 'Peak power hours are active. Switch off heavy appliances to conserve energy!',
       time: 'Just now',
       read: false,
@@ -123,7 +123,7 @@ export default function NotificationScreen({ navigation, user }) {
     setNotifications((prev) => [newNotif, ...prev]);
 
     await triggerDeviceNotification({
-      title: 'Mission LiFE Grid Alert ⚡',
+      title: 'EcoPulse Grid Alert ⚡',
       body: 'Peak power hours are active. Switch off heavy appliances to conserve energy!',
       sound: true,
     });

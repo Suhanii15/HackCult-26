@@ -148,6 +148,13 @@ const UserSchema = new mongoose.Schema(
   }
 );
 
+// Fast compound indexes for multi-scope leaderboards
+UserSchema.index({ district: 1, totalPoints: -1 });
+UserSchema.index({ district: 1, 'ecoScore.total': -1 });
+UserSchema.index({ district: 1, baselineAnnualCO2Kg: 1 });
+UserSchema.index({ state: 1, totalPoints: -1 });
+UserSchema.index({ city: 1, totalPoints: -1 });
+
 // Encrypt password before saving
 UserSchema.pre('save', async function (next) {
   if (!this.isModified('password')) {

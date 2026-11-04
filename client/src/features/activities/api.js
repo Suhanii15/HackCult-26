@@ -1,6 +1,6 @@
 import { request } from '../../services/api';
 
-// Comprehensive 13 official Mission LiFE activities catalog
+// Comprehensive 13 official EcoPulse activities catalog
 export const FALLBACK_ACTIVITIES = [
   // 1. Energy Conservation
   {

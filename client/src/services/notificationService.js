@@ -132,7 +132,7 @@ export function getDefaultNotifications(userName = 'Citizen') {
     {
       id: 'notif_habit_streak',
       type: 'activity',
-      title: 'Maintain Your Mission LiFE Streak',
+      title: 'Maintain Your EcoPulse Streak',
       body: 'Complete your daily eco-check-ins today to increase your EcoScore and earn Green Points.',
       time: '2 days ago',
       read: true,

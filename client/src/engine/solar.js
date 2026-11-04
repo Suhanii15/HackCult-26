@@ -1,7 +1,7 @@
 /**
  * shared/engine/solar.js
  *
- * Mission LiFE Solar Rooftop Calculator Engine.
+ * EcoPulse Solar Rooftop Calculator Engine.
  * Pure functions, deterministic, zero I/O, zero network calls at runtime.
  * All constants and numbers are loaded from shared/engine/config/solar.json.
  */
@@ -276,11 +276,12 @@ function calculateSolarPotential(inputs, options = {}) {
     : config.tariff.defaultDiscom;
 
   // Invert monthly bill to consumption units (kWh)
-  const monthlyUnits = billToUnits(monthlyBillInr, discomKey, config);
+  const monthlyUnits = Number(inputs?.monthlyKwh || inputs?.monthlyUnits) > 0 ? Number(inputs.monthlyKwh || inputs.monthlyUnits) : billToUnits(monthlyBillInr, discomKey, config);
 
   // Resolve solar yield
   const yieldInfo = resolveSolarYield(district, state, yieldData, config);
-  const yearlyYield = yieldInfo.yieldKwhPerKwp;
+  const derating = Number(inputs?.deratingFactor) > 0 ? Number(inputs.deratingFactor) : 1.0;
+  const yearlyYield = yieldInfo.yieldKwhPerKwp * derating;
 
   // Capacity calculations
   const sqftPerKw = config.system.sqftPerKw;
@@ -350,7 +351,7 @@ function calculateSolarPotential(inputs, options = {}) {
   // Capital Costs & Subsidies
   const costPerKw = getCostPerKw(capacityKw, config.cost);
   const grossCost = capacityKw * costPerKw;
-  const centralSubsidy = calculateCentralSubsidy(capacityKw, config.pmSuryaGhar);
+  const centralSubsidy = inputs?.applySubsidy === false ? 0 : calculateCentralSubsidy(capacityKw, config.pmSuryaGhar);
   const stateSubsidy = calculateStateSubsidy(capacityKw, config.stateSubsidy, state);
   const netInvestment = Math.max(0, grossCost - centralSubsidy - stateSubsidy);
 

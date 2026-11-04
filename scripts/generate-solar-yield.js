@@ -56,7 +56,7 @@ async function fetchDistrictYield(district, lat, lon, retries = 3) {
   for (let attempt = 1; attempt <= retries; attempt++) {
     try {
       const response = await fetch(url, {
-        headers: { 'User-Agent': 'MissionLiFE-SolarEngine/1.0' },
+        headers: { 'User-Agent': 'EcoPulse-SolarEngine/1.0' },
         signal: AbortSignal.timeout(15000),
       });
       if (!response.ok) {

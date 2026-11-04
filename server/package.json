@@ -1,7 +1,7 @@
 {
-  "name": "mission-life-server",
+  "name": "ecopulse-server",
   "version": "1.0.0",
-  "description": "Backend API for Mission LiFE (Lifestyle for Environment)",
+  "description": "Backend API for EcoPulse (Lifestyle for Environment)",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
@@ -21,6 +21,6 @@
   "devDependencies": {
     "nodemon": "^3.1.0"
   },
-  "keywords": ["mission-life", "sustainability", "geda", "carbon-footprint"],
+  "keywords": ["ecopulse", "sustainability", "geda", "carbon-footprint"],
   "license": "ISC"
 }

@@ -1,0 +1,39 @@
+flowchart TD
+    subgraph ClientLayer["Mobile & Web Client (React Native / Expo 51)"]
+        UI["UI Screens (Home, Activities, Solar, Profile)"]
+        LocalEngine["Local Deterministic Engine (Zero I/O Preview)"]
+        SecureStore["SecureStore / JWT Auth Token"]
+        i18n["Tri-Lingual Engine (EN / GU / HI)"]
+    end
+
+    subgraph APILayer["Backend Runtime (Node.js 20 / Express 4.19)"]
+        AuthMiddleware["JWT Auth & Rate Limiter Middleware"]
+        Controllers["Controllers (Footprint, Activities, Solar, User)"]
+        ServerEngine["Authoritative Mirror Engine (Pure Deterministic JS)"]
+    end
+
+    subgraph ConfigLayer["Authoritative Standards & Config Datasets"]
+        CEABaseline["CEA Baseline v19 (0.71 kg CO2e/kWh)"]
+        GERCTariffs["GERC FY24-25 RGP Tariffs & GUVNL FPPPA"]
+        PMSuryaSlabs["PM Surya Ghar MNRE 2024 Slabs"]
+        PVGISYield["JRC PVGIS-SARAH2 33 Gujarat Districts"]
+    end
+
+    subgraph DataLayer["Persistence (MongoDB Atlas M0 / Mongoose 8.4)"]
+        UserCol[("Users")]
+        FootprintCol[("FootprintLogs (Immutable Snapshots)")]
+        ActivityCol[("Activities & CheckIns")]
+        LedgerCol[("GreenPoint & EcoScore (Append-Only)")]
+        SolarCol[("SolarEstimates & SolarEnquiries")]
+        VendorCol[("Empanelled Vendors")]
+    end
+
+    %% Numbered Request Flow
+    UI -- "1. Instant User Input" --> LocalEngine
+    UI -- "2. POST /api/v1/solar/calculate (Bearer Token)" --> AuthMiddleware
+    AuthMiddleware -- "3. Validate Token & Rate Limit" --> Controllers
+    Controllers -- "4. Authoritative Calculation" --> ServerEngine
+    ConfigLayer -. "Loads Verified Constants" .-> ServerEngine
+    ConfigLayer -. "Synchronized via syncEngine.js" .-> LocalEngine
+    Controllers -- "5. Persist Immutable Record" --> DataLayer
+    Controllers -- "6. Return Verified Verdict & Slabs" --> UI
