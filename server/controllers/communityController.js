@@ -29,7 +29,9 @@ function formatPost(post, currentUserId, userLikedSet = new Set(), userCelebrate
     _id: String(p._id),
     userId: String(p.userId),
     author: p.authorName || 'Citizen',
+    authorName: p.authorName || 'Citizen',
     district: p.authorDistrict || 'Gujarat',
+    authorDistrict: p.authorDistrict || 'Gujarat',
     authorAvatar: p.authorAvatar || null,
     time: timeStr,
     tag: p.tag || '🌱 Eco Move',
@@ -178,8 +180,15 @@ exports.getFeed = async (req, res) => {
       count: formattedPosts.length,
       total,
       page,
+      limit,
       totalPages: Math.ceil(total / limit) || 1,
       hasMore: skip + formattedPosts.length < total,
+      pagination: {
+        page,
+        limit,
+        total,
+        pages: Math.ceil(total / limit) || 1,
+      },
       data: formattedPosts,
       posts: formattedPosts,
     });
@@ -380,8 +389,9 @@ exports.likePost = async (req, res) => {
     } catch (err) {
       // E11000 duplicate key -> already liked
       if (err.code === 11000) {
-        return res.status(200).json({
-          success: true,
+        return res.status(409).json({
+          success: false,
+          message: 'You have already liked this post.',
           isLiked: true,
           likesCount: post.likesCount,
           likes: post.likesCount,
@@ -487,8 +497,9 @@ exports.celebratePost = async (req, res) => {
     } catch (err) {
       // E11000 duplicate key -> already celebrated
       if (err.code === 11000) {
-        return res.status(200).json({
-          success: true,
+        return res.status(409).json({
+          success: false,
+          message: 'You have already celebrated this post.',
           isCelebrated: true,
           celebratesCount: post.celebratesCount,
           celebrates: post.celebratesCount,
