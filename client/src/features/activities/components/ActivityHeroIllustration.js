@@ -4,7 +4,6 @@ import Svg, {
   Path,
   Rect,
   Circle,
-  Ellipse,
   G,
   Defs,
   LinearGradient,
@@ -313,9 +312,9 @@ export default function ActivityHeroIllustration({
             <Circle cx="125" cy="116" r="2.5" fill="#7DD3FC" />
 
             {/* Water Ripple Circles */}
-            <Ellipse cx="160" cy="165" rx="50" ry="12" fill="none" stroke="#38BDF8" strokeWidth="2.5" opacity="0.8" />
-            <Ellipse cx="160" cy="165" rx="32" ry="8" fill="none" stroke="#7DD3FC" strokeWidth="2" opacity="0.6" />
-            <Ellipse cx="160" cy="165" rx="15" ry="4" fill="#0284C7" opacity="0.5" />
+            <Path d="M 110,165 a 50,12 0 1,0 100,0 a 50,12 0 1,0 -100,0" fill="none" stroke="#38BDF8" strokeWidth="2.5" opacity="0.8" />
+            <Path d="M 128,165 a 32,8 0 1,0 64,0 a 32,8 0 1,0 -64,0" fill="none" stroke="#7DD3FC" strokeWidth="2" opacity="0.6" />
+            <Path d="M 145,165 a 15,4 0 1,0 30,0 a 15,4 0 1,0 -30,0" fill="none" stroke="#0284C7" opacity="0.5" />
 
             {/* Floating Pure Leaf */}
             <Path d="M195,120 C185,110 185,135 205,132 C210,122 205,115 195,120 Z" fill="#34D399" />
@@ -355,7 +354,7 @@ export default function ActivityHeroIllustration({
             <Path d="M115,110 Q145,100 155,120 Q135,135 115,125 Z" fill="#6EE7B7" opacity="0.85" />
 
             {/* Orbiting Eco Ring */}
-            <Ellipse cx="125" cy="100" rx="72" ry="24" fill="none" stroke="#A7F3D0" strokeWidth="2" strokeDasharray="6 4" opacity="0.85" />
+            <Path d="M 53,100 a 72,24 0 1,0 144,0 a 72,24 0 1,0 -144,0" fill="none" stroke="#A7F3D0" strokeWidth="2" strokeDasharray="6 4" opacity="0.85" />
             <Circle cx="185" cy="90" r="5" fill="#FDE047" />
 
             {/* Sprouting LiFE Plant on top */}

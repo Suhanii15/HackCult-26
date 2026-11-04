@@ -1,0 +1,100 @@
+erDiagram
+    USER ||--o{ FOOTPRINT_LOG : "has historical snapshots"
+    USER ||--o{ ACTIVITY_CHECKIN : "logs daily completions"
+    USER ||--o{ GREEN_POINT_TRANSACTION : "receives points"
+    USER ||--o{ SOLAR_ESTIMATE : "saves assessments"
+    USER ||--o{ SOLAR_ENQUIRY : "submits leads"
+    VENDOR ||--o{ SOLAR_ENQUIRY : "assigned lead"
+
+    USER {
+        ObjectId _id PK
+        string fullName
+        string email UK "Indexed"
+        string phone
+        string role "citizen | admin"
+        string district "Indexed"
+        object household "Survey & appliances"
+        number baselineAnnualCO2Kg
+        number totalPoints
+        timestamp createdAt
+    }
+
+    FOOTPRINT_LOG {
+        ObjectId _id PK
+        ObjectId userId FK "Indexed (userId + createdAt DESC)"
+        string periodType "baseline | monthly_audit | what_if"
+        number totalMonthlyCO2Kg
+        number annualCO2Tonnes
+        object breakdown "electricity, cooking, transport"
+        object comparison "gujaratUrbanAvgTonnes"
+        object rawInputsSnapshot "Immutable record"
+        timestamp createdAt
+    }
+
+    ACTIVITY {
+        ObjectId _id PK
+        string activityId UK "Unique slug"
+        string title
+        string category "energy | water | waste | mobility | food"
+        string impactLevel "high | medium | low"
+        number co2ReductionMonthlyKg
+        number pointsAwarded
+        number durationDays
+    }
+
+    ACTIVITY_CHECKIN {
+        ObjectId _id PK
+        ObjectId userId FK "Compound index (user + act + cycle)"
+        string activityId
+        ObjectId cycleId
+        date checkInDate
+        number dayNumber
+        string notes
+    }
+
+    GREEN_POINT_TRANSACTION {
+        ObjectId _id PK
+        ObjectId userId FK
+        ObjectId activityCycleId FK "Compound UK (cycleId + type)"
+        string activityId
+        number points
+        string transactionType "challenge_completion | welcome_bonus"
+        string description
+        timestamp createdAt "Append-only"
+    }
+
+    SOLAR_ESTIMATE {
+        ObjectId _id PK
+        ObjectId userId FK "Indexed (userId + createdAt DESC)"
+        object inputs "roofAreaSqft, monthlyBillInr, district"
+        boolean feasible
+        string limitingFactor "roof | consumption | max"
+        number capacityKw
+        string discom "UGVCL | DGVCL | MGVCL | PGVCL | Torrent"
+        object financials "grossCost, subsidy, netCost, savings"
+        object environmental "annualCo2Avoided, lifetimeCo2"
+        timestamp createdAt
+    }
+
+    SOLAR_ENQUIRY {
+        ObjectId _id PK
+        ObjectId userId FK "Indexed"
+        string district
+        number capacityKw
+        ObjectId vendorId FK "Indexed"
+        string contactPhone
+        string status "submitted | in_review | contacted | closed"
+        timestamp createdAt
+    }
+
+    VENDOR {
+        ObjectId _id PK
+        string name
+        string category "solar_installer (Indexed)"
+        array districts "Indexed (multikey)"
+        string state
+        number rating
+        string phone
+        string whatsapp
+        boolean isEmpanelled "Indexed"
+    }

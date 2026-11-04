@@ -1,11 +1,16 @@
 {
-  "name": "hackcult-26-mission-life",
+  "name": "hackcult-26-ecopulse",
   "version": "1.0.0",
   "private": true,
-  "description": "Mission LiFE - Lifestyle for Environment Platform (HackCult '26)",
+  "description": "EcoPulse - Lifestyle for Environment Platform (HackCult '26)",
   "scripts": {
     "sync:engine": "node scripts/syncEngine.js",
     "test:engine-sync": "node scripts/checkEngineSync.js",
-    "test": "node scripts/checkEngineSync.js"
+    "test:solar": "node tests/solar.test.js",
+    "test:activities": "node client/src/features/activities/utils/discovery.test.js",
+    "test": "node scripts/checkEngineSync.js && node tests/solar.test.js",
+    "deck:html": "marp docs/deck/deck.md --theme-set docs/deck/theme.css --html --allow-local-files --no-stdin -o docs/deck/index.html",
+    "deck:pdf": "marp docs/deck/deck.md --theme-set docs/deck/theme.css --pdf --allow-local-files --no-stdin -o docs/deck/EcoPulse-Pitch-Deck.pdf",
+    "deck": "npm run deck:html && npm run deck:pdf"
   }
 }

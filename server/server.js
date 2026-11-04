@@ -44,7 +44,7 @@ app.get('/api/v1/health', (req, res) => {
 
   res.status(200).json({
     success: true,
-    service: 'Mission LiFE API',
+    service: 'EcoPulse API',
     version: '1.0.0',
     timestamp: new Date().toISOString(),
     database: dbStatusMap[mongoose.connection.readyState] || 'unknown',
@@ -86,7 +86,7 @@ if (require.main === module) {
 
   server = app.listen(PORT, HOST, () => {
     console.log(
-      `🚀 Mission LiFE Server running in ${process.env.NODE_ENV || 'development'} mode on ${HOST}:${PORT}`
+      `🚀 EcoPulse Server running in ${process.env.NODE_ENV || 'development'} mode on ${HOST}:${PORT}`
     );
     console.log(`📡 Local Health Check: http://localhost:${PORT}/api/v1/health`);
     try {
