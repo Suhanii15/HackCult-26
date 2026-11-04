@@ -150,6 +150,8 @@ const UserSchema = new mongoose.Schema(
 );
 
 UserSchema.index({ district: 1, totalPoints: -1 });
+UserSchema.index({ district: 1, ecoScore: -1 });
+UserSchema.index({ district: 1, baselineAnnualCO2Kg: 1 });
 UserSchema.index({ state: 1, totalPoints: -1 });
 UserSchema.index({ city: 1, totalPoints: -1 });
 
