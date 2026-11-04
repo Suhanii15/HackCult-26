@@ -1,9 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import { COLORS, RADII, SPACING } from '../../theme';
 import { useLanguage } from '../../i18n/LanguageContext';
+import { useProfile } from '../../features/profile/hooks';
 
 export default function TopBar({
   title,
@@ -16,6 +17,9 @@ export default function TopBar({
   const navigation = useNavigation();
   const { t } = useLanguage();
 
+  const { data: profile } = useProfile(user);
+  const currentUser = profile || user;
+
   const handleAvatarPress = () => {
     if (onAvatarPress) {
       onAvatarPress();
@@ -24,9 +28,10 @@ export default function TopBar({
     }
   };
 
-  // Determine user display initial
-  const rawName = user?.fullName || user?.name || '';
+  // Determine user display initial and avatar
+  const rawName = currentUser?.fullName || currentUser?.name || '';
   const initial = (rawName.trim()[0] || 'C').toUpperCase();
+  const avatarUri = currentUser?.avatar || null;
 
   // Greeting for Home
   const greeting = isHome
@@ -49,7 +54,11 @@ export default function TopBar({
         accessibilityLabel="Open user profile"
       >
         <View style={styles.avatarCircle}>
-          <Text style={styles.avatarText}>{initial}</Text>
+          {avatarUri ? (
+            <Image source={{ uri: avatarUri }} style={styles.avatarImage} />
+          ) : (
+            <Text style={styles.avatarText}>{initial}</Text>
+          )}
         </View>
       </TouchableOpacity>
     </View>
@@ -95,6 +104,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderWidth: 2,
     borderColor: COLORS.primaryLight,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: RADII.full,
   },
   avatarText: {
     color: COLORS.white,

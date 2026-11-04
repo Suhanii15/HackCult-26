@@ -1,0 +1,179 @@
+{
+  "configVersion": "2026.1",
+  "pmSuryaGhar": {
+    "slabs": [
+      {
+        "upToKw": 2.0,
+        "subsidyPerKw": 30000
+      },
+      {
+        "upToKw": 3.0,
+        "subsidyPerKw": 18000
+      }
+    ],
+    "maxSubsidyInr": 78000,
+    "applicableCustomerType": "residential",
+    "unit": "INR",
+    "source": "PM Surya Ghar: Muft Bijli Yojana Operational Guidelines (MNRE, Ministry of New and Renewable Energy, Govt of India)",
+    "asOf": "2024-02-15",
+    "verified": true
+  },
+  "stateSubsidy": {
+    "topUpPerKw": 0,
+    "maxTopUpInr": 0,
+    "unit": "INR",
+    "source": "Gujarat Energy Development Agency (GEDA) - Placeholder / Pending official notification",
+    "asOf": "2026-01-01",
+    "verified": false,
+    "note": "TODO: Confirm with GEDA whether an additional state top-up subsidy applies on top of PM Surya Ghar central subsidy."
+  },
+  "tariff": {
+    "discoms": {
+      "UGVCL": {
+        "fixedChargePerMonth": 25,
+        "energySlabs": [
+          { "upToUnits": 50, "ratePerUnit": 3.05 },
+          { "upToUnits": 100, "ratePerUnit": 3.50 },
+          { "upToUnits": 250, "ratePerUnit": 4.15 },
+          { "upToUnits": 999999, "ratePerUnit": 5.20 }
+        ],
+        "fpppaPerUnit": 2.45,
+        "electricityDutyPercent": 15
+      },
+      "DGVCL": {
+        "fixedChargePerMonth": 25,
+        "energySlabs": [
+          { "upToUnits": 50, "ratePerUnit": 3.05 },
+          { "upToUnits": 100, "ratePerUnit": 3.50 },
+          { "upToUnits": 250, "ratePerUnit": 4.15 },
+          { "upToUnits": 999999, "ratePerUnit": 5.20 }
+        ],
+        "fpppaPerUnit": 2.45,
+        "electricityDutyPercent": 15
+      },
+      "MGVCL": {
+        "fixedChargePerMonth": 25,
+        "energySlabs": [
+          { "upToUnits": 50, "ratePerUnit": 3.05 },
+          { "upToUnits": 100, "ratePerUnit": 3.50 },
+          { "upToUnits": 250, "ratePerUnit": 4.15 },
+          { "upToUnits": 999999, "ratePerUnit": 5.20 }
+        ],
+        "fpppaPerUnit": 2.45,
+        "electricityDutyPercent": 15
+      },
+      "PGVCL": {
+        "fixedChargePerMonth": 25,
+        "energySlabs": [
+          { "upToUnits": 50, "ratePerUnit": 3.05 },
+          { "upToUnits": 100, "ratePerUnit": 3.50 },
+          { "upToUnits": 250, "ratePerUnit": 4.15 },
+          { "upToUnits": 999999, "ratePerUnit": 5.20 }
+        ],
+        "fpppaPerUnit": 2.45,
+        "electricityDutyPercent": 15
+      },
+      "Torrent_Power": {
+        "fixedChargePerMonth": 25,
+        "energySlabs": [
+          { "upToUnits": 50, "ratePerUnit": 3.20 },
+          { "upToUnits": 100, "ratePerUnit": 3.65 },
+          { "upToUnits": 250, "ratePerUnit": 4.25 },
+          { "upToUnits": 999999, "ratePerUnit": 5.05 }
+        ],
+        "fpppaPerUnit": 2.15,
+        "electricityDutyPercent": 15
+      }
+    },
+    "districtToDiscom": {
+      "Ahmedabad": "Torrent_Power",
+      "Amreli": "PGVCL",
+      "Anand": "MGVCL",
+      "Aravalli": "UGVCL",
+      "Banaskantha": "UGVCL",
+      "Bharuch": "DGVCL",
+      "Bhavnagar": "PGVCL",
+      "Botad": "PGVCL",
+      "Chhota Udaipur": "MGVCL",
+      "Dahod": "MGVCL",
+      "Dang": "DGVCL",
+      "Devbhoomi Dwarka": "PGVCL",
+      "Gandhinagar": "UGVCL",
+      "Gir Somnath": "PGVCL",
+      "Jamnagar": "PGVCL",
+      "Junagadh": "PGVCL",
+      "Kheda": "MGVCL",
+      "Kutch": "PGVCL",
+      "Mahisagar": "MGVCL",
+      "Mehsana": "UGVCL",
+      "Morbi": "PGVCL",
+      "Narmada": "DGVCL",
+      "Navsari": "DGVCL",
+      "Panchmahal": "MGVCL",
+      "Patan": "UGVCL",
+      "Porbandar": "PGVCL",
+      "Rajkot": "PGVCL",
+      "Sabarkantha": "UGVCL",
+      "Surat": "Torrent_Power",
+      "Surendranagar": "PGVCL",
+      "Tapi": "DGVCL",
+      "Vadodara": "MGVCL",
+      "Valsad": "DGVCL"
+    },
+    "defaultDiscom": "PGVCL",
+    "unit": "INR/month (fixed), INR/unit (energy/fpppa), % (duty)",
+    "source": "Gujarat Electricity Regulatory Commission (GERC) Tariff Orders for FY 2024-25 (Tariff Schedule RGP) & GUVNL FPPPA Notifications",
+    "asOf": "2024-04-01",
+    "verified": true
+  },
+  "cost": {
+    "sizeBands": [
+      { "minKw": 1.0, "maxKw": 2.0, "costPerKw": 60000 },
+      { "minKw": 2.0, "maxKw": 3.0, "costPerKw": 55000 },
+      { "minKw": 3.0, "maxKw": 10.0, "costPerKw": 50000 }
+    ],
+    "unit": "INR/kW installed",
+    "source": "Estimated Gujarat market benchmark rates for residential grid-connected rooftop solar; unverified against formal L1 tender Discovery",
+    "asOf": "2024-06-01",
+    "verified": false,
+    "note": "TODO: Verify against formal GEDA / MNRE empanelled vendor rate discoveries."
+  },
+  "yield": {
+    "dataSource": "shared/engine/data/gujarat-yield.json",
+    "defaultYieldKwhPerKwp": 1588.5,
+    "approximateFallback": {
+      "value": 1500.0,
+      "unit": "kWh/kWp/year",
+      "source": "Estimated national average solar yield for non-Gujarat regions",
+      "asOf": "2024-01-01",
+      "verified": false,
+      "label": "approximate"
+    },
+    "unit": "kWh/kWp/year",
+    "source": "European Commission Joint Research Centre (JRC) - PVGIS-SARAH2 API v5.2",
+    "asOf": "2026-11-03",
+    "verified": true
+  },
+  "system": {
+    "sqftPerKw": 100,
+    "minKw": 1.0,
+    "maxKw": 10.0,
+    "roundingStep": 0.5,
+    "offsetFraction": 1.0,
+    "degradationPerYear": 0.005,
+    "lifetimeYears": 25,
+    "tariffEscalation": 0.0,
+    "unit": "sq.ft/kW, kW, fraction/year, years",
+    "source": "MNRE / IEC engineering design guidelines for residential rooftop solar",
+    "asOf": "2024-01-01",
+    "verified": true
+  },
+  "emissions": {
+    "reference": "shared/engine/config.json#electricity",
+    "gridKgPerKwh": 0.71,
+    "unit": "kg CO2e / kWh",
+    "source": "Central Electricity Authority (CEA) CO2 Baseline Database Ver 19 (2024), Western Regional Grid",
+    "asOf": "2024-03-01",
+    "verified": true
+  }
+}

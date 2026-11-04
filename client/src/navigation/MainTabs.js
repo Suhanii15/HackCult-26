@@ -4,7 +4,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 import CommunityScreen from '../features/community/screens/CommunityScreen';
 import ActivitiesStack from './ActivitiesStack';
 import HomeScreen from '../features/home/screens/HomeScreen';
-import SolarScreen from '../features/solar/screens/SolarScreen';
+import SolarStack from './SolarStack';
 import GlassEllipseTabBar from './GlassEllipseTabBar';
 import {
   CommunityIcon,
@@ -42,7 +42,7 @@ const TAB_DEFINITIONS = [
     name: 'Solar',
     titleKey: 'tab_solar',
     defaultLabel: 'Solar',
-    component: SolarScreen,
+    component: SolarStack,
     icon: SolarIcon,
   },
 ];

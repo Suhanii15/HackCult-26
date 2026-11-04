@@ -56,6 +56,9 @@ app.use('/api/v1/auth', require('./routes/authRoutes'));
 app.use('/api/v1/users', require('./routes/userRoutes'));
 app.use('/api/v1/footprint', require('./routes/footprintRoutes'));
 app.use('/api/v1/activities', require('./routes/activityRoutes'));
+app.use('/api/v1/points', require('./routes/pointsRoutes'));
+app.use('/api/v1/solar', require('./routes/solarRoutes'));
+app.use('/api/v1/vendors', require('./routes/vendorRoutes'));
 
 // Unknown API routes -> JSON 404 instead of an HTML page
 app.use('/api', (req, res) => {

@@ -5,6 +5,8 @@ import { QueryClientProvider } from '@tanstack/react-query';
 import { queryClient } from '../services/queryClient';
 import MainTabs from './MainTabs';
 import ProfileScreen from '../features/profile/screens/ProfileScreen';
+import LeaderboardScreen from '../screens/LeaderboardScreen';
+import NotificationScreen from '../features/notifications/screens/NotificationScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -25,6 +27,19 @@ export default function RootShell({ user, onLogout }) {
 
           <Stack.Screen name="Profile">
             {(props) => <ProfileScreen {...props} user={user} onLogout={onLogout} />}
+          </Stack.Screen>
+
+          <Stack.Screen name="Leaderboard">
+            {(props) => (
+              <LeaderboardScreen
+                {...props}
+                onBack={() => props.navigation.goBack()}
+              />
+            )}
+          </Stack.Screen>
+
+          <Stack.Screen name="Notifications">
+            {(props) => <NotificationScreen {...props} user={user} />}
           </Stack.Screen>
         </Stack.Navigator>
       </NavigationContainer>

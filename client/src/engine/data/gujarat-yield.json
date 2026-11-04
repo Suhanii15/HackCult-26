@@ -1,0 +1,241 @@
+{
+  "source": "European Commission Joint Research Centre (JRC) - Photovoltaic Geographical Information System (PVGIS-SARAH2 / v5.2)",
+  "sourceUrl": "https://re.jrc.ec.europa.eu/pvg_tools/en/",
+  "fetchedAt": "2026-11-03T14:55:39.527Z",
+  "systemLossPercent": 14,
+  "defaultYieldKwhPerKwp": 1588.5,
+  "districtCount": 33,
+  "districts": {
+    "Ahmedabad": {
+      "kwhPerKwpPerYear": 1585.2,
+      "lat": 23.0225,
+      "lon": 72.5714,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Amreli": {
+      "kwhPerKwpPerYear": 1570.9,
+      "lat": 21.6,
+      "lon": 71.2167,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Anand": {
+      "kwhPerKwpPerYear": 1572.3,
+      "lat": 22.5645,
+      "lon": 72.9289,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Aravalli": {
+      "kwhPerKwpPerYear": 1583,
+      "lat": 23.4619,
+      "lon": 73.303,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Banaskantha": {
+      "kwhPerKwpPerYear": 1607,
+      "lat": 24.1722,
+      "lon": 72.4344,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Bharuch": {
+      "kwhPerKwpPerYear": 1581.5,
+      "lat": 21.7051,
+      "lon": 72.9959,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Bhavnagar": {
+      "kwhPerKwpPerYear": 1599.2,
+      "lat": 21.7645,
+      "lon": 72.1519,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Botad": {
+      "kwhPerKwpPerYear": 1583.6,
+      "lat": 22.17,
+      "lon": 71.66,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Chhota Udaipur": {
+      "kwhPerKwpPerYear": 1548.6,
+      "lat": 22.3108,
+      "lon": 74.0117,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Dahod": {
+      "kwhPerKwpPerYear": 1554.8,
+      "lat": 22.8369,
+      "lon": 74.2547,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Dang": {
+      "kwhPerKwpPerYear": 1514.4,
+      "lat": 20.7567,
+      "lon": 73.6844,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Devbhoomi Dwarka": {
+      "kwhPerKwpPerYear": 1646.3,
+      "lat": 22.2039,
+      "lon": 69.6583,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Gandhinagar": {
+      "kwhPerKwpPerYear": 1589.9,
+      "lat": 23.2156,
+      "lon": 72.6369,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Gir Somnath": {
+      "kwhPerKwpPerYear": 1640.4,
+      "lat": 20.95,
+      "lon": 70.4,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Jamnagar": {
+      "kwhPerKwpPerYear": 1612.4,
+      "lat": 22.4707,
+      "lon": 70.0577,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Junagadh": {
+      "kwhPerKwpPerYear": 1589.9,
+      "lat": 21.5222,
+      "lon": 70.4579,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Kheda": {
+      "kwhPerKwpPerYear": 1574.7,
+      "lat": 22.6916,
+      "lon": 72.8634,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Kutch": {
+      "kwhPerKwpPerYear": 1696.5,
+      "lat": 23.242,
+      "lon": 69.6669,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Mahisagar": {
+      "kwhPerKwpPerYear": 1570.9,
+      "lat": 23.1333,
+      "lon": 73.6167,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Mehsana": {
+      "kwhPerKwpPerYear": 1598.7,
+      "lat": 23.588,
+      "lon": 72.3693,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Morbi": {
+      "kwhPerKwpPerYear": 1616.1,
+      "lat": 22.8173,
+      "lon": 70.8377,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Narmada": {
+      "kwhPerKwpPerYear": 1533.7,
+      "lat": 21.8711,
+      "lon": 73.5028,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Navsari": {
+      "kwhPerKwpPerYear": 1587.7,
+      "lat": 20.9467,
+      "lon": 72.952,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Panchmahal": {
+      "kwhPerKwpPerYear": 1560.9,
+      "lat": 22.7758,
+      "lon": 73.6149,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Patan": {
+      "kwhPerKwpPerYear": 1609.3,
+      "lat": 23.8493,
+      "lon": 72.1266,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Porbandar": {
+      "kwhPerKwpPerYear": 1633.6,
+      "lat": 21.6417,
+      "lon": 69.6293,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Rajkot": {
+      "kwhPerKwpPerYear": 1596.7,
+      "lat": 22.3039,
+      "lon": 70.8022,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Sabarkantha": {
+      "kwhPerKwpPerYear": 1590.1,
+      "lat": 23.5977,
+      "lon": 72.9698,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Surat": {
+      "kwhPerKwpPerYear": 1598.2,
+      "lat": 21.1702,
+      "lon": 72.8311,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Surendranagar": {
+      "kwhPerKwpPerYear": 1596.5,
+      "lat": 22.7278,
+      "lon": 71.637,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Tapi": {
+      "kwhPerKwpPerYear": 1534.6,
+      "lat": 21.1119,
+      "lon": 73.3908,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Vadodara": {
+      "kwhPerKwpPerYear": 1569,
+      "lat": 22.3072,
+      "lon": 73.1812,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    },
+    "Valsad": {
+      "kwhPerKwpPerYear": 1573.2,
+      "lat": 20.5992,
+      "lon": 72.9342,
+      "optimumSlopeDegrees": null,
+      "optimumAzimuthDegrees": null
+    }
+  }
+}

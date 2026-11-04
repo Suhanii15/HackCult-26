@@ -234,14 +234,34 @@ export default function HomeScreen({ user }) {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            style={styles.actionCircle}
-            activeOpacity={0.8}
-            onPress={openLanguageModal}
-            accessibilityLabel="Language selection"
-          >
-            <Text style={styles.actionIcon}>🌐</Text>
-          </TouchableOpacity>
+          <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
+            <TouchableOpacity
+              style={styles.actionCircle}
+              activeOpacity={0.8}
+              onPress={() => navigation.navigate('Leaderboard')}
+              accessibilityLabel="Leaderboard"
+            >
+              <Text style={styles.actionIcon}>🏆</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionCircle}
+              activeOpacity={0.8}
+              onPress={() => navigation.navigate('Notifications')}
+              accessibilityLabel="Notifications"
+            >
+              <Text style={styles.actionIcon}>🔔</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionCircle}
+              activeOpacity={0.8}
+              onPress={openLanguageModal}
+              accessibilityLabel="Language selection"
+            >
+              <Text style={styles.actionIcon}>🌐</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         {/* 1. GREETING SECTION (Directly on light background) */}
